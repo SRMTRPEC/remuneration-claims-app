@@ -138,6 +138,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── QP Radio Selection ──────────────────────────────────────────
 
+  let currentPassbookBase64 = null;
+  const passbookFileInput = document.getElementById('passbookFile');
+  passbookFileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => currentPassbookBase64 = evt.target.result;
+      reader.readAsDataURL(file);
+    } else {
+      currentPassbookBase64 = null;
+    }
+  });
+
   document.querySelectorAll('.radio-card').forEach(card => {
     card.addEventListener('click', () => {
       document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
@@ -292,6 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         account_number: document.getElementById('accountNumber').value.trim(),
         ifsc_code: document.getElementById('ifscCode').value.trim(),
         mobile_number: document.getElementById('mobileNumber').value.trim(),
+        passbook_file: currentPassbookBase64,
         staff_section_enabled: staffEnabled.checked,
         qp_section_enabled: qpEnabled.checked,
         qp_type: selectedQp ? selectedQp.value : null,

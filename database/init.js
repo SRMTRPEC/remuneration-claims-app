@@ -59,6 +59,7 @@ function initDatabase() {
       account_number TEXT,
       ifsc_code TEXT,
       mobile_number TEXT,
+      passbook_file TEXT,
       staff_section_enabled INTEGER DEFAULT 1,
 
       /* Question Paper Setting */
@@ -148,7 +149,8 @@ function initDatabase() {
     db.exec(`ALTER TABLE remuneration_claims ADD COLUMN account_number TEXT`);
     db.exec(`ALTER TABLE remuneration_claims ADD COLUMN ifsc_code TEXT`);
     db.exec(`ALTER TABLE remuneration_claims ADD COLUMN mobile_number TEXT`);
-    console.log('   ➜ Applied database migration: Added bank details columns');
+    db.exec(`ALTER TABLE remuneration_claims ADD COLUMN passbook_file TEXT`);
+    console.log('   ➜ Applied database migration: Added bank details columns and passbook_file');
   } catch (e) {
     // Columns likely already exist, safe to ignore
   }

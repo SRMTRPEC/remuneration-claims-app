@@ -174,6 +174,12 @@ function renderViewMode() {
           <div class="detail-field-label">Mobile Number</div>
           <div class="detail-field-value">${escapeHtml(c.mobile_number || '-')}</div>
         </div>
+        <div class="detail-field">
+          <div class="detail-field-label">Passbook Photo/PDF</div>
+          <div class="detail-field-value">
+            ${c.passbook_file ? `<a href="${c.passbook_file}" download="passbook_${escapeHtml(c.staff_id)}" target="_blank" style="color: var(--primary-500); text-decoration: underline; font-weight: 500;">View / Download</a>` : '-'}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -339,6 +345,12 @@ function renderEditMode() {
             <label class="form-label" for="editMobileNumber">Mobile Number *</label>
           </div>
         </div>
+        <div class="form-row">
+          <div class="form-group" style="grid-column: span 2;">
+            <input type="file" class="form-input" id="editPassbookFile" accept="image/*,application/pdf" style="padding-top: 12px; height: 52px;">
+            <label class="form-label" for="editPassbookFile" style="transform: translateY(-26px) scale(0.85); left: var(--space-sm);">Update Passbook Photo / PDF (Optional)</label>
+          </div>
+        </div>
       </div>
 
       <!-- Question Paper Setting -->
@@ -480,10 +492,26 @@ function renderEditMode() {
 
 // ── Switch Modes ────────────────────────────────────────────────────
 
+let currentEditPassbookBase64 = null;
+
 function switchToEdit() {
   isEditMode = true;
   renderEditMode();
-  // Dynamic sessions logic removed
+  
+  currentEditPassbookBase64 = null; // Reset on edit open
+  const editPassbookInput = document.getElementById('editPassbookFile');
+  if (editPassbookInput) {
+    editPassbookInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => currentEditPassbookBase64 = evt.target.result;
+        reader.readAsDataURL(file);
+      } else {
+        currentEditPassbookBase64 = null;
+      }
+    });
+  }
 }
 
 function cancelEdit() {
@@ -508,6 +536,7 @@ async function saveEdit() {
     account_number: document.getElementById('editAccountNumber').value.trim(),
     ifsc_code: document.getElementById('editIfscCode').value.trim(),
     mobile_number: document.getElementById('editMobileNumber').value.trim(),
+    passbook_file: currentEditPassbookBase64 || null,
     staff_section_enabled: true,
     qp_section_enabled: document.getElementById('editQpEnabled').checked,
     qp_type: document.getElementById('editQpType').value || null,
