@@ -31,7 +31,17 @@ router.post('/', validateClaim, (req, res) => {
     }
 
     const scrutinyAmount = (parseInt(b.scrutiny_quantity) || 0) * 300;
-    const evalAmount = (parseInt(b.eval_scripts) || 0) * 30;
+    let evalAmount = 0;
+    let evalScripts = 0;
+    let evalSessionsStr = null;
+    if (b.eval_sessions && Array.isArray(b.eval_sessions)) {
+      evalSessionsStr = JSON.stringify(b.eval_sessions);
+      evalScripts = b.eval_sessions.reduce((sum, s) => sum + (parseInt(s.scripts) || 0), 0);
+      evalAmount = evalScripts * 30;
+    } else {
+      evalScripts = parseInt(b.eval_scripts) || 0;
+      evalAmount = evalScripts * 30;
+    }
 
     let squadAmount = 0;
     let squadDays = 0;
@@ -83,9 +93,9 @@ router.post('/', validateClaim, (req, res) => {
       parseInt(b.scrutiny_quantity) || 0,
       scrutinyAmount,
       b.eval_appointment || null,
-      b.eval_phase || null,
+      evalSessionsStr || b.eval_phase || null,
       b.eval_date || null,
-      parseInt(b.eval_scripts) || 0,
+      evalScripts,
       evalAmount,
       squadDays,
       squadSessionsStr,
@@ -379,7 +389,17 @@ router.put('/:id', requireAdmin, validateClaim, (req, res) => {
     }
 
     const scrutinyAmount = (parseInt(b.scrutiny_quantity) || 0) * 300;
-    const evalAmount = (parseInt(b.eval_scripts) || 0) * 30;
+    let evalAmount = 0;
+    let evalScripts = 0;
+    let evalSessionsStr = null;
+    if (b.eval_sessions && Array.isArray(b.eval_sessions)) {
+      evalSessionsStr = JSON.stringify(b.eval_sessions);
+      evalScripts = b.eval_sessions.reduce((sum, s) => sum + (parseInt(s.scripts) || 0), 0);
+      evalAmount = evalScripts * 30;
+    } else {
+      evalScripts = parseInt(b.eval_scripts) || 0;
+      evalAmount = evalScripts * 30;
+    }
 
     let squadAmount = 0;
     let squadDays = 0;
@@ -423,9 +443,9 @@ router.put('/:id', requireAdmin, validateClaim, (req, res) => {
       parseInt(b.scrutiny_quantity) || 0,
       scrutinyAmount,
       b.eval_appointment || null,
-      b.eval_phase || null,
+      evalSessionsStr || b.eval_phase || null,
       b.eval_date || null,
-      parseInt(b.eval_scripts) || 0,
+      evalScripts,
       evalAmount,
       squadDays,
       squadSessionsStr,

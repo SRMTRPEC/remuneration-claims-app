@@ -66,6 +66,16 @@ function validateClaim(req, res, next) {
   if (body.eval_phase && !VALID_PHASES.includes(body.eval_phase)) {
     errors.push('Invalid phase');
   }
+  if (body.eval_sessions && Array.isArray(body.eval_sessions)) {
+    body.eval_sessions.forEach(s => {
+      if (s.scripts !== undefined && s.scripts !== null) {
+        const sc = parseInt(s.scripts);
+        if (isNaN(sc) || sc < 0) {
+          errors.push('Invalid scripts for evaluation session');
+        }
+      }
+    });
+  }
 
   // Squad Duty
   if (body.squad_days !== undefined && body.squad_days !== null) {

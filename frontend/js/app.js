@@ -39,10 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Eval section
   const evalEnabled = document.getElementById('evalEnabled');
   const evalSection = document.getElementById('evalSection');
-  const evalAppointment = document.getElementById('evalAppointment');
-  const evalPhase = document.getElementById('evalPhase');
-  const evalDate = document.getElementById('evalDate');
-  const evalScripts = document.getElementById('evalScripts');
+  const evalAppointment = document.getElementById('evalAppointment'); // Old (keeping if needed elsewhere? No, remove)
+  
+  const evalPhase1Toggle = document.getElementById('evalPhase1Toggle');
+  const evalPhase1Block = document.getElementById('evalPhase1Block');
+  const evalAppt1 = document.getElementById('evalAppt1');
+  const evalDate1 = document.getElementById('evalDate1');
+  const evalScripts1 = document.getElementById('evalScripts1');
+
+  const evalPhase2Toggle = document.getElementById('evalPhase2Toggle');
+  const evalPhase2Block = document.getElementById('evalPhase2Block');
+  const evalAppt2 = document.getElementById('evalAppt2');
+  const evalDate2 = document.getElementById('evalDate2');
+  const evalScripts2 = document.getElementById('evalScripts2');
   const evalSubtotal = document.getElementById('evalSubtotal');
 
   // Squad section
@@ -150,31 +159,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Script Evaluation ───────────────────────────────────────────
 
-  evalPhase.addEventListener('change', () => {
-    evalDate.disabled = false;
-    evalDate.innerHTML = '';
-
-    if (evalPhase.value === 'Phase 1') {
-      evalDate.innerHTML = `
-        <option value="">Select Date</option>
-        <option value="Both Days">Both Days (20-06 & 21-06)</option>
-        <option value="20-06-2026">20-06-2026</option>
-        <option value="21-06-2026">21-06-2026</option>
-      `;
-    } else if (evalPhase.value === 'Phase 2') {
-      evalDate.innerHTML = `
-        <option value="01-07-2026">01-07-2026</option>
-      `;
-    } else {
-      evalDate.innerHTML = '<option value="">Select Phase first</option>';
-      evalDate.disabled = true;
-    }
+  evalPhase1Toggle.addEventListener('change', () => {
+    evalPhase1Block.style.display = evalPhase1Toggle.checked ? 'block' : 'none';
+    recalculate();
   });
 
-  evalScripts.addEventListener('input', () => {
-    // Prevent negative
-    if (parseInt(evalScripts.value) < 0) evalScripts.value = 0;
+  evalPhase2Toggle.addEventListener('change', () => {
+    evalPhase2Block.style.display = evalPhase2Toggle.checked ? 'block' : 'none';
     recalculate();
+  });
+
+  [evalScripts1, evalScripts2].forEach(input => {
+    input.addEventListener('input', () => {
+      if (parseInt(input.value) < 0) input.value = 0;
+      recalculate();
+    });
   });
 
   // ── Squad Duty ──────────────────────────────────────────────────
@@ -205,7 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
     scrutinySubtotal.textContent = formatCurrency(scrutinyAmount);
 
     // Eval Amount
-    const evalAmount = evalEnabled.checked ? Math.max(0, parseInt(evalScripts.value || 0)) * 30 : 0;
+    let evalAmount = 0;
+    if (evalEnabled.checked) {
+      let scripts = 0;
+      if (evalPhase1Toggle.checked) scripts += Math.max(0, parseInt(evalScripts1.value || 0));
+      if (evalPhase2Toggle.checked) scripts += Math.max(0, parseInt(evalScripts2.value || 0));
+      evalAmount = scripts * 30;
+    }
     evalSubtotal.textContent = formatCurrency(evalAmount);
 
     // Squad Amount
@@ -273,10 +278,26 @@ document.addEventListener('DOMContentLoaded', () => {
         qp_type: selectedQp ? selectedQp.value : null,
         qp_quantity: parseInt(qpQuantity.value) || 0,
         scrutiny_quantity: parseInt(scrutinyQuantity.value) || 0,
-        eval_appointment: document.getElementById('evalAppointment').value || null,
-        eval_phase: evalPhase.value || null,
-        eval_date: evalDate.value || null,
-        eval_scripts: parseInt(evalScripts.value) || 0,
+        eval_sessions: (() => {
+          let sessions = [];
+          if (evalPhase1Toggle.checked) {
+            sessions.push({
+              phase: 'Phase 1',
+              appointment: evalAppt1.value || null,
+              date: evalDate1.value || null,
+              scripts: parseInt(evalScripts1.value) || 0
+            });
+          }
+          if (evalPhase2Toggle.checked) {
+            sessions.push({
+              phase: 'Phase 2',
+              appointment: evalAppt2.value || null,
+              date: evalDate2.value || null,
+              scripts: parseInt(evalScripts2.value) || 0
+            });
+          }
+          return sessions;
+        })(),
         squad_sessions: {
           Forenoon: parseInt(squadForenoon.value) || 0,
           Afternoon: parseInt(squadAfternoon.value) || 0,
@@ -464,10 +485,14 @@ document.addEventListener('DOMContentLoaded', () => {
       scrutiny_quantity: scrutinyQuantity.value,
       
       eval_enabled: evalEnabled.checked,
-      eval_appointment: document.getElementById('evalAppointment').value,
-      eval_phase: evalPhase.value,
-      eval_date: evalDate.value,
-      eval_scripts: evalScripts.value,
+      eval_phase1: evalPhase1Toggle.checked,
+      eval_appt1: evalAppt1.value,
+      eval_date1: evalDate1.value,
+      eval_scripts1: evalScripts1.value,
+      eval_phase2: evalPhase2Toggle.checked,
+      eval_appt2: evalAppt2.value,
+      eval_date2: evalDate2.value,
+      eval_scripts2: evalScripts2.value,
       
       squad_enabled: squadEnabled.checked,
       squad_sessions: {
@@ -513,15 +538,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.eval_enabled) {
       evalEnabled.checked = true;
       evalSection.classList.remove('disabled');
-      if (data.eval_appointment) document.getElementById('evalAppointment').value = data.eval_appointment;
-      if (data.eval_phase) {
-        evalPhase.value = data.eval_phase;
-        evalPhase.dispatchEvent(new Event('change'));
-        if (data.eval_date) {
-          setTimeout(() => { evalDate.value = data.eval_date; }, 50);
-        }
+      if (data.eval_phase1) {
+        evalPhase1Toggle.checked = true;
+        evalPhase1Toggle.dispatchEvent(new Event('change'));
+        if (data.eval_appt1) evalAppt1.value = data.eval_appt1;
+        if (data.eval_date1) evalDate1.value = data.eval_date1;
+        if (data.eval_scripts1) evalScripts1.value = data.eval_scripts1;
       }
-      if (data.eval_scripts) evalScripts.value = data.eval_scripts;
+      if (data.eval_phase2) {
+        evalPhase2Toggle.checked = true;
+        evalPhase2Toggle.dispatchEvent(new Event('change'));
+        if (data.eval_appt2) evalAppt2.value = data.eval_appt2;
+        if (data.eval_date2) evalDate2.value = data.eval_date2;
+        if (data.eval_scripts2) evalScripts2.value = data.eval_scripts2;
+      }
     }
     
     if (data.squad_enabled) {

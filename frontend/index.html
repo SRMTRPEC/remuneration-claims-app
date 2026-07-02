@@ -208,39 +208,69 @@
           </label>
         </div>
         <div class="section-body" id="evalBody">
-          <div class="form-row-3">
-            <div class="form-group">
-              <select class="form-select" id="evalAppointment" name="eval_appointment">
-                <option value="">Select</option>
-                <option value="Chief Examiner">Chief Examiner</option>
-                <option value="Examiner">Examiner</option>
-                <option value="Assistant Examiner">Assistant Examiner</option>
-              </select>
-              <label class="form-label" for="evalAppointment">Appointment</label>
-            </div>
-            <div class="form-group">
-              <select class="form-select" id="evalPhase" name="eval_phase">
-                <option value="">Select Phase</option>
-                <option value="Phase 1">Phase 1</option>
-                <option value="Phase 2">Phase 2</option>
-              </select>
-              <label class="form-label" for="evalPhase">Phase</label>
-            </div>
-            <div class="form-group">
-              <select class="form-select" id="evalDate" name="eval_date" disabled>
-                <option value="">Select Phase first</option>
-              </select>
-              <label class="form-label" for="evalDate">Date</label>
+          <!-- Phase Selectors -->
+          <div class="form-row" style="margin-bottom: var(--space-md);">
+            <label style="display:flex; align-items:center; gap:var(--space-sm); font-weight:600; cursor:pointer;">
+              <input type="checkbox" id="evalPhase1Toggle" style="width:18px;height:18px;"> Phase 1
+            </label>
+            <label style="display:flex; align-items:center; gap:var(--space-sm); font-weight:600; cursor:pointer; margin-left: var(--space-lg);">
+              <input type="checkbox" id="evalPhase2Toggle" style="width:18px;height:18px;"> Phase 2
+            </label>
+          </div>
+
+          <!-- Phase 1 Block -->
+          <div id="evalPhase1Block" style="display: none; padding: var(--space-md); background: rgba(0,0,0,0.02); border-radius: var(--radius-md); margin-bottom: var(--space-md); border: 1px solid var(--border-color);">
+            <h4 style="margin-bottom: var(--space-sm); color: var(--text-secondary);">Phase 1 Details</h4>
+            <div class="form-row-3">
+              <div class="form-group">
+                <select class="form-select" id="evalAppt1">
+                  <option value="">Select</option>
+                  <option value="Chief Examiner">Chief Examiner</option>
+                  <option value="Examiner">Examiner</option>
+                  <option value="Assistant Examiner">Assistant Examiner</option>
+                </select>
+                <label class="form-label">Appointment</label>
+              </div>
+              <div class="form-group">
+                <select class="form-select" id="evalDate1">
+                  <option value="">Select Date</option>
+                  <option value="Both Days">Both Days (20-06 & 21-06)</option>
+                  <option value="20-06-2026">20-06-2026</option>
+                  <option value="21-06-2026">21-06-2026</option>
+                </select>
+                <label class="form-label">Date</label>
+              </div>
+              <div class="form-group">
+                <input type="number" class="form-input" id="evalScripts1" value="0" min="0" placeholder=" ">
+                <label class="form-label">Scripts (₹30 each)</label>
+              </div>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <input type="number" class="form-input" id="evalScripts" name="eval_scripts" value="0" min="0" placeholder=" ">
-              <label class="form-label" for="evalScripts">Number of Scripts</label>
-            </div>
-            <div class="form-group">
-              <div class="form-input" style="background:var(--bg-card);font-weight:700;color:var(--primary-600);border-color:transparent;box-shadow:none;">₹30</div>
-              <label class="form-label">Rate</label>
+
+          <!-- Phase 2 Block -->
+          <div id="evalPhase2Block" style="display: none; padding: var(--space-md); background: rgba(0,0,0,0.02); border-radius: var(--radius-md); margin-bottom: var(--space-md); border: 1px solid var(--border-color);">
+            <h4 style="margin-bottom: var(--space-sm); color: var(--text-secondary);">Phase 2 Details</h4>
+            <div class="form-row-3">
+              <div class="form-group">
+                <select class="form-select" id="evalAppt2">
+                  <option value="">Select</option>
+                  <option value="Chief Examiner">Chief Examiner</option>
+                  <option value="Examiner">Examiner</option>
+                  <option value="Assistant Examiner">Assistant Examiner</option>
+                </select>
+                <label class="form-label">Appointment</label>
+              </div>
+              <div class="form-group">
+                <select class="form-select" id="evalDate2">
+                  <option value="">Select Date</option>
+                  <option value="01-07-2026">01-07-2026</option>
+                </select>
+                <label class="form-label">Date</label>
+              </div>
+              <div class="form-group">
+                <input type="number" class="form-input" id="evalScripts2" value="0" min="0" placeholder=" ">
+                <label class="form-label">Scripts (₹30 each)</label>
+              </div>
             </div>
           </div>
           <div class="subtotal-row">

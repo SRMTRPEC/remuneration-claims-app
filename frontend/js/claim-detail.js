@@ -98,6 +98,20 @@ async function loadClaim(id) {
 
 // ── View Mode ───────────────────────────────────────────────────────
 
+function formatEvalPhaseView(c) {
+  let str = c.eval_phase;
+  if (!str) return '-';
+  if (typeof str === 'string' && str.startsWith('[')) {
+    try {
+      const arr = JSON.parse(str);
+      if (Array.isArray(arr)) {
+        return arr.map(s => `<strong>${s.phase}</strong>: ${s.appointment || '-'} | ${s.date || '-'} | ${s.scripts || 0} scripts`).join('<br>');
+      }
+    } catch(e) {}
+  }
+  return `${escapeHtml(c.eval_appointment || '-')} | ${escapeHtml(c.eval_phase || '-')} | ${escapeHtml(c.eval_date || '-')}`;
+}
+
 function renderViewMode() {
   const c = currentClaim;
   const content = document.getElementById('claimContent');
@@ -174,8 +188,8 @@ function renderViewMode() {
           </tr>
           <tr>
             <td style="font-weight:600;">Script Evaluation</td>
-            <td>${escapeHtml(c.eval_appointment || '-')} | ${escapeHtml(c.eval_phase || '-')} | ${escapeHtml(c.eval_date || '-')}</td>
-            <td>${c.eval_scripts || 0} scripts</td>
+            <td>${formatEvalPhaseView(c)}</td>
+            <td>${c.eval_scripts || 0} scripts total</td>
             <td>₹30</td>
             <td style="text-align:right;font-weight:700;color:var(--primary-600);">${formatCurrency(c.eval_amount || 0)}</td>
           </tr>
@@ -210,6 +224,19 @@ function renderViewMode() {
 function renderEditMode() {
   const c = currentClaim;
   const content = document.getElementById('claimContent');
+  
+  let p1 = {}, p2 = {};
+  if (typeof c.eval_phase === 'string' && c.eval_phase.startsWith('[')) {
+    try {
+      const arr = JSON.parse(c.eval_phase);
+      p1 = arr.find(s => s.phase === 'Phase 1') || {};
+      p2 = arr.find(s => s.phase === 'Phase 2') || {};
+    } catch(e) {}
+  } else if (c.eval_phase === 'Phase 1') {
+    p1 = { appointment: c.eval_appointment, date: c.eval_date, scripts: c.eval_scripts };
+  } else if (c.eval_phase === 'Phase 2') {
+    p2 = { appointment: c.eval_appointment, date: c.eval_date, scripts: c.eval_scripts };
+  }
 
   content.innerHTML = `
     <div class="claim-detail-header animate-fade-in">
@@ -301,32 +328,57 @@ function renderEditMode() {
       <!-- Script Evaluation -->
       <div class="card" style="margin-bottom:var(--space-lg);">
         <h3 style="margin-bottom:var(--space-md);">📊 Script Evaluation</h3>
-        <div class="form-row-3">
+        
+        <!-- Phase 1 -->
+        <h4 style="margin-bottom:var(--space-sm); color:var(--text-secondary);">Phase 1</h4>
+        <div class="form-row-3" style="margin-bottom:var(--space-md);">
           <div class="form-group">
-            <select class="form-select" id="editEvalAppointment">
+            <select class="form-select" id="editEvalAppt1">
               <option value="">None</option>
-              <option value="Chief Examiner" ${c.eval_appointment === 'Chief Examiner' ? 'selected' : ''}>Chief Examiner</option>
-              <option value="Examiner" ${c.eval_appointment === 'Examiner' ? 'selected' : ''}>Examiner</option>
-              <option value="Assistant Examiner" ${c.eval_appointment === 'Assistant Examiner' ? 'selected' : ''}>Assistant Examiner</option>
+              <option value="Chief Examiner" ${p1.appointment === 'Chief Examiner' ? 'selected' : ''}>Chief Examiner</option>
+              <option value="Examiner" ${p1.appointment === 'Examiner' ? 'selected' : ''}>Examiner</option>
+              <option value="Assistant Examiner" ${p1.appointment === 'Assistant Examiner' ? 'selected' : ''}>Assistant Examiner</option>
             </select>
             <label class="form-label">Appointment</label>
           </div>
           <div class="form-group">
-            <select class="form-select" id="editEvalPhase">
-              <option value="">None</option>
-              <option value="Phase 1" ${c.eval_phase === 'Phase 1' ? 'selected' : ''}>Phase 1</option>
-              <option value="Phase 2" ${c.eval_phase === 'Phase 2' ? 'selected' : ''}>Phase 2</option>
+            <select class="form-select" id="editEvalDate1">
+              <option value="">Select Date</option>
+              <option value="Both Days" ${p1.date === 'Both Days' ? 'selected' : ''}>Both Days (20-06 & 21-06)</option>
+              <option value="20-06-2026" ${p1.date === '20-06-2026' ? 'selected' : ''}>20-06-2026</option>
+              <option value="21-06-2026" ${p1.date === '21-06-2026' ? 'selected' : ''}>21-06-2026</option>
             </select>
-            <label class="form-label">Phase</label>
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-input" id="editEvalDate" value="${escapeHtml(c.eval_date || '')}" placeholder=" ">
             <label class="form-label">Date</label>
           </div>
+          <div class="form-group">
+            <input type="number" class="form-input" id="editEvalScripts1" value="${p1.scripts || 0}" min="0" placeholder=" ">
+            <label class="form-label">Scripts (₹30 each)</label>
+          </div>
         </div>
-        <div class="form-group">
-          <input type="number" class="form-input" id="editEvalScripts" value="${c.eval_scripts || 0}" min="0" placeholder=" ">
-          <label class="form-label">Number of Scripts — Rate: ₹30</label>
+
+        <!-- Phase 2 -->
+        <h4 style="margin-bottom:var(--space-sm); color:var(--text-secondary);">Phase 2</h4>
+        <div class="form-row-3">
+          <div class="form-group">
+            <select class="form-select" id="editEvalAppt2">
+              <option value="">None</option>
+              <option value="Chief Examiner" ${p2.appointment === 'Chief Examiner' ? 'selected' : ''}>Chief Examiner</option>
+              <option value="Examiner" ${p2.appointment === 'Examiner' ? 'selected' : ''}>Examiner</option>
+              <option value="Assistant Examiner" ${p2.appointment === 'Assistant Examiner' ? 'selected' : ''}>Assistant Examiner</option>
+            </select>
+            <label class="form-label">Appointment</label>
+          </div>
+          <div class="form-group">
+            <select class="form-select" id="editEvalDate2">
+              <option value="">Select Date</option>
+              <option value="01-07-2026" ${p2.date === '01-07-2026' ? 'selected' : ''}>01-07-2026</option>
+            </select>
+            <label class="form-label">Date</label>
+          </div>
+          <div class="form-group">
+            <input type="number" class="form-input" id="editEvalScripts2" value="${p2.scripts || 0}" min="0" placeholder=" ">
+            <label class="form-label">Scripts (₹30 each)</label>
+          </div>
         </div>
       </div>
 
@@ -395,10 +447,28 @@ async function saveEdit() {
     qp_type: document.getElementById('editQpType').value || null,
     qp_quantity: parseInt(document.getElementById('editQpQuantity').value) || 0,
     scrutiny_quantity: parseInt(document.getElementById('editScrutinyQuantity').value) || 0,
-    eval_appointment: document.getElementById('editEvalAppointment').value || null,
-    eval_phase: document.getElementById('editEvalPhase').value || null,
-    eval_date: document.getElementById('editEvalDate').value || null,
-    eval_scripts: parseInt(document.getElementById('editEvalScripts').value) || 0,
+    eval_sessions: (() => {
+      let sessions = [];
+      const s1 = parseInt(document.getElementById('editEvalScripts1').value) || 0;
+      if (s1 > 0 || document.getElementById('editEvalAppt1').value) {
+        sessions.push({
+          phase: 'Phase 1',
+          appointment: document.getElementById('editEvalAppt1').value || null,
+          date: document.getElementById('editEvalDate1').value || null,
+          scripts: s1
+        });
+      }
+      const s2 = parseInt(document.getElementById('editEvalScripts2').value) || 0;
+      if (s2 > 0 || document.getElementById('editEvalAppt2').value) {
+        sessions.push({
+          phase: 'Phase 2',
+          appointment: document.getElementById('editEvalAppt2').value || null,
+          date: document.getElementById('editEvalDate2').value || null,
+          scripts: s2
+        });
+      }
+      return sessions;
+    })(),
     squad_sessions: {
       Forenoon: parseInt(document.getElementById('editSquadForenoon').value) || 0,
       Afternoon: parseInt(document.getElementById('editSquadAfternoon').value) || 0,

@@ -74,6 +74,23 @@ function createClaimsWorkbook(claims) {
       } catch (e) {}
     }
 
+    let formattedEvalPhase = claim.eval_phase || '-';
+    let formattedEvalAppt = claim.eval_appointment || '-';
+    let formattedEvalDate = claim.eval_date || '-';
+    let formattedEvalScripts = claim.eval_scripts || 0;
+    
+    if (typeof formattedEvalPhase === 'string' && formattedEvalPhase.startsWith('[')) {
+      try {
+        const arr = JSON.parse(formattedEvalPhase);
+        if (Array.isArray(arr)) {
+          formattedEvalPhase = arr.map(s => s.phase).join(', ');
+          formattedEvalAppt = arr.map(s => `${s.phase}: ${s.appointment || '-'}`).join(' | ');
+          formattedEvalDate = arr.map(s => `${s.phase}: ${s.date || '-'}`).join(' | ');
+          formattedEvalScripts = arr.map(s => `${s.phase}: ${s.scripts || 0}`).join(' | ');
+        }
+      } catch (e) {}
+    }
+
     const row = sheet.addRow({
       claim_number: claim.claim_number,
       created_at: formatExcelDate(claim.created_at),
@@ -86,10 +103,10 @@ function createClaimsWorkbook(claims) {
       qp_amount: claim.qp_amount || 0,
       scrutiny_quantity: claim.scrutiny_quantity || 0,
       scrutiny_amount: claim.scrutiny_amount || 0,
-      eval_appointment: claim.eval_appointment || '-',
-      eval_phase: claim.eval_phase || '-',
-      eval_date: claim.eval_date || '-',
-      eval_scripts: claim.eval_scripts || 0,
+      eval_appointment: formattedEvalAppt,
+      eval_phase: formattedEvalPhase,
+      eval_date: formattedEvalDate,
+      eval_scripts: formattedEvalScripts,
       eval_amount: claim.eval_amount || 0,
       squad_days: claim.squad_days || 0,
       squad_session: formattedSessions,
