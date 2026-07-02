@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const payload = {
         staff_name: document.getElementById('staffName').value.trim(),
-        staff_id: document.getElementById('staffId').value.trim(),
+        staff_id: 'TRPT' + document.getElementById('staffId').value.trim().replace(/^TRPT/i, ''),
         department: document.getElementById('department').value.trim(),
         designation: document.getElementById('designation').value,
         bank_name: document.getElementById('bankName').value.trim(),
@@ -529,7 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function restoreFormData(data) {
     if (data.staff_name) document.getElementById('staffName').value = data.staff_name;
-    if (data.staff_id) document.getElementById('staffId').value = data.staff_id;
+    if (data.staff_id) document.getElementById('staffId').value = data.staff_id.replace(/^TRPT/i, '');
     if (data.department) document.getElementById('department').value = data.department;
     if (data.designation) document.getElementById('designation').value = data.designation;
     if (data.bank_name) document.getElementById('bankName').value = data.bank_name;

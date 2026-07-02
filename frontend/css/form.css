@@ -138,6 +138,38 @@
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); margin-bottom: var(--space-lg); }
 .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-lg); margin-bottom: var(--space-lg); }
 
+.input-prefix-group {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.input-prefix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-right: none;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  padding: 0 var(--space-md);
+  height: 52px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+.input-prefix-group .form-input {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  flex: 1;
+}
+.input-prefix-group .form-label {
+  left: calc(var(--space-md) + 60px); /* Adjust based on prefix width */
+}
+.input-prefix-group .form-input:focus ~ .form-label,
+.input-prefix-group .form-input:not(:placeholder-shown) ~ .form-label {
+  transform: translateY(-26px) scale(0.85);
+  left: var(--space-sm);
+}
+
 .form-group {
   position: relative;
   margin-bottom: 0; /* overridden by grid gaps mostly */

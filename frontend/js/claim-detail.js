@@ -292,8 +292,9 @@ function renderEditMode() {
             <input type="text" class="form-input" id="editStaffName" value="${escapeHtml(c.staff_name)}" placeholder=" " required>
             <label class="form-label" for="editStaffName">Staff Name *</label>
           </div>
-          <div class="form-group">
-            <input type="text" class="form-input" id="editStaffId" value="${escapeHtml(c.staff_id)}" placeholder=" " required>
+          <div class="form-group input-prefix-group">
+            <span class="input-prefix">TRPT</span>
+            <input type="text" class="form-input" id="editStaffId" value="${escapeHtml((c.staff_id || '').replace(/^TRPT/i, ''))}" placeholder=" " required>
             <label class="form-label" for="editStaffId">Staff ID *</label>
           </div>
         </div>
@@ -499,7 +500,7 @@ async function saveEdit() {
 
   const payload = {
     staff_name: document.getElementById('editStaffName').value.trim(),
-    staff_id: document.getElementById('editStaffId').value.trim(),
+    staff_id: 'TRPT' + document.getElementById('editStaffId').value.trim().replace(/^TRPT/i, ''),
     department: document.getElementById('editDepartment').value.trim(),
     designation: document.getElementById('editDesignation').value,
     bank_name: document.getElementById('editBankName').value.trim(),
