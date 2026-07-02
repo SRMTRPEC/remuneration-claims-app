@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('claimForm');
   const saveBtn = document.getElementById('saveClaimBtn');
   const resetBtn = document.getElementById('resetBtn');
-  const printBtn = document.getElementById('printBtn');
+  const printSuccessBtn = document.getElementById('printSuccessBtn');
+  let submittedClaim = null;
 
   // Staff section
   const staffEnabled = document.getElementById('staffEnabled');
@@ -297,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Success!
+      submittedClaim = data.claim;
       showSuccessModal(data.claim);
 
       // Delete draft
@@ -391,11 +393,15 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   });
 
-  // ── Print Button ────────────────────────────────────────────────
+  // ── Print Success Button ────────────────────────────────────────
 
-  printBtn.addEventListener('click', () => {
-    printCurrentForm();
-  });
+  if (printSuccessBtn) {
+    printSuccessBtn.addEventListener('click', () => {
+      if (submittedClaim) {
+        printSubmittedClaim(submittedClaim);
+      }
+    });
+  }
 
   // ── Auto-Save Draft ─────────────────────────────────────────────
 
@@ -531,38 +537,8 @@ document.addEventListener('DOMContentLoaded', () => {
     recalculate();
   }
 
-  // ── Print Current Form ──────────────────────────────────────────
-
-  function printCurrentForm() {
-    const data = getFormData();
-    const selectedQp = document.querySelector('input[name="qp_type"]:checked');
-    
-    // Calculate amounts for print
-    let qpAmount = 0, qpRate = 0;
-    if (data.qp_enabled && selectedQp) {
-      qpRate = selectedQp.value === 'qp_with_answer_key' ? 1500 : 750;
-      qpAmount = parseInt(data.qp_quantity || 0) * qpRate;
-    }
-    const scrutinyAmount = parseInt(data.scrutiny_quantity || 0) * 300;
-    const evalAmount = Math.max(0, parseInt(data.eval_scripts || 0)) * 30;
-    const sRate = data.squad_session === 'Both Sessions' ? 400 : (data.squad_session === 'Forenoon' || data.squad_session === 'Afternoon') ? 200 : 0;
-    const squadAmount = parseInt(data.squad_days || 0) * sRate;
-    const total = qpAmount + scrutinyAmount + evalAmount + squadAmount;
-
-    const printHtml = generatePrintHtml({
-      ...data,
-      qp_rate: qpRate,
-      qp_amount: qpAmount,
-      scrutiny_amount: scrutinyAmount,
-      eval_amount: evalAmount,
-      squad_rate: sRate,
-      squad_amount: squadAmount,
-      grand_total: total,
-      amount_in_words: numberToWords(total),
-      claim_number: 'DRAFT',
-      created_at: new Date().toISOString(),
-    });
-
+  function printSubmittedClaim(claimData) {
+    const printHtml = generatePrintHtml(claimData);
     const printWindow = window.open('', '_blank');
     printWindow.document.write(printHtml);
     printWindow.document.close();
@@ -583,6 +559,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── Generate Print HTML ─────────────────────────────────────────────
+
+function formatSquadSessionPrint(sessionStr) {
+  if (!sessionStr) return '-';
+  if (sessionStr.startsWith('{')) {
+    try {
+      const obj = JSON.parse(sessionStr);
+      return Object.entries(obj).filter(([_, c]) => c > 0).map(([s, c]) => `${c}x ${s}`).join(', ') || '-';
+    } catch(e) { return '-'; }
+  }
+  return escapeHtml(sessionStr);
+}
 
 function generatePrintHtml(claim) {
   return `<!DOCTYPE html>
@@ -644,7 +631,7 @@ function generatePrintHtml(claim) {
       </tr>
     </thead>
     <tbody>
-      ${claim.qp_enabled ? `
+      ${claim.qp_section_enabled ? `
       <tr>
         <td>1</td>
         <td>Question Paper Setting</td>
@@ -655,7 +642,7 @@ function generatePrintHtml(claim) {
       </tr>
       ` : ''}
       <tr>
-        <td>${claim.qp_enabled ? '2' : '1'}</td>
+        <td>${claim.qp_section_enabled ? '2' : '1'}</td>
         <td>Paper Scrutiny</td>
         <td>-</td>
         <td>${claim.scrutiny_quantity || 0}</td>
@@ -663,7 +650,7 @@ function generatePrintHtml(claim) {
         <td class="amount">${Number(claim.scrutiny_amount || 0).toLocaleString('en-IN')}</td>
       </tr>
       <tr>
-        <td>${claim.qp_enabled ? '3' : '2'}</td>
+        <td>${claim.qp_section_enabled ? '3' : '2'}</td>
         <td>Script Evaluation</td>
         <td>${escapeHtml(claim.eval_appointment || '-')} | ${escapeHtml(claim.eval_phase || '-')} | ${escapeHtml(claim.eval_date || '-')}</td>
         <td>${claim.eval_scripts || 0}</td>
@@ -671,11 +658,11 @@ function generatePrintHtml(claim) {
         <td class="amount">${Number(claim.eval_amount || 0).toLocaleString('en-IN')}</td>
       </tr>
       <tr>
-        <td>${claim.qp_enabled ? '4' : '3'}</td>
+        <td>${claim.qp_section_enabled ? '4' : '3'}</td>
         <td>Squad Duty</td>
-        <td>${escapeHtml(claim.squad_session || '-')}</td>
+        <td>${formatSquadSessionPrint(claim.squad_session)}</td>
         <td>${claim.squad_days || 0} days</td>
-        <td>${claim.squad_rate || 0}</td>
+        <td>-</td>
         <td class="amount">${Number(claim.squad_amount || 0).toLocaleString('en-IN')}</td>
       </tr>
       <tr class="grand-total">

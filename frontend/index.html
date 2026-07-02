@@ -323,12 +323,11 @@
 
       <!-- ═══ ACTION BUTTONS ════════════════════════════════════ -->
       <div class="form-actions">
-        <button type="submit" class="btn btn-success btn-lg" id="saveClaimBtn">
+        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
           <span class="spinner"></span>
           <span class="btn-text">💾 Save Claim</span>
         </button>
         <button type="button" class="btn btn-secondary btn-lg" id="resetBtn">🔄 Reset</button>
-        <button type="button" class="btn btn-outline btn-lg" id="printBtn">🖨️ Print</button>
       </div>
     </form>
   </div>
@@ -352,7 +351,8 @@
         <p style="margin-top:var(--space-sm);">Grand Total: <strong id="successGrandTotal"></strong></p>
         <p style="font-size:0.82rem;color:var(--text-muted);margin-top:var(--space-sm);" id="successAmountWords"></p>
       </div>
-      <div class="modal-actions" style="justify-content:center;">
+      <div class="modal-actions" style="justify-content:center; gap: var(--space-md);">
+        <button class="btn btn-outline" id="printSuccessBtn">🖨️ Print Receipt</button>
         <button class="btn btn-primary" id="submitAnotherBtn">Submit Another Claim</button>
       </div>
     </div>
