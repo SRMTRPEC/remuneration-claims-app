@@ -5,7 +5,7 @@
  * Prevents invalid data from entering the database.
  */
 
-const VALID_DESIGNATIONS = ['Assistant Professor', 'Associate Professor', 'Professor', 'Technician'];
+const VALID_DESIGNATIONS = ['Assistant Professor', 'Associate Professor', 'Professor', 'Others'];
 const VALID_QP_TYPES = ['qp_with_answer_key', 'qp_only', 'answer_key_only', null, ''];
 const VALID_APPOINTMENTS = ['Chief Examiner/Controller', 'Examiner', 'Assistant Examiner', null, ''];
 const VALID_PHASES = ['Phase 1', 'Phase 2', null, ''];

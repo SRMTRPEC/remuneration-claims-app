@@ -307,7 +307,7 @@ function renderEditMode() {
               <option value="Assistant Professor" ${c.designation === 'Assistant Professor' ? 'selected' : ''}>Assistant Professor</option>
               <option value="Associate Professor" ${c.designation === 'Associate Professor' ? 'selected' : ''}>Associate Professor</option>
               <option value="Professor" ${c.designation === 'Professor' ? 'selected' : ''}>Professor</option>
-              <option value="Technician" ${c.designation === 'Technician' ? 'selected' : ''}>Technician</option>
+              <option value="Others" ${c.designation === 'Others' ? 'selected' : ''}>Others</option>
             </select>
             <label class="form-label" for="editDesignation">Designation *</label>
           </div>
