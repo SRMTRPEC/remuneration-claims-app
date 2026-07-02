@@ -169,10 +169,13 @@ document.addEventListener('DOMContentLoaded', () => {
     recalculate();
   });
 
-  [document.getElementById('evalScripts1_1'), document.getElementById('evalScripts1_2'), document.getElementById('evalScripts2_1')].forEach(input => {
+  [
+    document.getElementById('evalScripts1_1'), document.getElementById('evalScripts1_2'), document.getElementById('evalScripts2_1'),
+    document.getElementById('evalAppt1_1'), document.getElementById('evalAppt1_2'), document.getElementById('evalAppt2_1')
+  ].forEach(input => {
     if (!input) return;
     input.addEventListener('input', () => {
-      if (parseInt(input.value) < 0) input.value = 0;
+      if (input.type === 'number' && parseInt(input.value) < 0) input.value = 0;
       recalculate();
     });
   });
@@ -207,15 +210,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Eval Amount
     let evalAmount = 0;
     if (evalEnabled.checked) {
-      let scripts = 0;
       if (evalPhase1Toggle.checked) {
-        scripts += Math.max(0, parseInt(document.getElementById('evalScripts1_1').value || 0));
-        scripts += Math.max(0, parseInt(document.getElementById('evalScripts1_2').value || 0));
+        const s1_1 = Math.max(0, parseInt(document.getElementById('evalScripts1_1').value || 0));
+        const r1_1 = document.getElementById('evalAppt1_1').value === 'Chief Examiner/Controller' ? 33 : 30;
+        evalAmount += s1_1 * r1_1;
+        
+        const s1_2 = Math.max(0, parseInt(document.getElementById('evalScripts1_2').value || 0));
+        const r1_2 = document.getElementById('evalAppt1_2').value === 'Chief Examiner/Controller' ? 33 : 30;
+        evalAmount += s1_2 * r1_2;
       }
       if (evalPhase2Toggle.checked) {
-        scripts += Math.max(0, parseInt(document.getElementById('evalScripts2_1').value || 0));
+        const s2_1 = Math.max(0, parseInt(document.getElementById('evalScripts2_1').value || 0));
+        const r2_1 = document.getElementById('evalAppt2_1').value === 'Chief Examiner/Controller' ? 33 : 30;
+        evalAmount += s2_1 * r2_1;
       }
-      evalAmount = scripts * 30;
     }
     evalSubtotal.textContent = formatCurrency(evalAmount);
 

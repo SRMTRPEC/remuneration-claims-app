@@ -393,7 +393,7 @@ function renderEditMode() {
           <div class="form-group">
             <select class="form-select" id="editEvalAppt1_1">
               <option value="">None</option>
-              <option value="Chief Examiner" ${p1_1.appointment === 'Chief Examiner' ? 'selected' : ''}>Chief Examiner</option>
+              <option value="Chief Examiner/Controller" ${p1_1.appointment === 'Chief Examiner/Controller' ? 'selected' : ''}>Chief Examiner/Controller</option>
               <option value="Examiner" ${p1_1.appointment === 'Examiner' ? 'selected' : ''}>Examiner</option>
               <option value="Assistant Examiner" ${p1_1.appointment === 'Assistant Examiner' ? 'selected' : ''}>Assistant Examiner</option>
             </select>
@@ -410,7 +410,7 @@ function renderEditMode() {
           <div class="form-group">
             <select class="form-select" id="editEvalAppt1_2">
               <option value="">None</option>
-              <option value="Chief Examiner" ${p1_2.appointment === 'Chief Examiner' ? 'selected' : ''}>Chief Examiner</option>
+              <option value="Chief Examiner/Controller" ${p1_2.appointment === 'Chief Examiner/Controller' ? 'selected' : ''}>Chief Examiner/Controller</option>
               <option value="Examiner" ${p1_2.appointment === 'Examiner' ? 'selected' : ''}>Examiner</option>
               <option value="Assistant Examiner" ${p1_2.appointment === 'Assistant Examiner' ? 'selected' : ''}>Assistant Examiner</option>
             </select>
@@ -429,7 +429,7 @@ function renderEditMode() {
           <div class="form-group">
             <select class="form-select" id="editEvalAppt2_1">
               <option value="">None</option>
-              <option value="Chief Examiner" ${p2.appointment === 'Chief Examiner' ? 'selected' : ''}>Chief Examiner</option>
+              <option value="Chief Examiner/Controller" ${p2.appointment === 'Chief Examiner/Controller' ? 'selected' : ''}>Chief Examiner/Controller</option>
               <option value="Examiner" ${p2.appointment === 'Examiner' ? 'selected' : ''}>Examiner</option>
               <option value="Assistant Examiner" ${p2.appointment === 'Assistant Examiner' ? 'selected' : ''}>Assistant Examiner</option>
             </select>

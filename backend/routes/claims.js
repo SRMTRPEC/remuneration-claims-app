@@ -37,10 +37,14 @@ router.post('/', validateClaim, (req, res) => {
     if (b.eval_sessions && Array.isArray(b.eval_sessions)) {
       evalSessionsStr = JSON.stringify(b.eval_sessions);
       evalScripts = b.eval_sessions.reduce((sum, s) => sum + (parseInt(s.scripts) || 0), 0);
-      evalAmount = evalScripts * 30;
+      evalAmount = b.eval_sessions.reduce((sum, s) => {
+        const rate = s.appointment === 'Chief Examiner/Controller' ? 33 : 30;
+        return sum + ((parseInt(s.scripts) || 0) * rate);
+      }, 0);
     } else {
       evalScripts = parseInt(b.eval_scripts) || 0;
-      evalAmount = evalScripts * 30;
+      const rate = b.eval_appointment === 'Chief Examiner/Controller' ? 33 : 30;
+      evalAmount = evalScripts * rate;
     }
 
     let squadAmount = 0;
@@ -402,10 +406,14 @@ router.put('/:id', requireAdmin, validateClaim, (req, res) => {
     if (b.eval_sessions && Array.isArray(b.eval_sessions)) {
       evalSessionsStr = JSON.stringify(b.eval_sessions);
       evalScripts = b.eval_sessions.reduce((sum, s) => sum + (parseInt(s.scripts) || 0), 0);
-      evalAmount = evalScripts * 30;
+      evalAmount = b.eval_sessions.reduce((sum, s) => {
+        const rate = s.appointment === 'Chief Examiner/Controller' ? 33 : 30;
+        return sum + ((parseInt(s.scripts) || 0) * rate);
+      }, 0);
     } else {
       evalScripts = parseInt(b.eval_scripts) || 0;
-      evalAmount = evalScripts * 30;
+      const rate = b.eval_appointment === 'Chief Examiner/Controller' ? 33 : 30;
+      evalAmount = evalScripts * rate;
     }
 
     let squadAmount = 0;
