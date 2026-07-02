@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin Dashboard - APRIL MAY Remuneration Claim Management System">
+  <title>Dashboard | Admin Panel</title>
+  <link rel="stylesheet" href="/css/styles.css?v=11">
+  <link rel="stylesheet" href="/css/admin.css?v=11">
+</head>
+<body>
+  <!-- ── Animated Background ──────────────────────────────────────── -->
+  <div class="background-mesh">
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+  </div>
+
+  <div class="admin-layout">
+
+    <!-- ── Mobile Sidebar Toggle ──────────────────────────────── -->
+    <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+    <!-- ── Sidebar ────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>📋 Claims Admin</h2>
+        <div class="sidebar-subtitle">Remuneration System</div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/admin/dashboard" class="sidebar-link active">
+          <span class="sidebar-link-icon">📊</span> Dashboard
+        </a>
+        <a href="/admin/claims" class="sidebar-link">
+          <span class="sidebar-link-icon">📄</span> All Claims
+        </a>
+        <a href="/" class="sidebar-link" target="_blank">
+          <span class="sidebar-link-icon">📝</span> Claim Form
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user" style="margin-bottom: 1rem;">
+          <div class="sidebar-user-avatar" id="userAvatar">A</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="userName">Admin</div>
+            <div class="sidebar-user-role">Administrator</div>
+          </div>
+        </div>
+        <button class="btn btn-outline" id="logoutBtn" style="width: 100%; border-color: rgba(255,255,255,0.2); color: #fff; justify-content: center;">
+          🚪 Log Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ───────────────────────────────────────── -->
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <h1 class="admin-topbar-title">Dashboard</h1>
+        <div class="admin-topbar-actions">
+          <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+            <span class="icon-moon">🌙</span>
+            <span class="icon-sun">☀️</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-content">
+        <!-- ── Stats Cards ──────────────────────────────────── -->
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-icon blue">📋</div>
+            <div class="stat-details">
+              <div class="stat-label">Total Claims</div>
+              <div class="stat-value" id="statTotalClaims">—</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">📅</div>
+            <div class="stat-details">
+              <div class="stat-label">Today's Claims</div>
+              <div class="stat-value" id="statTodayClaims">—</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber">💰</div>
+            <div class="stat-details">
+              <div class="stat-label">Total Amount</div>
+              <div class="stat-value" id="statTotalAmount">—</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon rose">📈</div>
+            <div class="stat-details">
+              <div class="stat-label">Average Claim</div>
+              <div class="stat-value" id="statAvgAmount">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Department Breakdown ─────────────────────────── -->
+        <div class="card" style="margin-bottom:var(--space-xl);">
+          <h3 style="margin-bottom:var(--space-md);font-size:1rem;">Department Breakdown</h3>
+          <div id="deptBreakdown">
+            <div class="empty-state">
+              <div class="empty-state-icon">📊</div>
+              <div class="empty-state-title">No data yet</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Recent Claims ────────────────────────────────── -->
+        <div class="data-table-wrapper">
+          <div class="data-table-header">
+            <h3 style="font-size:1rem;">Recent Claims</h3>
+            <a href="/admin/claims" class="btn btn-sm btn-outline">View All →</a>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Claim #</th>
+                  <th>Staff Name</th>
+                  <th>Staff ID</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Grand Total</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="recentClaimsBody">
+                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── Audit Log ────────────────────────────────────── -->
+        <div class="data-table-wrapper" style="margin-top:var(--space-xl);">
+          <div class="data-table-header">
+            <h3 style="font-size:1rem;">Recent Activity</h3>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table audit-table">
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Claim #</th>
+                  <th>By</th>
+                  <th>Details</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="auditLogBody">
+                <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/utils.js?v=8"></script>
+  <script src="/js/dashboard.js?v=8"></script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage all remuneration claims - search, filter, export, and manage.">
+  <title>All Claims | Admin Panel</title>
+  <link rel="stylesheet" href="/css/styles.css?v=11">
+  <link rel="stylesheet" href="/css/admin.css?v=11">
+  <link rel="stylesheet" href="/css/print.css?v=11">
+</head>
+<body>
+  <div class="admin-layout">
+
+    <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+    <!-- ── Sidebar ────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>📋 Claims Admin</h2>
+        <div class="sidebar-subtitle">Remuneration System</div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="/admin/dashboard" class="sidebar-link">
+          <span class="sidebar-link-icon">📊</span> Dashboard
+        </a>
+        <a href="/admin/claims" class="sidebar-link active">
+          <span class="sidebar-link-icon">📄</span> All Claims
+        </a>
+        <a href="/" class="sidebar-link" target="_blank">
+          <span class="sidebar-link-icon">📝</span> Claim Form
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user" style="margin-bottom: 1rem;">
+          <div class="sidebar-user-avatar" id="userAvatar">A</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="userName">Admin</div>
+            <div class="sidebar-user-role">Administrator</div>
+          </div>
+        </div>
+        <button class="btn btn-outline" id="logoutBtn" style="width: 100%; border-color: rgba(255,255,255,0.2); color: #fff; justify-content: center;">
+          🚪 Log Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Main ───────────────────────────────────────────────── -->
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <h1 class="admin-topbar-title">All Claims</h1>
+        <div class="admin-topbar-actions">
+          <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
+            <span class="icon-moon">🌙</span>
+            <span class="icon-sun">☀️</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-content">
+
+        <!-- ── Export Buttons ──────────────────────────────────── -->
+        <div style="display:flex;gap:var(--space-sm);margin-bottom:var(--space-lg);flex-wrap:wrap;">
+          <button class="btn btn-success btn-sm" id="exportAllBtn">📥 Export All</button>
+          <button class="btn btn-primary btn-sm" id="exportFilteredBtn">📥 Export Current Filter</button>
+          <button class="btn btn-outline btn-sm" id="exportSelectedBtn" disabled>📥 Export Selected (<span id="selectedCount">0</span>)</button>
+        </div>
+
+        <!-- ── Claims Table ───────────────────────────────────── -->
+        <div class="data-table-wrapper">
+          <div class="data-table-header">
+            <div class="search-box">
+              <span class="search-box-icon">🔍</span>
+              <input type="text" id="searchInput" placeholder="Search by name, ID, department, claim #...">
+            </div>
+            <div class="table-actions">
+              <button class="btn btn-sm btn-secondary" id="toggleFilterBtn">🔽 Filters</button>
+              <select class="form-select" id="sortSelect" style="width:auto;padding:0.4rem 2rem 0.4rem 0.8rem;font-size:0.82rem;border-radius:var(--radius-md);">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="highest">Highest Amount</option>
+                <option value="lowest">Lowest Amount</option>
+                <option value="name">Alphabetical (Name)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ── Filter Panel ───────────────────────────────── -->
+          <div class="filter-panel" id="filterPanel">
+            <div class="filter-grid">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Department</label>
+                <select class="form-select" id="filterDepartment" style="font-size:0.82rem;">
+                  <option value="">All Departments</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Designation</label>
+                <select class="form-select" id="filterDesignation" style="font-size:0.82rem;">
+                  <option value="">All Designations</option>
+                  <option value="Assistant Professor">Assistant Professor</option>
+                  <option value="Associate Professor">Associate Professor</option>
+                  <option value="Professor">Professor</option>
+                  <option value="Technician">Technician</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Date From</label>
+                <input type="date" class="form-input" id="filterDateFrom" style="font-size:0.82rem;">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Date To</label>
+                <input type="date" class="form-input" id="filterDateTo" style="font-size:0.82rem;">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Min Amount (₹)</label>
+                <input type="number" class="form-input" id="filterAmountMin" min="0" placeholder="0" style="font-size:0.82rem;">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Max Amount (₹)</label>
+                <input type="number" class="form-input" id="filterAmountMax" min="0" placeholder="Any" style="font-size:0.82rem;">
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button class="btn btn-sm btn-secondary" id="clearFiltersBtn">Clear</button>
+              <button class="btn btn-sm btn-primary" id="applyFiltersBtn">Apply Filters</button>
+            </div>
+          </div>
+
+          <!-- ── Table ──────────────────────────────────────── -->
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:40px;"><input type="checkbox" class="row-checkbox" id="selectAll"></th>
+                  <th>Claim #</th>
+                  <th>Date</th>
+                  <th>Staff Name</th>
+                  <th>Staff ID</th>
+                  <th>Department</th>
+                  <th>Designation</th>
+                  <th>Grand Total</th>
+                  <th style="width:140px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="claimsTableBody">
+                <tr><td colspan="9" style="text-align:center;padding:3rem;color:var(--text-muted);">Loading claims...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ── Pagination ─────────────────────────────────── -->
+          <div class="pagination">
+            <div class="pagination-info" id="paginationInfo">Showing 0 of 0 claims</div>
+            <div class="pagination-controls" id="paginationControls"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/utils.js?v=8"></script>
+  <script src="/js/claims-list.js?v=8"></script>
+</body>
+</html>

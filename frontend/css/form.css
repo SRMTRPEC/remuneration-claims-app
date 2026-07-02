@@ -1,0 +1,329 @@
+/**
+ * Claim Form Styles — Premium Redesign
+ * 
+ * Floating labels, frosted glass form sections, 
+ * animated radio cards, and modern layout.
+ */
+
+/* ── Form Page Layout ────────────────────────────────────────────── */
+.claim-form-page {
+  min-height: 100vh;
+  padding-bottom: var(--space-3xl);
+}
+
+.claim-form-page .page-header {
+  padding: var(--space-3xl) var(--space-xl) var(--space-xl);
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--text-primary), var(--primary-500));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--space-xs);
+}
+[data-theme="dark"] .page-header h1 {
+  background: linear-gradient(135deg, #fff, var(--primary-400));
+  -webkit-background-clip: text;
+}
+
+.page-header .subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* ── Form Container ──────────────────────────────────────────────── */
+.claim-form {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+  position: relative;
+  z-index: 10;
+}
+
+/* ── Form Sections (Glass Cards) ─────────────────────────────────── */
+.form-section {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-glass);
+  border-left: 1px solid var(--border-glass);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+}
+.form-section:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-glow);
+}
+
+.form-section.disabled {
+  opacity: 0.7;
+  pointer-events: none;
+  filter: grayscale(0.4);
+}
+.form-section.disabled .section-header {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* ── Section Header ──────────────────────────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(0,0,0,0.02);
+}
+[data-theme="dark"] .section-header {
+  background: rgba(255,255,255,0.02);
+}
+
+.section-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.section-icon {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--primary-400), var(--primary-600));
+  box-shadow: 0 4px 15px var(--primary-glow);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: #fff; flex-shrink: 0;
+}
+
+.section-title { font-size: 1.2rem; font-weight: 800; }
+.section-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+
+/* ── Custom Toggle Switch ────────────────────────────────────────── */
+.toggle-switch { position: relative; width: 56px; height: 30px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; cursor: pointer; inset: 0;
+  background: var(--text-muted);
+  border-radius: var(--radius-full);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+.toggle-slider::before {
+  content: ''; position: absolute;
+  height: 24px; width: 24px;
+  left: 3px; bottom: 3px;
+  background: #fff; border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.toggle-switch input:checked + .toggle-slider {
+  background: var(--primary-500);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 0 10px var(--primary-glow);
+}
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(26px);
+}
+
+/* ── Floating Label Inputs ───────────────────────────────────────── */
+.section-body { padding: var(--space-xl); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); margin-bottom: var(--space-lg); }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-lg); margin-bottom: var(--space-lg); }
+
+.form-group {
+  position: relative;
+  margin-bottom: 0; /* overridden by grid gaps mostly */
+}
+
+/* Normal Input */
+.form-input, .form-select {
+  width: 100%;
+  padding: 1.2rem 1rem 0.6rem;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  outline: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--primary-500);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
+
+/* Floating Label Magic */
+.form-label {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: all 0.2s ease-out;
+  transform-origin: left top;
+}
+
+/* Float label when focused or has value */
+.form-input:focus ~ .form-label,
+.form-input:not(:placeholder-shown) ~ .form-label,
+.form-select:focus ~ .form-label,
+.form-select:not([value=""]) ~ .form-label {
+  transform: translateY(-0.6rem) scale(0.75);
+  color: var(--primary-500);
+  font-weight: 700;
+}
+
+/* Fix select element floating label */
+.form-select ~ .form-label {
+  transform: translateY(-0.6rem) scale(0.75);
+  font-weight: 700;
+}
+
+/* Hide placeholder initially for floating label to work */
+.form-input::placeholder {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.form-input:focus::placeholder {
+  opacity: 0.5;
+}
+
+/* ── Custom Radio Cards (QP Section) ─────────────────────────────── */
+.radio-options {
+  display: flex; flex-direction: column; gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.radio-card {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-md) var(--space-xl);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--bg-input);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative; overflow: hidden;
+}
+
+.radio-card input[type="radio"] {
+  position: absolute; opacity: 0;
+}
+
+.radio-card:hover {
+  border-color: var(--primary-400);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.radio-card.selected {
+  border-color: var(--primary-500);
+  background: var(--primary-glow); /* extremely subtle due to transparency */
+  box-shadow: 0 4px 20px var(--primary-glow);
+}
+[data-theme="dark"] .radio-card.selected { background: rgba(99,102,241,0.1); }
+
+.radio-card-label { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); transition: color 0.2s; }
+.radio-card.selected .radio-card-label { color: var(--primary-600); }
+[data-theme="dark"] .radio-card.selected .radio-card-label { color: var(--primary-400); }
+
+.radio-card-rate { font-size: 1.1rem; font-weight: 800; color: var(--primary-500); }
+
+/* Custom Check Indicator */
+.radio-card::before {
+  content: ''; width: 22px; height: 22px;
+  border: 2px solid var(--border-color); border-radius: 50%;
+  margin-right: var(--space-md); transition: all 0.2s;
+  flex-shrink: 0;
+}
+.radio-card.selected::before {
+  border-color: var(--primary-600);
+  border-width: 6px;
+}
+
+/* ── Subtotal Display ────────────────────────────────────────────── */
+.subtotal-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-md) var(--space-xl);
+  background: rgba(0,0,0,0.02);
+  border-top: 1px solid var(--border-color);
+  margin: var(--space-xl) calc(var(--space-xl) * -1) calc(var(--space-xl) * -1);
+}
+[data-theme="dark"] .subtotal-row { background: rgba(255,255,255,0.02); }
+.subtotal-label { font-size: 0.95rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+.subtotal-amount { font-size: 1.4rem; font-weight: 900; color: var(--primary-600); }
+[data-theme="dark"] .subtotal-amount { color: var(--primary-400); }
+
+/* ── Grand Total (Premium Receipt Style) ─────────────────────────── */
+.grand-total-section {
+  background: linear-gradient(135deg, var(--primary-900), var(--primary-600));
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  color: #fff;
+  box-shadow: 0 20px 50px rgba(49, 46, 129, 0.4);
+  position: relative; overflow: hidden;
+}
+.grand-total-section::after {
+  content: ''; position: absolute; right: -10%; top: -20%; width: 50%; height: 150%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+}
+
+.grand-total-header { text-align: center; position: relative; z-index: 2; }
+.grand-total-label { font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.8; }
+.grand-total-amount { font-size: 3.5rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.1; margin: var(--space-sm) 0; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.grand-total-words { font-size: 1rem; font-weight: 500; opacity: 0.9; font-style: italic; background: rgba(0,0,0,0.2); padding: 0.5rem 1rem; border-radius: var(--radius-full); display: inline-block; }
+
+.breakdown-list {
+  display: flex; flex-wrap: wrap; gap: var(--space-sm); justify-content: center;
+  margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid rgba(255,255,255,0.2);
+  position: relative; z-index: 2;
+}
+.breakdown-item {
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+  padding: 0.4rem 1rem; border-radius: var(--radius-full);
+  font-size: 0.85rem; font-weight: 600; display: flex; gap: var(--space-sm);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ── Actions & Draft ─────────────────────────────────────────────── */
+.form-actions { display: flex; gap: var(--space-md); justify-content: center; margin-top: var(--space-2xl); }
+
+.draft-indicator {
+  position: fixed; bottom: var(--space-xl); left: var(--space-xl);
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: 0.5rem 1rem; background: var(--bg-card); backdrop-filter: blur(15px);
+  border: 1px solid var(--border-color); border-radius: var(--radius-full);
+  font-size: 0.85rem; font-weight: 700; color: var(--text-muted);
+  box-shadow: var(--shadow-lg); opacity: 0; transition: opacity 0.3s; z-index: 100;
+}
+.draft-indicator.visible { opacity: 1; }
+.draft-indicator.saving { color: var(--accent-warning); }
+.draft-indicator.saved { color: var(--accent-success); }
+.draft-dot { font-size: 1.2rem; line-height: 0; }
+
+@media (max-width: 768px) {
+  .form-row, .form-row-3 { grid-template-columns: 1fr; gap: var(--space-md); margin-bottom: var(--space-md); }
+  .section-body { padding: var(--space-lg); }
+  .grand-total-amount { font-size: 2.5rem; }
+  .form-actions { flex-direction: column; }
+}

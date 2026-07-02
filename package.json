@@ -1,0 +1,23 @@
+{
+  "name": "april-may-remuneration-claims",
+  "version": "1.0.0",
+  "description": "APRIL MAY Remuneration Claim Management System for college office",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "better-sqlite3": "^11.7.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "cookie-parser": "^1.4.7",
+    "exceljs": "^4.4.0",
+    "dotenv": "^16.4.7",
+    "helmet": "^8.0.0",
+    "express-rate-limit": "^7.5.0"
+  },
+  "keywords": ["remuneration", "claims", "college"],
+  "license": "ISC"
+}

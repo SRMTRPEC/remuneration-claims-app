@@ -1,0 +1,222 @@
+/**
+ * Print Styles
+ * 
+ * Professional A4 print layout for individual claims.
+ * College office style formatting.
+ */
+
+@media print {
+  /* Hide all interactive/nav elements */
+  .navbar,
+  .sidebar,
+  .admin-topbar,
+  .sidebar-toggle,
+  .theme-toggle,
+  .btn:not(.no-print-hide),
+  .form-actions,
+  .toast-container,
+  .modal-overlay,
+  .draft-indicator,
+  .pagination,
+  .data-table-header,
+  .filter-panel,
+  .table-row-actions,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset page */
+  * {
+    color: #000 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+  }
+
+  @page {
+    size: A4;
+    margin: 15mm 20mm;
+  }
+
+  /* Print layout container */
+  .print-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Print header */
+  .print-header {
+    text-align: center;
+    border-bottom: 3px double #000;
+    padding-bottom: 10pt;
+    margin-bottom: 15pt;
+  }
+
+  .print-header h1 {
+    font-size: 16pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2pt;
+    margin-bottom: 4pt;
+  }
+
+  .print-header h2 {
+    font-size: 13pt;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .print-header .print-subtitle {
+    font-size: 10pt;
+    margin-top: 4pt;
+  }
+
+  /* Print claim info */
+  .print-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10pt;
+    font-size: 10pt;
+  }
+
+  /* Print table */
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10pt 0;
+    font-size: 10pt;
+  }
+
+  .print-table th,
+  .print-table td {
+    border: 1px solid #000;
+    padding: 5pt 8pt;
+    text-align: left;
+  }
+
+  .print-table th {
+    background: #f0f0f0 !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 9pt;
+  }
+
+  .print-table .amount-col {
+    text-align: right;
+    font-weight: bold;
+  }
+
+  .print-table .section-row {
+    background: #f8f8f8 !important;
+    font-weight: bold;
+  }
+
+  /* Grand total row */
+  .print-table .grand-total-row {
+    font-size: 12pt;
+    font-weight: bold;
+    border-top: 2px solid #000;
+  }
+
+  .print-table .grand-total-row td {
+    padding: 8pt;
+  }
+
+  /* Amount in words */
+  .print-amount-words {
+    margin: 10pt 0;
+    font-style: italic;
+    font-size: 10pt;
+    border: 1px solid #000;
+    padding: 6pt 10pt;
+  }
+
+  /* Signature section */
+  .print-signatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50pt;
+    padding-top: 10pt;
+  }
+
+  .print-signature-block {
+    text-align: center;
+    width: 30%;
+  }
+
+  .print-signature-line {
+    border-top: 1px solid #000;
+    padding-top: 4pt;
+    font-size: 10pt;
+    font-weight: bold;
+  }
+
+  .print-signature-desc {
+    font-size: 8pt;
+    margin-top: 2pt;
+  }
+
+  /* Footer */
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #666 !important;
+    border-top: 1px solid #ccc;
+    padding-top: 4pt;
+  }
+
+  /* Prevent page breaks inside important elements */
+  .print-table, .print-signatures {
+    page-break-inside: avoid;
+  }
+}
+
+/* ── Print Preview Container (visible in browser before printing) ── */
+.print-preview {
+  display: none;
+}
+
+.print-preview.active {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 10000;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.print-preview-content {
+  background: white;
+  max-width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 15mm 20mm;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  font-family: 'Times New Roman', serif;
+  color: #000;
+  font-size: 12pt;
+  line-height: 1.4;
+  position: relative;
+}
+
+.print-preview-actions {
+  max-width: 210mm;
+  margin: 0 auto 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
