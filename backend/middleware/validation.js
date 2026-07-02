@@ -74,8 +74,12 @@ function validateClaim(req, res, next) {
       errors.push('Squad days must be 0-10');
     }
   }
-  if (body.squad_session && !VALID_SESSIONS.includes(body.squad_session)) {
-    errors.push('Invalid session');
+  if (body.squad_sessions && Array.isArray(body.squad_sessions)) {
+    body.squad_sessions.forEach(session => {
+      if (!VALID_SESSIONS.includes(session)) {
+        errors.push('Invalid session in squad duty');
+      }
+    });
   }
 
   // Grand total cannot be negative

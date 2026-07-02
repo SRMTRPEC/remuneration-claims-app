@@ -276,7 +276,7 @@
 
 /* ── Grand Total (Premium Receipt Style) ─────────────────────────── */
 .grand-total-section {
-  background: linear-gradient(135deg, var(--primary-900), var(--primary-600));
+  background: linear-gradient(135deg, var(--primary-700), var(--primary-500));
   border-radius: var(--radius-xl);
   padding: var(--space-2xl);
   color: #fff;

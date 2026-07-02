@@ -48,8 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const squadEnabled = document.getElementById('squadEnabled');
   const squadSection = document.getElementById('squadSection');
   const squadDays = document.getElementById('squadDays');
-  const squadSession = document.getElementById('squadSession');
-  const squadRateDisplay = document.getElementById('squadRateDisplay');
+  const squadDynamicSessions = document.getElementById('squadDynamicSessions');
   const squadSubtotal = document.getElementById('squadSubtotal');
 
   // Grand total
@@ -118,8 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       squadSection.classList.add('disabled');
       squadDays.value = '0';
-      squadSession.value = '';
-      squadRateDisplay.textContent = '₹0';
+      if (squadDynamicSessions) squadDynamicSessions.innerHTML = '';
     }
     recalculate();
   });
@@ -176,14 +174,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Squad Duty ──────────────────────────────────────────────────
 
-  squadSession.addEventListener('change', () => {
-    const rate = squadSession.value === 'Both Sessions' ? 400 : 
-                 (squadSession.value === 'Forenoon' || squadSession.value === 'Afternoon') ? 200 : 0;
-    squadRateDisplay.textContent = formatCurrency(rate);
+  squadDays.addEventListener('change', () => {
+    const numDays = parseInt(squadDays.value) || 0;
+    if (squadDynamicSessions) squadDynamicSessions.innerHTML = '';
+    
+    for (let i = 1; i <= numDays; i++) {
+      const row = document.createElement('div');
+      row.className = 'form-row-3 dynamic-session-row';
+      row.style.marginTop = 'var(--space-md)';
+      row.innerHTML = `
+        <div class="form-group" style="align-self: center;">
+          <div style="font-weight: 600; color: var(--text-muted);">Day ${i} Session</div>
+        </div>
+        <div class="form-group">
+          <select class="form-select dynamic-squad-session" data-day="${i}">
+            <option value="">Select Session</option>
+            <option value="Both Sessions">Both Sessions (₹400)</option>
+            <option value="Forenoon">Forenoon (₹200)</option>
+            <option value="Afternoon">Afternoon (₹200)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-input dynamic-squad-rate" style="background:var(--bg-card);font-weight:700;color:var(--primary-600);border-color:transparent;box-shadow:none;">₹0</div>
+        </div>
+      `;
+      squadDynamicSessions.appendChild(row);
+    }
+    
+    // Add event listeners to new selects
+    const selects = squadDynamicSessions.querySelectorAll('.dynamic-squad-session');
+    selects.forEach(select => {
+      select.addEventListener('change', (e) => {
+        const rateDisplay = e.target.closest('.dynamic-session-row').querySelector('.dynamic-squad-rate');
+        const val = e.target.value;
+        const rate = val === 'Both Sessions' ? 400 : (val === 'Forenoon' || val === 'Afternoon') ? 200 : 0;
+        rateDisplay.textContent = formatCurrency(rate);
+        recalculate();
+      });
+    });
+    
     recalculate();
   });
-
-  squadDays.addEventListener('change', recalculate);
 
   // ── Recalculate All ─────────────────────────────────────────────
 
@@ -208,9 +239,15 @@ document.addEventListener('DOMContentLoaded', () => {
     evalSubtotal.textContent = formatCurrency(evalAmount);
 
     // Squad Amount
-    const sRate = squadSession.value === 'Both Sessions' ? 400 : 
-                  (squadSession.value === 'Forenoon' || squadSession.value === 'Afternoon') ? 200 : 0;
-    const squadAmount = squadEnabled.checked ? parseInt(squadDays.value || 0) * sRate : 0;
+    let squadAmount = 0;
+    if (squadEnabled.checked && squadDynamicSessions) {
+      const selects = squadDynamicSessions.querySelectorAll('.dynamic-squad-session');
+      selects.forEach(select => {
+        const val = select.value;
+        const sRate = val === 'Both Sessions' ? 400 : (val === 'Forenoon' || val === 'Afternoon') ? 200 : 0;
+        squadAmount += sRate;
+      });
+    }
     squadSubtotal.textContent = formatCurrency(squadAmount);
 
     // Grand Total
@@ -264,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         eval_date: evalDate.value || null,
         eval_scripts: parseInt(evalScripts.value) || 0,
         squad_days: parseInt(squadDays.value) || 0,
-        squad_session: squadSession.value || null,
+        squad_sessions: Array.from(document.querySelectorAll('.dynamic-squad-session')).map(s => s.value).filter(v => v),
       };
 
       const res = await apiFetch('/api/claims', {
@@ -446,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       squad_enabled: squadEnabled.checked,
       squad_days: squadDays.value,
-      squad_session: squadSession.value,
+      squad_sessions: Array.from(document.querySelectorAll('.dynamic-squad-session')).map(s => s.value),
     };
   }
 
@@ -499,11 +536,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.squad_enabled) {
       squadEnabled.checked = true;
       squadSection.classList.remove('disabled');
-      if (data.squad_days) squadDays.value = data.squad_days;
-      if (data.squad_session) {
-        squadSession.value = data.squad_session;
-        const rate = data.squad_session === 'Both Sessions' ? 400 : 200;
-        squadRateDisplay.textContent = formatCurrency(rate);
+      if (data.squad_days) {
+        squadDays.value = data.squad_days;
+        squadDays.dispatchEvent(new Event('change'));
+        
+        // Restore sessions if any
+        if (data.squad_sessions && Array.isArray(data.squad_sessions)) {
+          const selects = document.querySelectorAll('.dynamic-squad-session');
+          data.squad_sessions.forEach((session, index) => {
+            if (selects[index]) {
+              selects[index].value = session;
+              selects[index].dispatchEvent(new Event('change'));
+            }
+          });
+        }
       }
     }
 

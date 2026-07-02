@@ -181,7 +181,11 @@ function renderViewMode() {
           </tr>
           <tr>
             <td style="font-weight:600;">Squad Duty</td>
-            <td>${escapeHtml(c.squad_session || '-')}</td>
+            <td>${
+              c.squad_sessions && Array.isArray(c.squad_sessions) && c.squad_sessions.length > 0
+                ? Object.entries(c.squad_sessions.reduce((acc, s) => { acc[s] = (acc[s] || 0) + 1; return acc; }, {})).map(([s, count]) => `${count}x ${s}`).join(', ')
+                : escapeHtml(c.squad_session || '-')
+            }</td>
             <td>${c.squad_days || 0} days</td>
             <td>${formatCurrency(c.squad_rate || 0)}</td>
             <td style="text-align:right;font-weight:700;color:var(--primary-600);">${formatCurrency(c.squad_amount || 0)}</td>
@@ -336,16 +340,8 @@ function renderEditMode() {
             </select>
             <label class="form-label">Days (0-10)</label>
           </div>
-          <div class="form-group">
-            <select class="form-select" id="editSquadSession">
-              <option value="">None</option>
-              <option value="Both Sessions" ${c.squad_session === 'Both Sessions' ? 'selected' : ''}>Both Sessions (₹400)</option>
-              <option value="Forenoon" ${c.squad_session === 'Forenoon' ? 'selected' : ''}>Forenoon (₹200)</option>
-              <option value="Afternoon" ${c.squad_session === 'Afternoon' ? 'selected' : ''}>Afternoon (₹200)</option>
-            </select>
-            <label class="form-label">Session</label>
-          </div>
         </div>
+        <div id="editSquadDynamicSessions"></div>
       </div>
     </form>
   `;
@@ -356,6 +352,45 @@ function renderEditMode() {
 function switchToEdit() {
   isEditMode = true;
   renderEditMode();
+  
+  // Setup dynamic sessions logic
+  const editSquadDays = document.getElementById('editSquadDays');
+  const dynamicContainer = document.getElementById('editSquadDynamicSessions');
+  
+  function renderDynamicSessions() {
+    if (!dynamicContainer) return;
+    const numDays = parseInt(editSquadDays.value) || 0;
+    dynamicContainer.innerHTML = '';
+    
+    const existingSessions = currentClaim.squad_sessions || [];
+    
+    for (let i = 1; i <= numDays; i++) {
+      const selected = existingSessions[i-1] || '';
+      
+      const row = document.createElement('div');
+      row.className = 'form-row-3';
+      row.style.marginTop = 'var(--space-md)';
+      row.innerHTML = `
+        <div class="form-group" style="align-self: center;">
+          <div style="font-weight: 600; color: var(--text-muted);">Day ${i} Session</div>
+        </div>
+        <div class="form-group">
+          <select class="form-select edit-dynamic-squad-session">
+            <option value="">None</option>
+            <option value="Both Sessions" ${selected === 'Both Sessions' ? 'selected' : ''}>Both Sessions (₹400)</option>
+            <option value="Forenoon" ${selected === 'Forenoon' ? 'selected' : ''}>Forenoon (₹200)</option>
+            <option value="Afternoon" ${selected === 'Afternoon' ? 'selected' : ''}>Afternoon (₹200)</option>
+          </select>
+        </div>
+      `;
+      dynamicContainer.appendChild(row);
+    }
+  }
+  
+  if (editSquadDays) {
+    editSquadDays.addEventListener('change', renderDynamicSessions);
+    renderDynamicSessions();
+  }
 }
 
 function cancelEdit() {
@@ -385,7 +420,7 @@ async function saveEdit() {
     eval_date: document.getElementById('editEvalDate').value || null,
     eval_scripts: parseInt(document.getElementById('editEvalScripts').value) || 0,
     squad_days: parseInt(document.getElementById('editSquadDays').value) || 0,
-    squad_session: document.getElementById('editSquadSession').value || null,
+    squad_sessions: Array.from(document.querySelectorAll('.edit-dynamic-squad-session')).map(s => s.value).filter(v => v),
   };
 
   // Validate

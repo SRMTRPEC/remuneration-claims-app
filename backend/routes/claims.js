@@ -33,10 +33,15 @@ router.post('/', validateClaim, (req, res) => {
     const scrutinyAmount = (parseInt(b.scrutiny_quantity) || 0) * 300;
     const evalAmount = (parseInt(b.eval_scripts) || 0) * 30;
 
-    let squadRate = 0;
-    if (b.squad_session === 'Both Sessions') squadRate = 400;
-    else if (b.squad_session === 'Forenoon' || b.squad_session === 'Afternoon') squadRate = 200;
-    const squadAmount = (parseInt(b.squad_days) || 0) * squadRate;
+    let squadAmount = 0;
+    let squadSessionsStr = null;
+    if (b.squad_sessions && Array.isArray(b.squad_sessions)) {
+      squadSessionsStr = JSON.stringify(b.squad_sessions);
+      b.squad_sessions.forEach(session => {
+        if (session === 'Both Sessions') squadAmount += 400;
+        else if (session === 'Forenoon' || session === 'Afternoon') squadAmount += 200;
+      });
+    }
 
     const grandTotal = qpAmount + scrutinyAmount + evalAmount + squadAmount;
     const amountInWords = numberToWords(grandTotal);
@@ -81,8 +86,8 @@ router.post('/', validateClaim, (req, res) => {
       parseInt(b.eval_scripts) || 0,
       evalAmount,
       parseInt(b.squad_days) || 0,
-      b.squad_session || null,
-      squadRate,
+      squadSessionsStr,
+      0, // squadRate is no longer a single value, storing 0 or could store something else. We'll leave it 0.
       squadAmount,
       grandTotal,
       amountInWords
@@ -329,6 +334,15 @@ router.get('/:id', requireAdmin, (req, res) => {
     if (!claim) {
       return res.status(404).json({ error: 'Claim not found' });
     }
+    
+    // Parse squad_session if it's JSON
+    if (claim.squad_session && claim.squad_session.startsWith('[')) {
+      try {
+        claim.squad_sessions = JSON.parse(claim.squad_session);
+      } catch (e) {
+        claim.squad_sessions = [];
+      }
+    }
 
     res.json(claim);
   } catch (err) {
@@ -365,10 +379,15 @@ router.put('/:id', requireAdmin, validateClaim, (req, res) => {
     const scrutinyAmount = (parseInt(b.scrutiny_quantity) || 0) * 300;
     const evalAmount = (parseInt(b.eval_scripts) || 0) * 30;
 
-    let squadRate = 0;
-    if (b.squad_session === 'Both Sessions') squadRate = 400;
-    else if (b.squad_session === 'Forenoon' || b.squad_session === 'Afternoon') squadRate = 200;
-    const squadAmount = (parseInt(b.squad_days) || 0) * squadRate;
+    let squadAmount = 0;
+    let squadSessionsStr = null;
+    if (b.squad_sessions && Array.isArray(b.squad_sessions)) {
+      squadSessionsStr = JSON.stringify(b.squad_sessions);
+      b.squad_sessions.forEach(session => {
+        if (session === 'Both Sessions') squadAmount += 400;
+        else if (session === 'Forenoon' || session === 'Afternoon') squadAmount += 200;
+      });
+    }
 
     const grandTotal = qpAmount + scrutinyAmount + evalAmount + squadAmount;
     const amountInWords = numberToWords(grandTotal);
@@ -405,8 +424,8 @@ router.put('/:id', requireAdmin, validateClaim, (req, res) => {
       parseInt(b.eval_scripts) || 0,
       evalAmount,
       parseInt(b.squad_days) || 0,
-      b.squad_session || null,
-      squadRate,
+      squadSessionsStr,
+      0,
       squadAmount,
       grandTotal,
       amountInWords,

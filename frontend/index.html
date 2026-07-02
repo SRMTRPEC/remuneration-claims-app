@@ -6,7 +6,7 @@
   <meta name="description" content="APRIL MAY Remuneration Claim Form - Submit your remuneration claims for question paper setting, paper scrutiny, script evaluation, and squad duty.">
   <title>APRIL MAY Remuneration Claim</title>
   <link rel="stylesheet" href="/css/styles.css?v=10">
-  <link rel="stylesheet" href="/css/form.css?v=10">
+  <link rel="stylesheet" href="/css/form.css?v=11">
   <link rel="stylesheet" href="/css/print.css?v=10">
 </head>
 <body>
@@ -266,7 +266,7 @@
           </label>
         </div>
         <div class="section-body" id="squadBody">
-          <div class="form-row-3">
+          <div class="form-row" id="squadDaysContainer">
             <div class="form-group">
               <select class="form-select" id="squadDays" name="squad_days">
                 <option value="0">0</option>
@@ -283,20 +283,11 @@
               </select>
               <label class="form-label" for="squadDays">Number of Days</label>
             </div>
-            <div class="form-group">
-              <select class="form-select" id="squadSession" name="squad_session">
-                <option value="">Select Session</option>
-                <option value="Both Sessions">Both Sessions</option>
-                <option value="Forenoon">Forenoon</option>
-                <option value="Afternoon">Afternoon</option>
-              </select>
-              <label class="form-label" for="squadSession">Session</label>
-            </div>
-            <div class="form-group">
-              <div class="form-input" id="squadRateDisplay" style="background:var(--bg-card);font-weight:700;color:var(--primary-600);border-color:transparent;box-shadow:none;">₹0</div>
-              <label class="form-label">Rate</label>
-            </div>
+            <!-- Empty div for alignment if needed, or we just let form-row handle it -->
           </div>
+          
+          <!-- Dynamic session selectors will be appended here -->
+          <div id="squadDynamicSessions"></div>
           <div class="subtotal-row">
             <span class="subtotal-label">Subtotal</span>
             <span class="subtotal-amount" id="squadSubtotal">₹0</span>

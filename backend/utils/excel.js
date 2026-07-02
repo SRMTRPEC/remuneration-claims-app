@@ -58,6 +58,18 @@ function createClaimsWorkbook(claims) {
 
   // ── Add data rows ───────────────────────────────────────────────
   claims.forEach((claim, index) => {
+    let formattedSessions = claim.squad_session || '-';
+    if (typeof formattedSessions === 'string' && formattedSessions.startsWith('[')) {
+      try {
+        const arr = JSON.parse(formattedSessions);
+        if (Array.isArray(arr) && arr.length > 0) {
+          const counts = {};
+          arr.forEach(s => counts[s] = (counts[s] || 0) + 1);
+          formattedSessions = Object.entries(counts).map(([s, c]) => `${c}x ${s}`).join(', ');
+        }
+      } catch (e) {}
+    }
+
     const row = sheet.addRow({
       claim_number: claim.claim_number,
       created_at: formatExcelDate(claim.created_at),
@@ -76,7 +88,7 @@ function createClaimsWorkbook(claims) {
       eval_scripts: claim.eval_scripts || 0,
       eval_amount: claim.eval_amount || 0,
       squad_days: claim.squad_days || 0,
-      squad_session: claim.squad_session || '-',
+      squad_session: formattedSessions,
       squad_amount: claim.squad_amount || 0,
       grand_total: claim.grand_total || 0,
       amount_in_words: claim.amount_in_words || '',
