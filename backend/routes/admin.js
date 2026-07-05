@@ -145,8 +145,8 @@ router.get('/users/admins', async (req, res) => {
   try {
     const { data: admins, error } = await supabase
       .from('admins')
-      .select('id, username')
-      .order('id', { ascending: true });
+      .select('id, username, created_at')
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
     res.json({ admins });
@@ -190,7 +190,7 @@ router.post('/users/admins', async (req, res) => {
         full_name: null,
         password_hash
       }])
-      .select('id, username')
+      .select('id, username, created_at')
       .single();
 
     if (error) throw error;
