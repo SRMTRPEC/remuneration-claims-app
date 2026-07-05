@@ -6,7 +6,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { getDb } = require('../../database/init');
+const supabase = require('../supabase');
 const { requireAdmin } = require('../middleware/auth');
 
 // All admin routes require authentication
@@ -16,28 +16,27 @@ router.use(requireAdmin);
  * GET /api/admin/audit-log
  * Get the audit trail with pagination
  */
-router.get('/audit-log', (req, res) => {
+router.get('/audit-log', async (req, res) => {
   try {
-    const db = getDb();
     const page = parseInt(req.query.page) || 1;
     const limit = Math.min(parseInt(req.query.limit) || 20, 100);
     const offset = (page - 1) * limit;
 
-    const { total } = db.prepare('SELECT COUNT(*) as total FROM audit_log').get();
+    const { data: logs, count, error } = await supabase
+      .from('audit_log')
+      .select('*', { count: 'exact' })
+      .order('timestamp', { ascending: false })
+      .range(offset, offset + limit - 1);
 
-    const logs = db.prepare(`
-      SELECT * FROM audit_log 
-      ORDER BY timestamp DESC 
-      LIMIT ? OFFSET ?
-    `).all(limit, offset);
+    if (error) throw error;
 
     res.json({
       logs,
       pagination: {
         page,
         limit,
-        total,
-        totalPages: Math.ceil(total / limit)
+        total: count,
+        totalPages: Math.ceil(count / limit)
       }
     });
   } catch (err) {
@@ -50,14 +49,20 @@ router.get('/audit-log', (req, res) => {
  * GET /api/admin/departments
  * Get list of unique departments for filter dropdowns
  */
-router.get('/departments', (req, res) => {
+router.get('/departments', async (req, res) => {
   try {
-    const db = getDb();
-    const departments = db.prepare(
-      'SELECT DISTINCT department FROM remuneration_claims ORDER BY department'
-    ).all().map(r => r.department);
+    // Supabase JS doesn't have a DISTINCT function natively without RPC.
+    // So we fetch all distinct departments. If there are too many, we should use RPC.
+    // For now, fetch all claims' departments and deduplicate in node.
+    const { data, error } = await supabase
+      .from('remuneration_claims')
+      .select('department');
 
-    res.json({ departments });
+    if (error) throw error;
+
+    const uniqueDepartments = [...new Set(data.map(d => d.department))].filter(Boolean).sort();
+
+    res.json({ departments: uniqueDepartments });
   } catch (err) {
     console.error('Departments error:', err);
     res.status(500).json({ error: 'Failed to fetch departments' });
