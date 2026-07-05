@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Eval section
   const evalEnabled = document.getElementById('evalEnabled');
   const evalSection = document.getElementById('evalSection');
-  const evalAppointment = document.getElementById('evalAppointment'); // Old (keeping if needed elsewhere? No, remove)
   
   const evalPhase1Toggle = document.getElementById('evalPhase1Toggle');
   const evalPhase1Block = document.getElementById('evalPhase1Block');
@@ -127,11 +126,17 @@ document.addEventListener('DOMContentLoaded', () => {
       evalSection.style.display = 'block';
     } else {
       evalSection.style.display = 'none';
-      evalAppointment.value = '';
-      evalPhase.value = '';
-      evalDate.innerHTML = '<option value="">Select Phase first</option>';
-      evalDate.disabled = true;
-      evalScripts.value = '0';
+      evalPhase1Toggle.checked = false;
+      evalPhase2Toggle.checked = false;
+      evalPhase1Block.style.display = 'none';
+      evalPhase2Block.style.display = 'none';
+      
+      document.getElementById('evalAppt1_1').value = '';
+      document.getElementById('evalScripts1_1').value = '0';
+      document.getElementById('evalAppt1_2').value = '';
+      document.getElementById('evalScripts1_2').value = '0';
+      document.getElementById('evalAppt2_1').value = '';
+      document.getElementById('evalScripts2_1').value = '0';
     }
     recalculate();
   });
@@ -423,17 +428,15 @@ document.addEventListener('DOMContentLoaded', () => {
   function validateForm() {
     const errors = [];
 
-    if (staffEnabled.checked) {
-      if (!document.getElementById('staffName').value.trim()) errors.push('Staff Name is required');
-      if (!document.getElementById('staffId').value.trim()) errors.push('Staff ID is required');
-      if (!document.getElementById('department').value.trim()) errors.push('Department is required');
-      if (!document.getElementById('designation').value) errors.push('Designation is required');
-      if (!document.getElementById('bankName').value.trim()) errors.push('Bank Name is required');
-      if (!document.getElementById('bankBranch').value.trim()) errors.push('Bank Branch is required');
-      if (!document.getElementById('accountNumber').value.trim()) errors.push('Account Number is required');
-      if (!document.getElementById('ifscCode').value.trim()) errors.push('IFSC Code is required');
-      if (!document.getElementById('mobileNumber').value.trim()) errors.push('Mobile Number is required');
-    }
+    if (!document.getElementById('staffName').value.trim()) errors.push('Staff Name is required');
+    if (!document.getElementById('staffId').value.trim()) errors.push('Staff ID is required');
+    if (!document.getElementById('department').value.trim()) errors.push('Department is required');
+    if (!document.getElementById('designation').value) errors.push('Designation is required');
+    if (!document.getElementById('bankName').value.trim()) errors.push('Bank Name is required');
+    if (!document.getElementById('bankBranch').value.trim()) errors.push('Bank Branch is required');
+    if (!document.getElementById('accountNumber').value.trim()) errors.push('Account Number is required');
+    if (!document.getElementById('ifscCode').value.trim()) errors.push('IFSC Code is required');
+    if (!document.getElementById('mobileNumber').value.trim()) errors.push('Mobile Number is required');
 
     if (errors.length > 0) {
       errors.forEach(err => showToast(err, 'error'));
@@ -470,8 +473,6 @@ document.addEventListener('DOMContentLoaded', () => {
         evalEnabled.checked = false;
         squadEnabled.checked = false;
         
-        staffEnabled.checked = true;
-        staffBody.style.opacity = '1';
         document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
         qpRateDisplay.textContent = '₹0';
         squadRateDisplay.textContent = '₹0';
@@ -549,7 +550,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ifsc_code: document.getElementById('ifscCode').value,
       mobile_number: document.getElementById('mobileNumber').value,
       
-      staff_enabled: staffEnabled.checked,
       qp_enabled: qpEnabled.checked,
       qp_type: selectedQp ? selectedQp.value : null,
       qp_quantity: qpQuantity.value,
@@ -586,11 +586,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.account_number) document.getElementById('accountNumber').value = data.account_number;
     if (data.ifsc_code) document.getElementById('ifscCode').value = data.ifsc_code;
     if (data.mobile_number) document.getElementById('mobileNumber').value = data.mobile_number;
-
-    if (data.staff_enabled !== undefined) {
-      staffEnabled.checked = data.staff_enabled;
-      staffEnabled.dispatchEvent(new Event('change'));
-    }
 
     if (data.qp_enabled) {
       qpEnabled.checked = true;
