@@ -129,9 +129,41 @@
           </div>
         </div>
       </div>
+      <!-- ═══ SECTION: Duties Performed ═════════════════════════ -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">📋</div>
+            <div>
+              <div class="section-title">Duties Performed</div>
+              <div class="section-subtitle">Select the duties you are claiming remuneration for</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body" style="padding-top: 1rem;">
+          <div class="checkbox-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="qpEnabled" name="qp_section_enabled" class="custom-checkbox">
+              <span style="font-weight: 500;">Question Paper Setting</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="scrutinyEnabled" name="scrutiny_section_enabled" class="custom-checkbox">
+              <span style="font-weight: 500;">Paper Scrutiny</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="evalEnabled" name="eval_section_enabled" class="custom-checkbox">
+              <span style="font-weight: 500;">Script Evaluation</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="squadEnabled" name="squad_section_enabled" class="custom-checkbox">
+              <span style="font-weight: 500;">Flying Squad / Exam Duty</span>
+            </label>
+          </div>
+        </div>
+      </div>
 
       <!-- ═══ SECTION 2: Question Paper Setting ═════════════════ -->
-      <div class="form-section disabled" id="qpSection">
+      <div class="form-section" id="qpSection" style="display: none;">
         <div class="section-header">
           <div class="section-header-left">
             <div class="section-icon">📝</div>
@@ -140,10 +172,6 @@
               <div class="section-subtitle">Select one option for question paper work</div>
             </div>
           </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="qpEnabled">
-            <span class="toggle-slider"></span>
-          </label>
         </div>
         <div class="section-body" id="qpBody">
           <!-- Radio Options -->
@@ -196,7 +224,7 @@
       </div>
 
       <!-- ═══ SECTION 3: Paper Scrutiny ═════════════════════════ -->
-      <div class="form-section disabled" id="scrutinySection">
+      <div class="form-section" id="scrutinySection" style="display: none;">
         <div class="section-header">
           <div class="section-header-left">
             <div class="section-icon">🔍</div>
@@ -205,10 +233,6 @@
               <div class="section-subtitle">Rate: ₹300 per paper</div>
             </div>
           </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="scrutinyEnabled">
-            <span class="toggle-slider"></span>
-          </label>
         </div>
         <div class="section-body" id="scrutinyBody">
           <div class="form-row">
@@ -241,7 +265,7 @@
       </div>
 
       <!-- ═══ SECTION 4: Script Evaluation ══════════════════════ -->
-      <div class="form-section disabled" id="evalSection">
+      <div class="form-section" id="evalSection" style="display: none;">
         <div class="section-header">
           <div class="section-header-left">
             <div class="section-icon">📊</div>
@@ -250,10 +274,6 @@
               <div class="section-subtitle">Rate: ₹30 per script</div>
             </div>
           </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="evalEnabled">
-            <span class="toggle-slider"></span>
-          </label>
         </div>
         <div class="section-body" id="evalBody">
           <!-- Phase Selectors -->
@@ -335,20 +355,16 @@
         </div>
       </div>
 
-      <!-- ═══ SECTION 5: Squad Duty ═════════════════════════════ -->
-      <div class="form-section disabled" id="squadSection">
+      <!-- ═══ SECTION 5: Flying Squad ═══════════════════════════ -->
+      <div class="form-section" id="squadSection" style="display: none;">
         <div class="section-header">
           <div class="section-header-left">
-            <div class="section-icon">🛡️</div>
+            <div class="section-icon">🚗</div>
             <div>
-              <div class="section-title">Squad Duty</div>
-              <div class="section-subtitle">Both Sessions ₹400 | Single Session ₹200</div>
+              <div class="section-title">Flying Squad / Exam Duty</div>
+              <div class="section-subtitle">Rate depends on sessions</div>
             </div>
           </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="squadEnabled">
-            <span class="toggle-slider"></span>
-          </label>
         </div>
         <div class="section-body" id="squadBody">
           <div class="form-row-3" style="margin-bottom: var(--space-md);">

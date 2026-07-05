@@ -86,9 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   qpEnabled.addEventListener('change', () => {
     if (qpEnabled.checked) {
-      qpSection.classList.remove('disabled');
+      qpSection.style.display = 'block';
     } else {
-      qpSection.classList.add('disabled');
+      qpSection.style.display = 'none';
       // Reset QP values
       qpRadios.forEach(r => r.checked = false);
       document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
@@ -100,9 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   scrutinyEnabled.addEventListener('change', () => {
     if (scrutinyEnabled.checked) {
-      scrutinySection.classList.remove('disabled');
+      scrutinySection.style.display = 'block';
     } else {
-      scrutinySection.classList.add('disabled');
+      scrutinySection.style.display = 'none';
       scrutinyQuantity.value = '0';
     }
     recalculate();
@@ -110,9 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   evalEnabled.addEventListener('change', () => {
     if (evalEnabled.checked) {
-      evalSection.classList.remove('disabled');
+      evalSection.style.display = 'block';
     } else {
-      evalSection.classList.add('disabled');
+      evalSection.style.display = 'none';
       evalAppointment.value = '';
       evalPhase.value = '';
       evalDate.innerHTML = '<option value="">Select Phase first</option>';
@@ -124,8 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   squadEnabled.addEventListener('change', () => {
     if (squadEnabled.checked) {
-      squadSection.classList.remove('disabled');
+      squadSection.style.display = 'block';
     } else {
+      squadSection.style.display = 'none';
       squadForenoon.value = '0';
       squadAfternoon.value = '0';
       squadBoth.value = '0';
