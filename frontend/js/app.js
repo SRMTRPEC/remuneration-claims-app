@@ -6,9 +6,36 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // For security: when exiting the admin panel to the main form, clear the admin session
-  apiFetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
-  sessionStorage.setItem('logged_out', 'true');
+  // Auth check
+  apiFetch('/api/auth/me').then(res => res.json()).then(data => {
+    if (data.error) {
+      window.location.href = '/login';
+    } else {
+      document.getElementById('staffWelcomeName').textContent = `Welcome, ${data.user.staff_name || data.user.fullName}`;
+      
+      // Auto-fill staff details if staff
+      if (data.role === 'staff') {
+        const staffNameInput = document.getElementById('staffName');
+        const staffIdInput = document.getElementById('staffId');
+        const departmentInput = document.getElementById('department');
+        
+        if (staffNameInput) staffNameInput.value = data.user.staff_name;
+        if (staffIdInput) staffIdInput.value = data.user.staff_id.replace(/^TRPT/i, '');
+        if (departmentInput) departmentInput.value = data.user.department;
+      }
+    }
+  }).catch(() => {
+    window.location.href = '/login';
+  });
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      await apiFetch('/api/auth/logout', { method: 'POST' });
+      sessionStorage.setItem('logged_out', 'true');
+      window.location.href = '/login';
+    });
+  }
 
   // ── Element References ──────────────────────────────────────────
   const form = document.getElementById('claimForm');
@@ -17,9 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const printSuccessBtn = document.getElementById('printSuccessBtn');
   let submittedClaim = null;
 
-  // Staff section
-  const staffEnabled = document.getElementById('staffEnabled');
-  const staffBody = document.getElementById('staffBody');
 
   // QP section
   const qpEnabled = document.getElementById('qpEnabled');
@@ -72,17 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let autoSaveTimer = null;
   let isSubmitting = false;
 
-  // ── Section Enable/Disable ──────────────────────────────────────
 
-  staffEnabled.addEventListener('change', () => {
-    const inputs = staffBody.querySelectorAll('input, select');
-    inputs.forEach(input => input.disabled = !staffEnabled.checked);
-    if (!staffEnabled.checked) {
-      staffBody.style.opacity = '0.4';
-    } else {
-      staffBody.style.opacity = '1';
-    }
-  });
 
   qpEnabled.addEventListener('change', () => {
     if (qpEnabled.checked) {
@@ -327,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ifsc_code: document.getElementById('ifscCode').value.trim(),
         mobile_number: document.getElementById('mobileNumber').value.trim(),
         passbook_file: currentPassbookBase64,
-        staff_section_enabled: staffEnabled.checked,
+        staff_section_enabled: true,
         qp_section_enabled: qpEnabled.checked,
         qp_type: selectedQp ? selectedQp.value : null,
         qp_quantity: parseInt(qpQuantity.value) || 0,

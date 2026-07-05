@@ -22,7 +22,15 @@ function verifyToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.admin = decoded;
+    req.user = decoded; // Generic user
+    if (decoded.role === 'admin') {
+      req.admin = decoded;
+    } else if (decoded.role === 'staff') {
+      req.staff = decoded;
+    } else {
+      // Fallback for legacy admin tokens without role
+      req.admin = decoded;
+    }
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid or expired token' });
@@ -33,7 +41,20 @@ function verifyToken(req, res, next) {
  * Require admin authentication for a route
  */
 function requireAdmin(req, res, next) {
-  verifyToken(req, res, next);
+  verifyToken(req, res, () => {
+    if (req.admin) return next();
+    return res.status(403).json({ error: 'Admin access required' });
+  });
+}
+
+/**
+ * Require staff authentication for a route
+ */
+function requireStaff(req, res, next) {
+  verifyToken(req, res, () => {
+    if (req.staff || req.admin) return next(); // Admins can act as staff if needed? Or just req.staff
+    return res.status(403).json({ error: 'Staff access required' });
+  });
 }
 
 /**
@@ -41,10 +62,21 @@ function requireAdmin(req, res, next) {
  */
 function generateToken(admin) {
   return jwt.sign(
-    { id: admin.id, username: admin.username, fullName: admin.full_name },
+    { id: admin.id, username: admin.username, fullName: admin.full_name, role: 'admin' },
     JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
   );
 }
 
-module.exports = { verifyToken, requireAdmin, generateToken };
+/**
+ * Generate a JWT token for staff
+ */
+function generateStaffToken(staff) {
+  return jwt.sign(
+    { id: staff.id, staff_id: staff.staff_id, staff_name: staff.staff_name, department: staff.department, role: 'staff' },
+    JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
+  );
+}
+
+module.exports = { verifyToken, requireAdmin, requireStaff, generateToken, generateStaffToken };

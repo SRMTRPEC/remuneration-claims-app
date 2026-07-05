@@ -8,7 +8,7 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../supabase');
-const { requireAdmin } = require('../middleware/auth');
+const { requireAdmin, requireStaff } = require('../middleware/auth');
 const { validateClaim } = require('../middleware/validation');
 const { generateClaimNumber, numberToWords, sanitize } = require('../utils/helpers');
 
@@ -45,9 +45,9 @@ async function uploadPassbook(base64Data, claimNumber) {
 
 /**
  * POST /api/claims
- * Create a new claim
+ * Create a new claim (Requires Staff Authentication)
  */
-router.post('/', validateClaim, async (req, res) => {
+router.post('/', requireStaff, validateClaim, async (req, res) => {
   try {
     const b = req.body;
     const claimNumber = await generateClaimNumber();

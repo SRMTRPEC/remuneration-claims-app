@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Staff Registration - APRIL MAY Remuneration Claim Management System">
+  <title>Staff Registration | Remuneration Claims</title>
+  <link rel="stylesheet" href="/css/styles.css?v=8">
+  <link rel="stylesheet" href="/css/admin.css?v=8">
+</head>
+<body>
+  <!-- ── Animated Background ──────────────────────────────────────── -->
+  <div class="background-mesh">
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+  </div>
+
+  <div class="login-page">
+    <div class="login-card animate-fade-in" style="max-width: 500px;">
+      <div class="login-header">
+        <div class="login-icon">📝</div>
+        <h2 class="login-title">Staff Registration</h2>
+        <p class="login-subtitle">Create an account to submit claims</p>
+      </div>
+
+      <div class="login-error" id="registerError"></div>
+
+      <form id="staffRegisterForm">
+        <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <input type="text" class="login-input" id="staffId" name="staffId" placeholder="Staff ID (e.g. TRPT...)" required autocomplete="off">
+          </div>
+          <div>
+            <input type="text" class="login-input" id="staffName" name="staffName" placeholder="Full Name" required autocomplete="off">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <input type="text" class="login-input" id="department" name="department" placeholder="Department" required autocomplete="off">
+        </div>
+
+        <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+          <div>
+            <input type="password" class="login-input" id="password" name="password" placeholder="Password" required minlength="6">
+          </div>
+          <div>
+            <input type="password" class="login-input" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required minlength="6">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:var(--space-sm);" id="registerBtn">
+          <span class="spinner"></span>
+          <span class="btn-text">Create Account</span>
+        </button>
+      </form>
+
+      <p style="text-align:center;margin-top:var(--space-lg);font-size:0.9rem;color:var(--text-muted);">
+        Already have an account? <a href="/login" style="color:var(--primary-400);font-weight:600;">Log In Here</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="/js/utils.js?v=8"></script>
+  <script src="/js/staff-auth.js?v=8"></script>
+</body>
+</html>

@@ -32,6 +32,14 @@
       "dest": "/frontend/admin/login.html"
     },
     {
+      "src": "/login",
+      "dest": "/frontend/staff-login.html"
+    },
+    {
+      "src": "/register",
+      "dest": "/frontend/staff-register.html"
+    },
+    {
       "src": "/",
       "dest": "/frontend/index.html"
     },

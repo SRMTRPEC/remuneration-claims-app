@@ -23,7 +23,9 @@
       <span class="badge badge-primary">2026</span>
     </div>
     <div class="navbar-actions">
-      <a href="/admin" class="btn btn-sm btn-primary">🔒 Admin Panel</a>
+      <span style="margin-right: 1rem; font-weight: 600;" id="staffWelcomeName"></span>
+      <button type="button" class="btn btn-sm" id="logoutBtn">Logout</button>
+      <a href="/admin" class="btn btn-sm btn-primary">🔒 Admin</a>
     </div>
   </nav>
 
@@ -47,26 +49,22 @@
               <div class="section-subtitle">Enter your personal information</div>
             </div>
           </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="staffEnabled" checked>
-            <span class="toggle-slider"></span>
-          </label>
         </div>
         <div class="section-body" id="staffBody">
           <div class="form-row">
             <div class="form-group">
-              <input type="text" class="form-input" id="staffName" name="staff_name" placeholder=" " required>
+              <input type="text" class="form-input" id="staffName" name="staff_name" placeholder=" " required readonly style="background-color: var(--bg-body); cursor: not-allowed;">
               <label class="form-label" for="staffName">Staff Name *</label>
             </div>
             <div class="form-group input-prefix-group">
               <span class="input-prefix">TRPT</span>
-              <input type="text" class="form-input" id="staffId" name="staff_id" placeholder=" " required>
+              <input type="text" class="form-input" id="staffId" name="staff_id" placeholder=" " required readonly style="background-color: var(--bg-body); cursor: not-allowed;">
               <label class="form-label" for="staffId">Staff ID *</label>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <input type="text" class="form-input" id="department" name="department" placeholder=" " required>
+              <input type="text" class="form-input" id="department" name="department" placeholder=" " required readonly style="background-color: var(--bg-body); cursor: not-allowed;">
               <label class="form-label" for="department">Department *</label>
             </div>
             <div class="form-group">
