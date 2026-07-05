@@ -1,27 +1,21 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Check Auth
-  const adminDataStr = localStorage.getItem('adminData');
-  if (!adminDataStr) {
-    window.location.href = '/admin';
-    return;
-  }
-
-  let adminData;
   try {
-    adminData = JSON.parse(adminDataStr);
-  } catch(e) {
-    window.location.href = '/admin';
-    return;
-  }
-
-  // Handle new Supabase auth wrapper vs old
-  if (adminData.user && adminData.role === 'admin') {
-    document.getElementById('userName').textContent = adminData.user.full_name || adminData.user.username;
-    document.getElementById('userAvatar').textContent = (adminData.user.full_name || adminData.user.username).charAt(0).toUpperCase();
-  } else if (adminData.username) {
-    document.getElementById('userName').textContent = adminData.fullName || adminData.username;
-    document.getElementById('userAvatar').textContent = (adminData.fullName || adminData.username).charAt(0).toUpperCase();
-  } else {
+    const meRes = await apiFetch('/api/auth/me');
+    if (!meRes || !meRes.ok) {
+      window.location.href = '/admin';
+      return;
+    }
+    const data = await meRes.json();
+    if (data.role !== 'admin') {
+      window.location.href = '/admin';
+      return;
+    }
+    const me = data.user;
+    document.getElementById('userName').textContent = me.fullName || me.username;
+    document.getElementById('userAvatar').textContent = (me.fullName || me.username).charAt(0).toUpperCase();
+  } catch (err) {
+    console.error('Auth check failed', err);
     window.location.href = '/admin';
     return;
   }
@@ -74,6 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(data)
       });
       
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Failed to create staff account');
+      
       e.target.reset();
       closeModal('staffModal');
       showToast('Staff account created successfully', 'success');
@@ -107,6 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(data)
       });
       
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Failed to create admin profile');
+      
       e.target.reset();
       closeModal('adminModal');
       showToast('Admin profile created successfully', 'success');
@@ -126,12 +126,15 @@ async function fetchStaff() {
   const tbody = document.querySelector('#staffTable tbody');
   try {
     const res = await apiFetch('/api/admin/users/staff');
-    if (!res.staff || res.staff.length === 0) {
+    if (!res || !res.ok) throw new Error('Failed to fetch staff');
+    const data = await res.json();
+    
+    if (!data.staff || data.staff.length === 0) {
       tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;">No staff accounts found.</td></tr>';
       return;
     }
 
-    tbody.innerHTML = res.staff.map(s => `
+    tbody.innerHTML = data.staff.map(s => `
       <tr>
         <td><strong>${escapeHtml(s.staff_id)}</strong></td>
         <td>${escapeHtml(s.staff_name)}</td>
@@ -149,12 +152,15 @@ async function fetchAdmins() {
   const tbody = document.querySelector('#adminTable tbody');
   try {
     const res = await apiFetch('/api/admin/users/admins');
-    if (!res.admins || res.admins.length === 0) {
+    if (!res || !res.ok) throw new Error('Failed to fetch admins');
+    const data = await res.json();
+    
+    if (!data.admins || data.admins.length === 0) {
       tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2rem;">No admin profiles found.</td></tr>';
       return;
     }
 
-    tbody.innerHTML = res.admins.map(a => `
+    tbody.innerHTML = data.admins.map(a => `
       <tr>
         <td><strong>${escapeHtml(a.username)}</strong></td>
         <td>${escapeHtml(a.full_name)}</td>
