@@ -16,6 +16,26 @@
       "dest": "/server.js"
     },
     {
+      "src": "/admin/dashboard",
+      "dest": "/frontend/admin/dashboard.html"
+    },
+    {
+      "src": "/admin/claims",
+      "dest": "/frontend/admin/claims.html"
+    },
+    {
+      "src": "/admin/claim/.*",
+      "dest": "/frontend/admin/claim-detail.html"
+    },
+    {
+      "src": "/admin/?",
+      "dest": "/frontend/admin/login.html"
+    },
+    {
+      "src": "/",
+      "dest": "/frontend/index.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }
