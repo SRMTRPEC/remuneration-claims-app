@@ -163,7 +163,7 @@ async function fetchAdmins() {
     tbody.innerHTML = data.admins.map(a => `
       <tr>
         <td><strong>${escapeHtml(a.username)}</strong></td>
-        <td>${new Date(a.created_at).toLocaleDateString()}</td>
+        <td>-</td>
       </tr>
     `).join('');
   } catch (err) {
