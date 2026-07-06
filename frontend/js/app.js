@@ -265,16 +265,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (evalEnabled.checked) {
       if (evalPhase1Toggle.checked) {
         const s1_1 = Math.max(0, parseInt(document.getElementById('evalScripts1_1').value || 0));
-        const r1_1 = document.getElementById('evalAppt1_1').value === 'Chief Examiner/Controller' ? 33 : 30;
+        const r1_1 = document.getElementById('evalAppt1_1').value === 'Chief Examiner/Board Chairman' ? 33 : 30;
         evalAmount += s1_1 * r1_1;
         
         const s1_2 = Math.max(0, parseInt(document.getElementById('evalScripts1_2').value || 0));
-        const r1_2 = document.getElementById('evalAppt1_2').value === 'Chief Examiner/Controller' ? 33 : 30;
+        const r1_2 = document.getElementById('evalAppt1_2').value === 'Chief Examiner/Board Chairman' ? 33 : 30;
         evalAmount += s1_2 * r1_2;
       }
       if (evalPhase2Toggle.checked) {
         const s2_1 = Math.max(0, parseInt(document.getElementById('evalScripts2_1').value || 0));
-        const r2_1 = document.getElementById('evalAppt2_1').value === 'Chief Examiner/Controller' ? 33 : 30;
+        const r2_1 = document.getElementById('evalAppt2_1').value === 'Chief Examiner/Board Chairman' ? 33 : 30;
         evalAmount += s2_1 * r2_1;
       }
     }
