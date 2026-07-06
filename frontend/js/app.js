@@ -544,7 +544,9 @@ document.addEventListener('DOMContentLoaded', () => {
       staff_id: document.getElementById('staffId').value,
       department: document.getElementById('department').value,
       designation: document.getElementById('designation').value,
-      bank_name: document.getElementById('bankName').value,
+      bank_name: document.getElementById('bankName').value === 'Other' 
+                 ? document.getElementById('otherBankName').value.trim() 
+                 : document.getElementById('bankName').value,
       bank_branch: document.getElementById('bankBranch').value,
       account_number: document.getElementById('accountNumber').value,
       ifsc_code: document.getElementById('ifscCode').value,
@@ -581,7 +583,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.staff_id) document.getElementById('staffId').value = data.staff_id.replace(/^TRPT/i, '');
     if (data.department) document.getElementById('department').value = data.department;
     if (data.designation) document.getElementById('designation').value = data.designation;
-    if (data.bank_name) document.getElementById('bankName').value = data.bank_name;
+    if (data.bank_name) {
+      const bankSelect = document.getElementById('bankName');
+      const options = Array.from(bankSelect.options).map(opt => opt.value);
+      if (options.includes(data.bank_name)) {
+        bankSelect.value = data.bank_name;
+      } else {
+        bankSelect.value = 'Other';
+        document.getElementById('otherBankRow').style.display = 'block';
+        document.getElementById('otherBankName').value = data.bank_name;
+        document.getElementById('otherBankName').required = true;
+      }
+    }
     if (data.bank_branch) document.getElementById('bankBranch').value = data.bank_branch;
     if (data.account_number) document.getElementById('accountNumber').value = data.account_number;
     if (data.ifsc_code) document.getElementById('ifscCode').value = data.ifsc_code;
@@ -646,6 +659,21 @@ document.addEventListener('DOMContentLoaded', () => {
     printWindow.document.write(printHtml);
     printWindow.document.close();
     setTimeout(() => printWindow.print(), 500);
+  }
+
+  const bankNameInput = document.getElementById('bankName');
+  if (bankNameInput) {
+    bankNameInput.addEventListener('change', (e) => {
+      const otherBankRow = document.getElementById('otherBankRow');
+      const otherBankInput = document.getElementById('otherBankName');
+      if (e.target.value === 'Other') {
+        otherBankRow.style.display = 'block';
+        otherBankInput.required = true;
+      } else {
+        otherBankRow.style.display = 'none';
+        otherBankInput.required = false;
+      }
+    });
   }
 
   // ── Initialize ──────────────────────────────────────────────────

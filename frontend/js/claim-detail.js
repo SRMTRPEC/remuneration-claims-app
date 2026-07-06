@@ -365,6 +365,12 @@ function renderEditMode() {
             <label class="form-label" for="editBankBranch">Branch Name *</label>
           </div>
         </div>
+        <div class="form-row" id="editOtherBankRow" style="display: none;">
+          <div class="form-group" style="grid-column: span 2;">
+            <input type="text" class="form-input" id="editOtherBankName" placeholder=" ">
+            <label class="form-label" for="editOtherBankName">Please specify your Bank Name *</label>
+          </div>
+        </div>
         <div class="form-row">
           <div class="form-group">
             <input type="text" class="form-input" id="editAccountNumber" value="${escapeHtml(c.account_number || '')}" placeholder=" " required>
@@ -536,7 +542,30 @@ function switchToEdit() {
   
   if (currentClaim && currentClaim.bank_name) {
     const bankSelect = document.getElementById('editBankName');
-    if (bankSelect) bankSelect.value = currentClaim.bank_name;
+    const options = Array.from(bankSelect.options).map(opt => opt.value);
+    if (options.includes(currentClaim.bank_name)) {
+      bankSelect.value = currentClaim.bank_name;
+    } else {
+      bankSelect.value = 'Other';
+      document.getElementById('editOtherBankRow').style.display = 'block';
+      document.getElementById('editOtherBankName').value = currentClaim.bank_name;
+      document.getElementById('editOtherBankName').required = true;
+    }
+  }
+
+  const bankNameInput = document.getElementById('editBankName');
+  if (bankNameInput) {
+    bankNameInput.addEventListener('change', (e) => {
+      const otherBankRow = document.getElementById('editOtherBankRow');
+      const otherBankInput = document.getElementById('editOtherBankName');
+      if (e.target.value === 'Other') {
+        otherBankRow.style.display = 'block';
+        otherBankInput.required = true;
+      } else {
+        otherBankRow.style.display = 'none';
+        otherBankInput.required = false;
+      }
+    });
   }
   
   currentEditPassbookBase64 = null; // Reset on edit open
@@ -592,7 +621,9 @@ async function saveEdit() {
     staff_id: 'TRPT' + document.getElementById('editStaffId').value.trim().replace(/^TRPT/i, ''),
     department: document.getElementById('editDepartment').value.trim(),
     designation: document.getElementById('editDesignation').value,
-    bank_name: document.getElementById('editBankName').value.trim(),
+    bank_name: document.getElementById('editBankName').value === 'Other' 
+               ? document.getElementById('editOtherBankName').value.trim() 
+               : document.getElementById('editBankName').value.trim(),
     bank_branch: document.getElementById('editBankBranch').value.trim(),
     account_number: document.getElementById('editAccountNumber').value.trim(),
     ifsc_code: document.getElementById('editIfscCode').value.trim(),
