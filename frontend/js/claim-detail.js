@@ -326,7 +326,38 @@ function renderEditMode() {
         </div>
         <div class="form-row">
           <div class="form-group">
-            <input type="text" class="form-input" id="editBankName" value="${escapeHtml(c.bank_name || '')}" placeholder=" " required>
+            <select class="form-select" id="editBankName" required>
+              <option value="">Select Bank</option>
+              <option value="State Bank of India">State Bank of India</option>
+              <option value="HDFC Bank">HDFC Bank</option>
+              <option value="ICICI Bank">ICICI Bank</option>
+              <option value="Punjab National Bank">Punjab National Bank</option>
+              <option value="Axis Bank">Axis Bank</option>
+              <option value="Canara Bank">Canara Bank</option>
+              <option value="Bank of Baroda">Bank of Baroda</option>
+              <option value="Union Bank of India">Union Bank of India</option>
+              <option value="Bank of India">Bank of India</option>
+              <option value="Indian Bank">Indian Bank</option>
+              <option value="Central Bank of India">Central Bank of India</option>
+              <option value="Indian Overseas Bank">Indian Overseas Bank</option>
+              <option value="UCO Bank">UCO Bank</option>
+              <option value="Bank of Maharashtra">Bank of Maharashtra</option>
+              <option value="Punjab & Sind Bank">Punjab & Sind Bank</option>
+              <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+              <option value="IndusInd Bank">IndusInd Bank</option>
+              <option value="Yes Bank">Yes Bank</option>
+              <option value="IDBI Bank">IDBI Bank</option>
+              <option value="Federal Bank">Federal Bank</option>
+              <option value="South Indian Bank">South Indian Bank</option>
+              <option value="Karur Vysya Bank">Karur Vysya Bank</option>
+              <option value="City Union Bank">City Union Bank</option>
+              <option value="Tamilnad Mercantile Bank">Tamilnad Mercantile Bank</option>
+              <option value="Equitas Small Finance Bank">Equitas Small Finance Bank</option>
+              <option value="Ujjivan Small Finance Bank">Ujjivan Small Finance Bank</option>
+              <option value="Paytm Payments Bank">Paytm Payments Bank</option>
+              <option value="India Post Payments Bank">India Post Payments Bank</option>
+              <option value="Other">Other / Co-operative Bank</option>
+            </select>
             <label class="form-label" for="editBankName">Bank Name *</label>
           </div>
           <div class="form-group">
@@ -502,6 +533,11 @@ let currentEditPassbookBase64 = null;
 function switchToEdit() {
   isEditMode = true;
   renderEditMode();
+  
+  if (currentClaim && currentClaim.bank_name) {
+    const bankSelect = document.getElementById('editBankName');
+    if (bankSelect) bankSelect.value = currentClaim.bank_name;
+  }
   
   currentEditPassbookBase64 = null; // Reset on edit open
   const editPassbookInput = document.getElementById('editPassbookFile');
