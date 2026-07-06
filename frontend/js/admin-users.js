@@ -204,7 +204,7 @@ function closeModal(id) {
 function updateUserDatalist() {
   const datalist = document.getElementById('userList');
   if (!datalist || !window.userMap) return;
-  datalist.innerHTML = Object.keys(window.userMap).map(key => `<option value="${escapeHtml(key)}"></option>`).join('');
+  datalist.innerHTML = Object.keys(window.userMap).map(key => `<option value="${escapeHtml(key)}">${escapeHtml(key)}</option>`).join('');
 }
 
 // Handle Change Password Form
