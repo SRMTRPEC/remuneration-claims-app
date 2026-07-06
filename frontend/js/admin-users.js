@@ -202,9 +202,58 @@ function closeModal(id) {
 }
 
 function updateUserDatalist() {
-  const datalist = document.getElementById('userList');
-  if (!datalist || !window.userMap) return;
-  datalist.innerHTML = Object.keys(window.userMap).map(key => `<option value="${escapeHtml(key)}">${escapeHtml(key)}</option>`).join('');
+  const searchInput = document.getElementById('passwordSearch');
+  const dropdown = document.getElementById('userDropdown');
+  if (!dropdown || !searchInput || !window.userMap) return;
+  
+  const keys = Object.keys(window.userMap);
+  
+  const renderOptions = (filter = '') => {
+    const f = filter.toLowerCase();
+    const filtered = keys.filter(k => k.toLowerCase().includes(f));
+    if (filtered.length === 0) {
+      dropdown.innerHTML = '<div style="padding:0.75rem 1rem; color:var(--text-muted);">No users found</div>';
+      return;
+    }
+    dropdown.innerHTML = filtered.map(k => `<div class="dropdown-option" data-value="${escapeHtml(k)}">${escapeHtml(k)}</div>`).join('');
+    
+    // Add click listeners to options
+    dropdown.querySelectorAll('.dropdown-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        searchInput.value = opt.dataset.value;
+        document.getElementById('passwordSearchHidden').value = opt.dataset.value;
+        dropdown.style.display = 'none';
+      });
+    });
+  };
+
+  // Initial render
+  renderOptions();
+
+  // Search filter
+  searchInput.addEventListener('input', (e) => {
+    document.getElementById('passwordSearchHidden').value = ''; // clear hidden value if typing
+    dropdown.style.display = 'block';
+    renderOptions(e.target.value);
+  });
+
+  // Show dropdown on focus
+  searchInput.addEventListener('focus', () => {
+    dropdown.style.display = 'block';
+    renderOptions(searchInput.value);
+  });
+
+  // Hide dropdown on click outside
+  document.addEventListener('click', (e) => {
+    if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+      // Auto-select if exact match is typed
+      const typed = searchInput.value;
+      if (window.userMap[typed]) {
+        document.getElementById('passwordSearchHidden').value = typed;
+      }
+    }
+  });
 }
 
 // Handle Change Password Form
@@ -229,7 +278,7 @@ document.getElementById('changePasswordForm')?.addEventListener('submit', async 
     return;
   }
   
-  const searchInput = document.getElementById('passwordSearch').value;
+  const searchInput = document.getElementById('passwordSearchHidden').value || document.getElementById('passwordSearch').value;
   const user = window.userMap ? window.userMap[searchInput] : null;
   
   if (!user) {

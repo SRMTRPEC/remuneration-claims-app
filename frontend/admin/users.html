@@ -22,6 +22,10 @@
     .form-group { margin-bottom: 1rem; }
     .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; }
     .form-group input, .form-group select { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; background: var(--bg-body); color: var(--text-primary); }
+    
+    .dropdown-option { padding: 0.75rem 1rem; cursor: pointer; border-bottom: 1px solid var(--border-color); color: var(--text-primary); }
+    .dropdown-option:last-child { border-bottom: none; }
+    .dropdown-option:hover { background: var(--bg-body); color: var(--primary-600); }
   </style>
 </head>
 <body>
@@ -124,11 +128,13 @@
           <div class="card">
             <div id="changePasswordFormError" style="color: var(--danger-color); margin-bottom: 1rem; font-size: 0.9rem; display: none;"></div>
             <form id="changePasswordForm">
-              <div class="form-group">
+              <div class="form-group" style="position: relative;">
                 <label>Select User</label>
-                <input type="text" list="userList" id="passwordSearch" placeholder="Search for user... (e.g. TRPT1234 or Admin Name)" required>
-                <datalist id="userList"></datalist>
-                <small style="color: var(--text-muted); display: block; margin-top: 0.25rem;">Type to search. You must select an existing user from the dropdown.</small>
+                <input type="hidden" id="passwordSearchHidden" required>
+                <input type="text" id="passwordSearch" placeholder="Click to select or type to search..." autocomplete="off" style="cursor: text;">
+                <div id="userDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 0 0 var(--radius-md) var(--radius-md); max-height: 250px; overflow-y: auto; z-index: 50; box-shadow: var(--shadow-lg);">
+                  <!-- Options injected via JS -->
+                </div>
               </div>
               <div class="form-group">
                 <label>New Password (min 6 characters)</label>
