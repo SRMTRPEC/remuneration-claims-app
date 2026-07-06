@@ -131,7 +131,12 @@
               <div class="form-group" style="position: relative;">
                 <label>Select User</label>
                 <input type="hidden" id="passwordSearchHidden" required>
-                <input type="text" id="passwordSearch" placeholder="Click to select or type to search..." autocomplete="off" style="cursor: text;">
+                <div style="position: relative; display: flex; align-items: center;">
+                  <input type="text" id="passwordSearch" placeholder="Click to select or type to search..." autocomplete="off" style="cursor: text; padding-right: 30px;">
+                  <span id="passwordSearchArrow" style="position: absolute; right: 10px; cursor: pointer; pointer-events: none; color: var(--text-muted);">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </span>
+                </div>
                 <div id="userDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 0 0 var(--radius-md) var(--radius-md); max-height: 250px; overflow-y: auto; z-index: 50; box-shadow: var(--shadow-lg);">
                   <!-- Options injected via JS -->
                 </div>

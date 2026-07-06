@@ -237,10 +237,24 @@ function updateUserDatalist() {
     renderOptions(e.target.value);
   });
 
+  // Show dropdown on click
+  searchInput.addEventListener('click', () => {
+    dropdown.style.display = 'block';
+    if (!searchInput.value) {
+      renderOptions(''); // Show all if empty
+    } else {
+      renderOptions(searchInput.value);
+    }
+  });
+
   // Show dropdown on focus
   searchInput.addEventListener('focus', () => {
     dropdown.style.display = 'block';
-    renderOptions(searchInput.value);
+    if (!searchInput.value) {
+      renderOptions('');
+    } else {
+      renderOptions(searchInput.value);
+    }
   });
 
   // Hide dropdown on click outside
