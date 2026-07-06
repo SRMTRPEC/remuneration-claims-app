@@ -201,4 +201,88 @@ router.post('/users/admins', async (req, res) => {
   }
 });
 
+/**
+ * PUT /api/admin/users/staff/:id/password
+ * Admin changes a staff member's password
+ */
+router.put('/users/staff/:id/password', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    // Get old password hash to check if it's the same
+    const { data: staff, error: fetchErr } = await supabase
+      .from('staff')
+      .select('password_hash')
+      .eq('id', id)
+      .single();
+
+    if (fetchErr || !staff) {
+      return res.status(404).json({ error: 'Staff account not found' });
+    }
+
+    if (bcrypt.compareSync(password, staff.password_hash)) {
+      return res.status(400).json({ error: 'New password must be different from the old password' });
+    }
+
+    const password_hash = bcrypt.hashSync(password, 10);
+    const { error: updateErr } = await supabase
+      .from('staff')
+      .update({ password_hash })
+      .eq('id', id);
+
+    if (updateErr) throw updateErr;
+    res.json({ success: true, message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('Staff password update error:', err);
+    res.status(500).json({ error: 'Failed to update staff password' });
+  }
+});
+
+/**
+ * PUT /api/admin/users/admins/:id/password
+ * Admin changes an admin's password
+ */
+router.put('/users/admins/:id/password', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    // Get old password hash to check if it's the same
+    const { data: admin, error: fetchErr } = await supabase
+      .from('admins')
+      .select('password_hash')
+      .eq('id', id)
+      .single();
+
+    if (fetchErr || !admin) {
+      return res.status(404).json({ error: 'Admin profile not found' });
+    }
+
+    if (bcrypt.compareSync(password, admin.password_hash)) {
+      return res.status(400).json({ error: 'New password must be different from the old password' });
+    }
+
+    const password_hash = bcrypt.hashSync(password, 10);
+    const { error: updateErr } = await supabase
+      .from('admins')
+      .update({ password_hash })
+      .eq('id', id);
+
+    if (updateErr) throw updateErr;
+    res.json({ success: true, message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('Admin password update error:', err);
+    res.status(500).json({ error: 'Failed to update admin password' });
+  }
+});
+
 module.exports = router;
