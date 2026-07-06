@@ -16,7 +16,8 @@ const { generateToken, generateStaffToken, requireAdmin, requireStaff, verifyTok
  */
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username } = req.body;
+    const password = (req.body.password || '').trim();
 
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
@@ -99,7 +100,9 @@ router.get('/me', verifyToken, (req, res) => {
  */
 router.post('/staff/register', async (req, res) => {
   try {
-    const { staff_id, staff_name, department, password, confirm_password } = req.body;
+    const { staff_id, staff_name, department } = req.body;
+    const password = (req.body.password || '').trim();
+    const confirm_password = (req.body.confirm_password || '').trim();
 
     if (!staff_id || !staff_name || !department || !password) {
       return res.status(400).json({ error: 'All fields are required' });
@@ -160,7 +163,8 @@ router.post('/staff/register', async (req, res) => {
  */
 router.post('/staff/login', async (req, res) => {
   try {
-    const { staff_id, password } = req.body;
+    const { staff_id } = req.body;
+    const password = (req.body.password || '').trim();
 
     if (!staff_id || !password) {
       return res.status(400).json({ error: 'Staff ID and password required' });

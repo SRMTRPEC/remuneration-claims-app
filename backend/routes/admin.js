@@ -208,7 +208,8 @@ router.post('/users/admins', async (req, res) => {
 router.put('/users/staff/:id/password', async (req, res) => {
   try {
     const { id } = req.params;
-    const { password } = req.body;
+    const rawPassword = req.body.password || '';
+    const password = rawPassword.trim();
 
     if (!password || password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
@@ -250,7 +251,8 @@ router.put('/users/staff/:id/password', async (req, res) => {
 router.put('/users/admins/:id/password', async (req, res) => {
   try {
     const { id } = req.params;
-    const { password } = req.body;
+    const rawPassword = req.body.password || '';
+    const password = rawPassword.trim();
 
     if (!password || password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });

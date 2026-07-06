@@ -143,11 +143,17 @@
               </div>
               <div class="form-group">
                 <label>New Password (min 6 characters)</label>
-                <input type="password" name="new_password" required minlength="6">
+                <input type="password" name="new_password" id="adminNewPassword" required minlength="6">
               </div>
               <div class="form-group">
                 <label>Confirm New Password</label>
-                <input type="password" name="confirm_password" required minlength="6">
+                <input type="password" name="confirm_password" id="adminConfirmPassword" required minlength="6">
+              </div>
+              <div style="margin-bottom: 1rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.9rem; cursor:pointer; color:var(--text-muted);">
+                  <input type="checkbox" onchange="document.getElementById('adminNewPassword').type = this.checked ? 'text' : 'password'; document.getElementById('adminConfirmPassword').type = this.checked ? 'text' : 'password';">
+                  Show Passwords
+                </label>
               </div>
               <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Update Password</button>
             </form>

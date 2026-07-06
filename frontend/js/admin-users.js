@@ -283,8 +283,11 @@ document.getElementById('changePasswordForm')?.addEventListener('submit', async 
 
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
+  
+  const newPassword = (data.new_password || '').trim();
+  const confirmPassword = (data.confirm_password || '').trim();
 
-  if (data.new_password !== data.confirm_password) {
+  if (newPassword !== confirmPassword) {
     errorDiv.textContent = 'Passwords do not match';
     errorDiv.style.display = 'block';
     btn.textContent = originalText;
@@ -311,7 +314,7 @@ document.getElementById('changePasswordForm')?.addEventListener('submit', async 
     const res = await apiFetch(endpoint, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: data.new_password })
+      body: JSON.stringify({ password: newPassword })
     });
     
     const resData = await res.json();
