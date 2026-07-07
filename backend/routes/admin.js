@@ -287,4 +287,43 @@ router.put('/users/admins/:id/password', async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/admin/users/staff/:id
+ * Delete a staff profile
+ */
+router.delete('/users/staff/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { error } = await supabase.from('staff').delete().eq('id', id);
+    if (error) throw error;
+    res.json({ success: true, message: 'Staff profile deleted' });
+  } catch (err) {
+    console.error('Delete staff error:', err);
+    res.status(500).json({ error: 'Failed to delete staff profile' });
+  }
+});
+
+/**
+ * DELETE /api/admin/users/admins/:id
+ * Delete an admin profile
+ */
+router.delete('/users/admins/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Prevent deleting the very last admin or the admin themselves? 
+    // We'll just allow it for now, or prevent deleting self if req.admin.id === id
+    if (req.admin && req.admin.id === id) {
+       return res.status(403).json({ error: 'You cannot delete your own admin profile' });
+    }
+    
+    const { error } = await supabase.from('admins').delete().eq('id', id);
+    if (error) throw error;
+    res.json({ success: true, message: 'Admin profile deleted' });
+  } catch (err) {
+    console.error('Delete admin error:', err);
+    res.status(500).json({ error: 'Failed to delete admin profile' });
+  }
+});
+
 module.exports = router;

@@ -130,7 +130,7 @@ async function fetchStaff() {
     const data = await res.json();
     
     if (!data.staff || data.staff.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;">No staff accounts found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;">No staff accounts found.</td></tr>';
       return;
     }
 
@@ -145,6 +145,11 @@ async function fetchStaff() {
         <td>${escapeHtml(s.staff_name)}</td>
         <td><span class="badge badge-outline">${escapeHtml(s.department)}</span></td>
         <td>${new Date(s.created_at).toLocaleDateString()}</td>
+        <td style="text-align: center;">
+          <button class="btn btn-sm" style="color: var(--danger-color); padding: 0.25rem 0.5rem; background: transparent; border: none;" onclick="deleteUser('${s.id}', 'staff', '${escapeHtml(s.staff_name)}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </td>
       </tr>
       `;
     }).join('');
@@ -153,7 +158,7 @@ async function fetchStaff() {
     updateUserDatalist();
   } catch (err) {
     console.error(err);
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--danger-color);padding:2rem;">Failed to load staff.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--danger-color);padding:2rem;">Failed to load staff.</td></tr>';
   }
 }
 
@@ -165,7 +170,7 @@ async function fetchAdmins() {
     const data = await res.json();
     
     if (!data.admins || data.admins.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;padding:2rem;">No admin profiles found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2rem;">No admin profiles found.</td></tr>';
       return;
     }
 
@@ -178,6 +183,11 @@ async function fetchAdmins() {
       <tr>
         <td><strong>${escapeHtml(a.username)}</strong></td>
         <td>${a.created_at ? new Date(a.created_at).toLocaleDateString() : '-'}</td>
+        <td style="text-align: center;">
+          <button class="btn btn-sm" style="color: var(--danger-color); padding: 0.25rem 0.5rem; background: transparent; border: none;" onclick="deleteUser('${a.id}', 'admin', '${escapeHtml(a.username)}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </td>
       </tr>
       `;
     }).join('');
@@ -186,7 +196,7 @@ async function fetchAdmins() {
     updateUserDatalist();
   } catch (err) {
     console.error(err);
-    tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;color:var(--danger-color);padding:2rem;">Failed to load admins.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--danger-color);padding:2rem;">Failed to load admins.</td></tr>';
   }
 }
 
@@ -339,3 +349,29 @@ document.querySelectorAll('.modal').forEach(modal => {
     }
   });
 });
+
+async function deleteUser(id, type, name) {
+  if (!confirm(`Are you sure you want to completely delete the ${type} profile for "${name}"?\nThis action cannot be undone.`)) {
+    return;
+  }
+  
+  try {
+    const res = await apiFetch(`/api/admin/users/${type}s/${id}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+    
+    if (!res.ok) throw new Error(data.error || `Failed to delete ${type}`);
+    
+    showToast(`Successfully deleted ${name}`, 'success');
+    
+    // Refresh tables
+    if (type === 'staff') {
+      fetchStaff();
+    } else {
+      fetchAdmins();
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
