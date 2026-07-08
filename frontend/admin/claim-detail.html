@@ -7,13 +7,11 @@
   <title>Claim Details | Admin Panel</title>
   <link rel="stylesheet" href="/css/styles.css?v=14">
   <link rel="stylesheet" href="/css/form.css?v=14">
-  <link rel="stylesheet" href="/css/admin.css?v=14">
+  <link rel="stylesheet" href="/css/admin.css?v=15">
   <link rel="stylesheet" href="/css/print.css?v=12">
 </head>
 <body>
   <div class="admin-layout">
-
-    <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
 
     <!-- ── Sidebar ────────────────────────────────────────────── -->
     <aside class="sidebar">
@@ -54,6 +52,7 @@
       <div class="admin-topbar">
         <h1 class="admin-topbar-title" id="pageTitle">Claim Details</h1>
         <div class="admin-topbar-actions">
+          <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" title="Toggle Menu">☰</button>
           <button class="btn btn-sm btn-secondary" id="backToClaimsBtn">← Back to Claims</button>
           <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
             <span class="icon-moon">🌙</span>

@@ -6,13 +6,11 @@
   <meta name="description" content="Manage all remuneration claims - search, filter, export, and manage.">
   <title>All Claims | Admin Panel</title>
   <link rel="stylesheet" href="/css/styles.css?v=14">
-  <link rel="stylesheet" href="/css/admin.css?v=14">
+  <link rel="stylesheet" href="/css/admin.css?v=15">
   <link rel="stylesheet" href="/css/print.css?v=11">
 </head>
 <body>
   <div class="admin-layout">
-
-    <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
 
     <!-- ── Sidebar ────────────────────────────────────────────── -->
     <aside class="sidebar">
@@ -53,6 +51,7 @@
       <div class="admin-topbar">
         <h1 class="admin-topbar-title">All Claims</h1>
         <div class="admin-topbar-actions">
+          <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" title="Toggle Menu">☰</button>
           <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" style="background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);">
             <span class="icon-moon">🌙</span>
             <span class="icon-sun">☀️</span>
