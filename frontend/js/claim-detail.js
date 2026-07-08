@@ -319,9 +319,15 @@ function renderEditMode() {
               <option value="Assistant Professor" ${c.designation === 'Assistant Professor' ? 'selected' : ''}>Assistant Professor</option>
               <option value="Associate Professor" ${c.designation === 'Associate Professor' ? 'selected' : ''}>Associate Professor</option>
               <option value="Professor" ${c.designation === 'Professor' ? 'selected' : ''}>Professor</option>
-              <option value="Others" ${c.designation === 'Others' ? 'selected' : ''}>Others</option>
+              <option value="Others" ${!['Assistant Professor', 'Associate Professor', 'Professor'].includes(c.designation) ? 'selected' : ''}>Others</option>
             </select>
             <label class="form-label" for="editDesignation">Designation *</label>
+          </div>
+        </div>
+        <div class="form-row" id="editOtherDesignationRow" style="display: none;">
+          <div class="form-group" style="grid-column: span 2;">
+            <input type="text" class="form-input" id="editOtherDesignation" placeholder=" ">
+            <label class="form-label" for="editOtherDesignation">Please specify your Designation *</label>
           </div>
         </div>
         <div class="form-row">
@@ -539,6 +545,19 @@ let currentEditPassbookBase64 = null;
 function switchToEdit() {
   isEditMode = true;
   renderEditMode();
+
+  if (currentClaim && currentClaim.designation) {
+    const desigSelect = document.getElementById('editDesignation');
+    const desigOptions = Array.from(desigSelect.options).map(opt => opt.value);
+    if (desigOptions.includes(currentClaim.designation)) {
+      desigSelect.value = currentClaim.designation;
+    } else {
+      desigSelect.value = 'Others';
+      document.getElementById('editOtherDesignationRow').style.display = 'block';
+      document.getElementById('editOtherDesignation').value = currentClaim.designation;
+      document.getElementById('editOtherDesignation').required = true;
+    }
+  }
   
   if (currentClaim && currentClaim.bank_name) {
     const bankSelect = document.getElementById('editBankName');
@@ -564,6 +583,21 @@ function switchToEdit() {
       } else {
         otherBankRow.style.display = 'none';
         otherBankInput.required = false;
+      }
+    });
+  }
+
+  const desigInput = document.getElementById('editDesignation');
+  if (desigInput) {
+    desigInput.addEventListener('change', (e) => {
+      const otherRow = document.getElementById('editOtherDesignationRow');
+      const otherInput = document.getElementById('editOtherDesignation');
+      if (e.target.value === 'Others') {
+        otherRow.style.display = 'block';
+        otherInput.required = true;
+      } else {
+        otherRow.style.display = 'none';
+        otherInput.required = false;
       }
     });
   }
@@ -620,7 +654,9 @@ async function saveEdit() {
     staff_name: document.getElementById('editStaffName').value.trim(),
     staff_id: 'TRPT' + document.getElementById('editStaffId').value.trim().replace(/^TRPT/i, ''),
     department: document.getElementById('editDepartment').value.trim(),
-    designation: document.getElementById('editDesignation').value,
+    designation: document.getElementById('editDesignation').value === 'Others'
+                 ? document.getElementById('editOtherDesignation').value.trim()
+                 : document.getElementById('editDesignation').value,
     bank_name: document.getElementById('editBankName').value === 'Other' 
                ? document.getElementById('editOtherBankName').value.trim() 
                : document.getElementById('editBankName').value.trim(),

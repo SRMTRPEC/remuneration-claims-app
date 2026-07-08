@@ -339,8 +339,12 @@ document.addEventListener('DOMContentLoaded', () => {
         staff_name: document.getElementById('staffName').value.trim(),
         staff_id: 'TRPT' + document.getElementById('staffId').value.trim().replace(/^TRPT/i, ''),
         department: document.getElementById('department').value.trim(),
-        designation: document.getElementById('designation').value,
-        bank_name: document.getElementById('bankName').value.trim(),
+        designation: document.getElementById('designation').value === 'Others' 
+          ? document.getElementById('otherDesignation').value.trim() 
+          : document.getElementById('designation').value,
+        bank_name: document.getElementById('bankName').value === 'Other'
+          ? document.getElementById('otherBankName').value.trim()
+          : document.getElementById('bankName').value.trim(),
         bank_branch: document.getElementById('bankBranch').value.trim(),
         account_number: document.getElementById('accountNumber').value.trim(),
         ifsc_code: document.getElementById('ifscCode').value.trim(),
@@ -543,7 +547,9 @@ document.addEventListener('DOMContentLoaded', () => {
       staff_name: document.getElementById('staffName').value,
       staff_id: document.getElementById('staffId').value,
       department: document.getElementById('department').value,
-      designation: document.getElementById('designation').value,
+      designation: document.getElementById('designation').value === 'Others'
+                 ? document.getElementById('otherDesignation').value.trim()
+                 : document.getElementById('designation').value,
       bank_name: document.getElementById('bankName').value === 'Other' 
                  ? document.getElementById('otherBankName').value.trim() 
                  : document.getElementById('bankName').value,
@@ -582,7 +588,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.staff_name) document.getElementById('staffName').value = data.staff_name;
     if (data.staff_id) document.getElementById('staffId').value = data.staff_id.replace(/^TRPT/i, '');
     if (data.department) document.getElementById('department').value = data.department;
-    if (data.designation) document.getElementById('designation').value = data.designation;
+    if (data.designation) {
+      const desigSelect = document.getElementById('designation');
+      const desigOptions = Array.from(desigSelect.options).map(opt => opt.value);
+      if (desigOptions.includes(data.designation)) {
+        desigSelect.value = data.designation;
+      } else {
+        desigSelect.value = 'Others';
+        document.getElementById('otherDesignationRow').style.display = 'block';
+        document.getElementById('otherDesignation').value = data.designation;
+        document.getElementById('otherDesignation').required = true;
+      }
+    }
     if (data.bank_name) {
       const bankSelect = document.getElementById('bankName');
       const options = Array.from(bankSelect.options).map(opt => opt.value);
@@ -672,6 +689,21 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         otherBankRow.style.display = 'none';
         otherBankInput.required = false;
+      }
+    });
+  }
+
+  const designationInput = document.getElementById('designation');
+  if (designationInput) {
+    designationInput.addEventListener('change', (e) => {
+      const otherRow = document.getElementById('otherDesignationRow');
+      const otherInput = document.getElementById('otherDesignation');
+      if (e.target.value === 'Others') {
+        otherRow.style.display = 'block';
+        otherInput.required = true;
+      } else {
+        otherRow.style.display = 'none';
+        otherInput.required = false;
       }
     });
   }
