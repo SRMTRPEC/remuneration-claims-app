@@ -100,11 +100,11 @@ router.get('/me', verifyToken, (req, res) => {
  */
 router.post('/staff/register', async (req, res) => {
   try {
-    const { staff_id, staff_name, department } = req.body;
+    const { staff_id, staff_name, department, staff_type } = req.body;
     const password = (req.body.password || '').trim();
     const confirm_password = (req.body.confirm_password || '').trim();
 
-    if (!staff_id || !staff_name || !department || !password) {
+    if (!staff_id || !staff_name || !department || !staff_type || !password) {
       return res.status(400).json({ error: 'All fields are required' });
     }
     if (password !== confirm_password) {
@@ -136,6 +136,7 @@ router.post('/staff/register', async (req, res) => {
         staff_id: cleanStaffId,
         staff_name: staff_name.trim(),
         department: department.trim(),
+        staff_type: staff_type,
         password_hash
       }])
       .select()

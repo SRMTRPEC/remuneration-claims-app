@@ -143,6 +143,7 @@ async function fetchStaff() {
       <tr>
         <td><strong>${escapeHtml(s.staff_id)}</strong></td>
         <td>${escapeHtml(s.staff_name)}</td>
+        <td><span class="badge ${s.staff_type === 'External' ? 'badge-warning' : 'badge-primary'}">${escapeHtml(s.staff_type || 'Internal')}</span></td>
         <td><span class="badge badge-outline">${escapeHtml(s.department)}</span></td>
         <td>${new Date(s.created_at).toLocaleDateString()}</td>
         <td style="text-align: center;">
@@ -158,7 +159,7 @@ async function fetchStaff() {
     updateUserDatalist();
   } catch (err) {
     console.error(err);
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--danger-color);padding:2rem;">Failed to load staff.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--danger-color);padding:2rem;">Failed to load staff.</td></tr>';
   }
 }
 

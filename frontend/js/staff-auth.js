@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const staff_id = document.getElementById('staffId').value.trim();
       const staff_name = document.getElementById('staffName').value.trim();
       const department = document.getElementById('department').value.trim();
+      const staff_type = document.querySelector('input[name="staffType"]:checked')?.value;
       const password = document.getElementById('password').value;
       const confirm_password = document.getElementById('confirmPassword').value;
 
@@ -86,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
-          body: JSON.stringify({ staff_id, staff_name, department, password, confirm_password }),
+          body: JSON.stringify({ staff_id, staff_name, department, staff_type, password, confirm_password }),
         });
 
         const data = await res.json();

@@ -78,7 +78,7 @@ router.get('/users/staff', async (req, res) => {
   try {
     const { data: staff, error } = await supabase
       .from('staff')
-      .select('id, staff_id, staff_name, department, created_at')
+      .select('id, staff_id, staff_name, department, staff_type, created_at')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -95,9 +95,9 @@ router.get('/users/staff', async (req, res) => {
  */
 router.post('/users/staff', async (req, res) => {
   try {
-    const { staff_id, staff_name, department, password } = req.body;
+    const { staff_id, staff_name, department, staff_type, password } = req.body;
 
-    if (!staff_id || !staff_name || !department || !password) {
+    if (!staff_id || !staff_name || !department || !staff_type || !password) {
       return res.status(400).json({ error: 'All fields are required' });
     }
     if (password.length < 6) {
@@ -124,9 +124,10 @@ router.post('/users/staff', async (req, res) => {
         staff_id: cleanStaffId,
         staff_name: staff_name.trim(),
         department: department.trim(),
+        staff_type: staff_type,
         password_hash
       }])
-      .select('id, staff_id, staff_name, department, created_at')
+      .select('id, staff_id, staff_name, department, staff_type, created_at')
       .single();
 
     if (error) throw error;
