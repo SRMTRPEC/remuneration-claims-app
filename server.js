@@ -71,6 +71,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
+// Serve staff auth pages
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'staff-login.html'));
+});
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'staff-register.html'));
+});
+
 // Serve admin pages
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'admin', 'login.html'));

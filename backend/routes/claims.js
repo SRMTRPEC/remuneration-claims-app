@@ -82,7 +82,14 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
       squadDays = fDays + aDays + bDays;
     }
 
-    const grandTotal = qpAmount + scrutinyAmount + evalAmount + squadAmount;
+    let practicalSquadAmount = 0, practicalSquadSessions = 0, practicalSquadRate = 0;
+    if (b.practical_squad_enabled) {
+      practicalSquadRate = isExternal ? 500 : 200;
+      practicalSquadSessions = parseInt(b.practical_squad_sessions) || 0;
+      practicalSquadAmount = practicalSquadSessions * practicalSquadRate;
+    }
+
+    const grandTotal = qpAmount + scrutinyAmount + evalAmount + practicalSquadAmount + squadAmount;
     const amountInWords = numberToWords(grandTotal);
 
     let passbookUrl = null;
@@ -117,6 +124,10 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
       eval_scripts: evalScripts,
       eval_rate: 30,
       eval_amount: evalAmount,
+      practical_squad_enabled: b.practical_squad_enabled ? 1 : 0,
+      practical_squad_sessions: practicalSquadSessions,
+      practical_squad_rate: practicalSquadRate,
+      practical_squad_amount: practicalSquadAmount,
       squad_days: squadDays,
       squad_session: squadSessionsStr,
       squad_rate: 0,
@@ -320,7 +331,14 @@ router.put('/:id', requireAdmin, validateClaim, async (req, res) => {
       squadDays = fDays + aDays + bDays;
     }
 
-    const grandTotal = qpAmount + scrutinyAmount + evalAmount + squadAmount;
+    let practicalSquadAmount = 0, practicalSquadSessions = 0, practicalSquadRate = 0;
+    if (b.practical_squad_enabled) {
+      practicalSquadRate = isExternal ? 500 : 200;
+      practicalSquadSessions = parseInt(b.practical_squad_sessions) || 0;
+      practicalSquadAmount = practicalSquadSessions * practicalSquadRate;
+    }
+
+    const grandTotal = qpAmount + scrutinyAmount + evalAmount + practicalSquadAmount + squadAmount;
     
     let passbookUrl = oldClaim.passbook_file;
     if (b.passbook_file) {
@@ -352,6 +370,10 @@ router.put('/:id', requireAdmin, validateClaim, async (req, res) => {
       eval_date: b.eval_date || null,
       eval_scripts: evalScripts,
       eval_amount: evalAmount,
+      practical_squad_enabled: b.practical_squad_enabled ? 1 : 0,
+      practical_squad_sessions: practicalSquadSessions,
+      practical_squad_rate: practicalSquadRate,
+      practical_squad_amount: practicalSquadAmount,
       squad_days: squadDays,
       squad_session: squadSessionsStr,
       squad_amount: squadAmount,

@@ -226,6 +226,14 @@ function renderViewMode() {
             <td>₹30</td>
             <td style="text-align:right;font-weight:700;color:var(--primary-600);">${formatCurrency(c.eval_amount || 0)}</td>
           </tr>
+          ${c.practical_squad_amount > 0 ? `
+          <tr>
+            <td style="font-weight:600;">Practical Squad</td>
+            <td>—</td>
+            <td>${c.practical_squad_sessions || 0} sessions</td>
+            <td>${formatCurrency(c.practical_squad_rate || 0)}</td>
+            <td style="text-align:right;font-weight:700;color:var(--primary-600);">${formatCurrency(c.practical_squad_amount || 0)}</td>
+          </tr>` : ''}
           <tr>
             <td style="font-weight:600;">Squad Duty</td>
             <td>${
@@ -503,6 +511,25 @@ function renderEditMode() {
         </div>
       </div>
 
+      <!-- Practical Squad -->
+      <div class="card" style="margin-bottom:var(--space-lg);">
+        <h3 style="margin-bottom:var(--space-md);display:flex;align-items:center;justify-content:space-between;">
+          <span>🔬 Practical Squad</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="editPracticalSquadEnabled" ${c.practical_squad_enabled ? 'checked' : ''} onchange="document.getElementById('editPracticalSquadBody').style.display = this.checked ? 'block' : 'none'">
+            <span class="toggle-slider"></span>
+          </label>
+        </h3>
+        <div id="editPracticalSquadBody" style="${c.practical_squad_enabled ? 'display:block;' : 'display:none;'}">
+          <div class="form-row">
+            <div class="form-group">
+              <input type="number" class="form-input" id="editPracticalSquadSessions" value="${c.practical_squad_sessions || 0}" min="0" placeholder=" ">
+              <label class="form-label">Number of Sessions</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Squad Duty -->
       <div class="card" style="margin-bottom:var(--space-lg);">
         <h3 style="margin-bottom:var(--space-md);">🛡️ Squad Duty</h3>
@@ -691,6 +718,8 @@ async function saveEdit() {
       }
       return sessions;
     })(),
+    practical_squad_enabled: document.getElementById('editPracticalSquadEnabled')?.checked || false,
+    practical_squad_sessions: parseInt(document.getElementById('editPracticalSquadSessions')?.value) || 0,
     squad_sessions: {
       Forenoon: parseInt(document.getElementById('editSquadForenoon').value) || 0,
       Afternoon: parseInt(document.getElementById('editSquadAfternoon').value) || 0,
@@ -836,7 +865,8 @@ function generatePrintHtmlDetail(claim) {
       ${claim.qp_section_enabled ? `<tr><td>1</td><td>Question Paper Setting</td><td>${qpTypeLabel(claim.qp_type)}</td><td>${claim.qp_quantity || 0}</td><td>${claim.qp_rate || 0}</td><td class="amount">${Number(claim.qp_amount || 0).toLocaleString('en-IN')}</td></tr>` : ''}
       <tr><td>${claim.qp_section_enabled ? '2' : '1'}</td><td>Paper Scrutiny</td><td>-</td><td>${claim.scrutiny_quantity || 0}</td><td>300</td><td class="amount">${Number(claim.scrutiny_amount || 0).toLocaleString('en-IN')}</td></tr>
       <tr><td>${claim.qp_section_enabled ? '3' : '2'}</td><td>Script Evaluation</td><td>${formatEvalPhasePrint(claim)}</td><td>${claim.eval_scripts || 0}</td><td>30</td><td class="amount">${Number(claim.eval_amount || 0).toLocaleString('en-IN')}</td></tr>
-      <tr><td>${claim.qp_section_enabled ? '4' : '3'}</td><td>Squad Duty</td><td>${formatSquadSessionPrint(claim)}</td><td>${claim.squad_days || 0} days</td><td>${claim.squad_rate || 0}</td><td class="amount">${Number(claim.squad_amount || 0).toLocaleString('en-IN')}</td></tr>
+      ${claim.practical_squad_amount > 0 ? `<tr><td>${claim.qp_section_enabled ? '4' : '3'}</td><td>Practical Squad</td><td>-</td><td>${claim.practical_squad_sessions || 0} sessions</td><td>${claim.practical_squad_rate || 0}</td><td class="amount">${Number(claim.practical_squad_amount || 0).toLocaleString('en-IN')}</td></tr>` : ''}
+      <tr><td>${claim.qp_section_enabled ? (claim.practical_squad_amount > 0 ? '5' : '4') : (claim.practical_squad_amount > 0 ? '4' : '3')}</td><td>Squad Duty</td><td>${formatSquadSessionPrint(claim)}</td><td>${claim.squad_days || 0} days</td><td>${claim.squad_rate || 0}</td><td class="amount">${Number(claim.squad_amount || 0).toLocaleString('en-IN')}</td></tr>
       <tr class="grand-total"><td colspan="5" style="text-align:right;">GRAND TOTAL</td><td class="amount" style="font-size:13pt;">₹${Number(claim.grand_total || 0).toLocaleString('en-IN')}</td></tr>
     </tbody>
   </table>

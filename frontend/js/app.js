@@ -92,6 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const evalScripts2 = document.getElementById('evalScripts2');
   const evalSubtotal = document.getElementById('evalSubtotal');
 
+  // Practical Squad section
+  const practicalSquadEnabled = document.getElementById('practicalSquadEnabled');
+  const practicalSquadSection = document.getElementById('practicalSquadSection');
+  const practicalSquadSessions = document.getElementById('practicalSquadSessions');
+  const practicalSquadAmount = document.getElementById('practicalSquadAmount');
+  const practicalSquadSubtotal = document.getElementById('practicalSquadSubtotal');
+
   // Squad section
   const squadEnabled = document.getElementById('squadEnabled');
   const squadSection = document.getElementById('squadSection');
@@ -152,6 +159,18 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('evalScripts1_2').value = '0';
       document.getElementById('evalAppt2_1').value = '';
       document.getElementById('evalScripts2_1').value = '0';
+    }
+    recalculate();
+  });
+
+  practicalSquadEnabled.addEventListener('change', () => {
+    if (practicalSquadEnabled.checked) {
+      practicalSquadSection.style.display = 'block';
+    } else {
+      practicalSquadSection.style.display = 'none';
+      practicalSquadSessions.value = '0';
+      practicalSquadAmount.textContent = '₹0';
+      practicalSquadSubtotal.textContent = '₹0';
     }
     recalculate();
   });
@@ -251,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Squad Duty ──────────────────────────────────────────────────
 
-  [squadForenoon, squadAfternoon, squadBoth].forEach(input => {
+  [squadForenoon, squadAfternoon, squadBoth, practicalSquadSessions].forEach(input => {
     input.addEventListener('input', () => {
       if (parseInt(input.value) < 0) input.value = 0;
       recalculate();
@@ -297,6 +316,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     evalSubtotal.textContent = formatCurrency(evalAmount);
 
+    // Practical Squad Amount
+    let pracSquadAmount = 0;
+    if (practicalSquadEnabled.checked) {
+      const isExternal = currentStaffType === 'External';
+      const rate = isExternal ? 500 : 200;
+      const sessions = parseInt(practicalSquadSessions.value || 0);
+      pracSquadAmount = sessions * rate;
+      practicalSquadAmount.textContent = formatCurrency(pracSquadAmount);
+    }
+    practicalSquadSubtotal.textContent = formatCurrency(pracSquadAmount);
+
     // Squad Amount
     let squadAmount = 0;
     if (squadEnabled.checked) {
@@ -317,20 +347,21 @@ document.addEventListener('DOMContentLoaded', () => {
     squadSubtotal.textContent = formatCurrency(squadAmount);
 
     // Grand Total
-    const total = qpAmount + scrutinyAmount + evalAmount + squadAmount;
+    const total = qpAmount + scrutinyAmount + evalAmount + pracSquadAmount + squadAmount;
     grandTotalAmount.textContent = formatCurrency(total);
-    grandTotalWords.textContent = numberToWords(total);
+    grandTotalWords.textContent = total > 0 ? numberToWords(total) + ' Rupees Only' : 'Zero Rupees';
 
     // Breakdown items
     const breakdowns = [];
     if (qpAmount > 0) breakdowns.push({ label: 'QP Setting', value: formatCurrency(qpAmount) });
     if (scrutinyAmount > 0) breakdowns.push({ label: 'Scrutiny', value: formatCurrency(scrutinyAmount) });
     if (evalAmount > 0) breakdowns.push({ label: 'Evaluation', value: formatCurrency(evalAmount) });
+    if (pracSquadAmount > 0) breakdowns.push({ label: 'Practical Squad', value: formatCurrency(pracSquadAmount) });
     if (squadAmount > 0) breakdowns.push({ label: 'Squad Duty', value: formatCurrency(squadAmount) });
 
-    breakdownList.innerHTML = breakdowns.map(b =>
-      `<div class="breakdown-item"><span class="label">${b.label}:</span><span class="value">${b.value}</span></div>`
-    ).join('');
+    breakdownList.innerHTML = breakdowns.length > 0 
+      ? breakdowns.map(b => `<div class="breakdown-item"><span class="label">${b.label}:</span><span class="value">${b.value}</span></div>`).join('')
+      : `<div class="breakdown-item" style="color:var(--text-tertiary); justify-content:center;">No duties selected</div>`;
 
     // Trigger auto-save
     scheduleAutoSave();
@@ -390,11 +421,14 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           return sessions;
         })(),
-        squad_sessions: {
+        practical_squad_enabled: practicalSquadEnabled.checked,
+        practical_squad_sessions: practicalSquadEnabled.checked ? parseInt(practicalSquadSessions.value || 0) : 0,
+        squad_enabled: squadEnabled.checked,
+        squad_sessions: squadEnabled.checked ? {
           Forenoon: parseInt(squadForenoon.value) || 0,
           Afternoon: parseInt(squadAfternoon.value) || 0,
           "Both Sessions": parseInt(squadBoth.value) || 0
-        },
+        } : null
       };
 
       const res = await apiFetch('/api/claims', {
@@ -460,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('mobileNumber').value.trim()) errors.push('Mobile Number is required');
 
     // Duties Validation
-    if (!qpEnabled.checked && !scrutinyEnabled.checked && !evalEnabled.checked && !squadEnabled.checked) {
+    if (!qpEnabled.checked && !scrutinyEnabled.checked && !evalEnabled.checked && !practicalSquadEnabled.checked && !squadEnabled.checked) {
       errors.push('Please select at least one Duty Performed');
     }
 
@@ -502,6 +536,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!a3 || s3 === 0) {
           errors.push('Script Eval Phase 2: Select appointment and enter scripts');
         }
+      }
+    }
+
+    if (practicalSquadEnabled.checked) {
+      const psSessions = parseInt(practicalSquadSessions.value) || 0;
+      if (psSessions <= 0) {
+        errors.push('Practical Squad: Sessions must be greater than 0');
       }
     }
 
@@ -647,6 +688,9 @@ document.addEventListener('DOMContentLoaded', () => {
       eval_appt2_1: document.getElementById('evalAppt2_1').value,
       eval_scripts2_1: document.getElementById('evalScripts2_1').value,
       
+      practical_squad_enabled: practicalSquadEnabled.checked,
+      practical_squad_sessions: practicalSquadSessions.value,
+
       squad_enabled: squadEnabled.checked,
       squad_sessions: {
         Forenoon: squadForenoon.value,
@@ -727,6 +771,14 @@ document.addEventListener('DOMContentLoaded', () => {
         evalPhase2Toggle.dispatchEvent(new Event('change'));
         if (data.eval_appt2_1) document.getElementById('evalAppt2_1').value = data.eval_appt2_1;
         if (data.eval_scripts2_1) document.getElementById('evalScripts2_1').value = data.eval_scripts2_1;
+      }
+    }
+    
+    if (data.practical_squad_enabled) {
+      practicalSquadEnabled.checked = true;
+      practicalSquadSection.style.display = 'block';
+      if (data.practical_squad_sessions) {
+        practicalSquadSessions.value = data.practical_squad_sessions;
       }
     }
     
@@ -895,6 +947,14 @@ function generatePrintHtml(claim) {
       </tr>
       <tr>
         <td>${claim.qp_section_enabled ? '4' : '3'}</td>
+        <td>Practical Squad</td>
+        <td>-</td>
+        <td>${claim.practical_squad_sessions || 0} sessions</td>
+        <td>${claim.practical_squad_rate || 0}</td>
+        <td class="amount">${Number(claim.practical_squad_amount || 0).toLocaleString('en-IN')}</td>
+      </tr>
+      <tr>
+        <td>${claim.qp_section_enabled ? '5' : '4'}</td>
         <td>Squad Duty</td>
         <td>${formatSquadSessionPrint(claim.squad_session)}</td>
         <td>${claim.squad_days || 0} days</td>
