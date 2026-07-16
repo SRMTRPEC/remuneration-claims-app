@@ -73,7 +73,7 @@ function generateToken(admin) {
  */
 function generateStaffToken(staff) {
   return jwt.sign(
-    { id: staff.id, staff_id: staff.staff_id, staff_name: staff.staff_name, department: staff.department, role: 'staff' },
+    { id: staff.id, staff_id: staff.staff_id, staff_name: staff.staff_name, department: staff.department, staff_type: staff.staff_type, role: 'staff' },
     JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
   );

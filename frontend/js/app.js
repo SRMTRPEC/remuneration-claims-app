@@ -6,6 +6,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  let currentStaffType = 'Internal'; // Default to internal
+
   // Auth check
   apiFetch('/api/auth/me').then(res => res.json()).then(data => {
     if (data.error) {
@@ -22,6 +24,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (staffNameInput) staffNameInput.value = data.user.staff_name;
         if (staffIdInput) staffIdInput.value = data.user.staff_id.replace(/^TRPT/i, '');
         if (departmentInput) departmentInput.value = data.user.department;
+        
+        currentStaffType = data.user.staff_type || 'Internal';
+        
+        // Update QP rate labels if External
+        if (currentStaffType === 'External') {
+          const qpWithKeyCard = document.querySelector('label[data-qp-type="qp_with_answer_key"] .radio-card-rate');
+          const qpOnlyCard = document.querySelector('label[data-qp-type="qp_only"] .radio-card-rate');
+          const answerKeyOnlyCard = document.querySelector('label[data-qp-type="answer_key_only"] .radio-card-rate');
+          
+          if (qpWithKeyCard) qpWithKeyCard.textContent = '₹2,000';
+          if (qpOnlyCard) qpOnlyCard.textContent = '₹1,000';
+          if (answerKeyOnlyCard) answerKeyOnlyCard.textContent = '₹1,000';
+        }
       }
     }
   }).catch(() => {
@@ -199,7 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
       radio.checked = true;
 
       // Update rate display
-      const rate = radio.value === 'qp_with_answer_key' ? 1500 : 750;
+      const isExternal = currentStaffType === 'External';
+      const rate = radio.value === 'qp_with_answer_key' ? (isExternal ? 2000 : 1500) : (isExternal ? 1000 : 750);
       qpRateDisplay.textContent = formatCurrency(rate);
       recalculate();
     });
@@ -250,7 +266,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (qpEnabled.checked) {
       const selectedQp = document.querySelector('input[name="qp_type"]:checked');
       if (selectedQp) {
-        const rate = selectedQp.value === 'qp_with_answer_key' ? 1500 : 750;
+        const isExternal = currentStaffType === 'External';
+        const rate = selectedQp.value === 'qp_with_answer_key' ? (isExternal ? 2000 : 1500) : (isExternal ? 1000 : 750);
         qpAmount = parseInt(qpQuantity.value || 0) * rate;
       }
     }
@@ -680,7 +697,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (radio) {
           radio.checked = true;
           radio.closest('.radio-card').classList.add('selected');
-          const rate = data.qp_type === 'qp_with_answer_key' ? 1500 : 750;
+          const isExternal = currentStaffType === 'External';
+          const rate = data.qp_type === 'qp_with_answer_key' ? (isExternal ? 2000 : 1500) : (isExternal ? 1000 : 750);
           qpRateDisplay.textContent = formatCurrency(rate);
         }
       }

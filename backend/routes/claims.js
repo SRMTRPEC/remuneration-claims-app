@@ -52,10 +52,12 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
     const b = req.body;
     const claimNumber = await generateClaimNumber();
 
-    let qpAmount = 0;
+    const isExternal = req.staff?.staff_type === 'External';
+
+    let qpAmount = 0, qpRate = 0;
     if (b.qp_section_enabled) {
       const qpQty = parseInt(b.qp_quantity) || 0;
-      const qpRate = b.qp_type === 'qp_with_answer_key' ? 1500 : (b.qp_type ? 750 : 0);
+      qpRate = b.qp_type === 'qp_with_answer_key' ? (isExternal ? 2000 : 1500) : (b.qp_type ? (isExternal ? 1000 : 750) : 0);
       qpAmount = qpQty * qpRate;
     }
 
@@ -104,7 +106,7 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
       qp_section_enabled: b.qp_section_enabled ? 1 : 0,
       qp_type: b.qp_type || null,
       qp_quantity: parseInt(b.qp_quantity) || 0,
-      qp_rate: b.qp_type === 'qp_with_answer_key' ? 1500 : (b.qp_type ? 750 : 0),
+      qp_rate: qpRate,
       qp_amount: qpAmount,
       scrutiny_quantity: parseInt(b.scrutiny_quantity) || 0,
       scrutiny_rate: 300,
@@ -286,10 +288,14 @@ router.put('/:id', requireAdmin, validateClaim, async (req, res) => {
     const { data: oldClaim, error: fetchErr } = await supabase.from('remuneration_claims').select('*').eq('id', claimId).single();
     if (fetchErr || !oldClaim) return res.status(404).json({ error: 'Claim not found' });
 
+    const cleanStaffId = 'TRPT' + b.staff_id.replace(/^TRPT/i, '').trim();
+    const { data: staffData } = await supabase.from('staff').select('staff_type').eq('staff_id', cleanStaffId).maybeSingle();
+    const isExternal = staffData?.staff_type === 'External';
+
     let qpAmount = 0, qpRate = 0;
     if (b.qp_section_enabled) {
       const qpQty = parseInt(b.qp_quantity) || 0;
-      qpRate = b.qp_type === 'qp_with_answer_key' ? 1500 : 750;
+      qpRate = b.qp_type === 'qp_with_answer_key' ? (isExternal ? 2000 : 1500) : (b.qp_type ? (isExternal ? 1000 : 750) : 0);
       qpAmount = qpQty * qpRate;
     }
 
