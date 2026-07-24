@@ -92,6 +92,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const evalScripts2 = document.getElementById('evalScripts2');
   const evalSubtotal = document.getElementById('evalSubtotal');
 
+  // Practical Duty section
+  const practicalDutyEnabled = document.getElementById('practicalDutyEnabled');
+  const practicalDutySection = document.getElementById('practicalDutySection');
+  const practicalType = document.getElementById('practicalType');
+  const practicalCandidates = document.getElementById('practicalCandidates');
+  const practicalDutySubtotal = document.getElementById('practicalDutySubtotal');
+
+  // Project Duty section
+  const projectDutyEnabled = document.getElementById('projectDutyEnabled');
+  const projectDutySection = document.getElementById('projectDutySection');
+  const projectCourse = document.getElementById('projectCourse');
+  const projectCandidates = document.getElementById('projectCandidates');
+  const projectDutySubtotal = document.getElementById('projectDutySubtotal');
+
   // Practical Squad section
   const practicalSquadEnabled = document.getElementById('practicalSquadEnabled');
   const practicalSquadSection = document.getElementById('practicalSquadSection');
@@ -162,6 +176,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     recalculate();
   });
+
+  practicalDutyEnabled.addEventListener('change', () => {
+    if (practicalDutyEnabled.checked) {
+      practicalDutySection.style.display = 'block';
+    } else {
+      practicalDutySection.style.display = 'none';
+      practicalType.value = '';
+      practicalCandidates.value = '0';
+      practicalDutySubtotal.textContent = '₹0';
+    }
+    recalculate();
+  });
+  
+  practicalType.addEventListener('change', recalculate);
+  practicalCandidates.addEventListener('input', recalculate);
+
+  projectDutyEnabled.addEventListener('change', () => {
+    if (projectDutyEnabled.checked) {
+      projectDutySection.style.display = 'block';
+    } else {
+      projectDutySection.style.display = 'none';
+      projectCourse.value = '';
+      projectCandidates.value = '0';
+      projectDutySubtotal.textContent = '₹0';
+    }
+    recalculate();
+  });
+  
+  projectCourse.addEventListener('change', recalculate);
+  projectCandidates.addEventListener('input', recalculate);
 
   practicalSquadEnabled.addEventListener('change', () => {
     if (practicalSquadEnabled.checked) {
@@ -316,6 +360,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     evalSubtotal.textContent = formatCurrency(evalAmount);
 
+    // Practical Duty Amount
+    let practicalAmount = 0;
+    if (practicalDutyEnabled.checked) {
+      const type = practicalType.value;
+      if (type) {
+        const candidates = parseInt(practicalCandidates.value || 0);
+        const rate = type === 'UG' ? 25 : 30;
+        practicalAmount = candidates * rate;
+      }
+    }
+    practicalDutySubtotal.textContent = formatCurrency(practicalAmount);
+
+    // Project Duty Amount
+    let projectAmount = 0;
+    if (projectDutyEnabled.checked) {
+      const type = projectCourse.value;
+      if (type) {
+        const candidates = parseInt(projectCandidates.value || 0);
+        let rate = 0;
+        const isExternal = currentStaffType === 'External';
+        
+        if (type === 'M.E') {
+          rate = isExternal ? 250 : 75;
+        } else if (type === 'MBA') {
+          rate = isExternal ? 200 : 50;
+        } else if (type === 'B.E/B.Tech') {
+          rate = 30; // 30 for both internal and external
+        }
+        
+        projectAmount = candidates * rate;
+      }
+    }
+    projectDutySubtotal.textContent = formatCurrency(projectAmount);
+
     // Practical Squad Amount
     let pracSquadAmount = 0;
     if (practicalSquadEnabled.checked) {
@@ -347,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     squadSubtotal.textContent = formatCurrency(squadAmount);
 
     // Grand Total
-    const total = qpAmount + scrutinyAmount + evalAmount + pracSquadAmount + squadAmount;
+    const total = qpAmount + scrutinyAmount + evalAmount + practicalAmount + projectAmount + pracSquadAmount + squadAmount;
     grandTotalAmount.textContent = formatCurrency(total);
     grandTotalWords.textContent = total > 0 ? numberToWords(total) + ' Rupees Only' : 'Zero Rupees';
 
@@ -356,6 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (qpAmount > 0) breakdowns.push({ label: 'QP Setting', value: formatCurrency(qpAmount) });
     if (scrutinyAmount > 0) breakdowns.push({ label: 'Scrutiny', value: formatCurrency(scrutinyAmount) });
     if (evalAmount > 0) breakdowns.push({ label: 'Evaluation', value: formatCurrency(evalAmount) });
+    if (practicalAmount > 0) breakdowns.push({ label: 'Practical', value: formatCurrency(practicalAmount) });
+    if (projectAmount > 0) breakdowns.push({ label: 'Project', value: formatCurrency(projectAmount) });
     if (pracSquadAmount > 0) breakdowns.push({ label: 'Practical Squad', value: formatCurrency(pracSquadAmount) });
     if (squadAmount > 0) breakdowns.push({ label: 'Squad Duty', value: formatCurrency(squadAmount) });
 
@@ -421,6 +501,12 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           return sessions;
         })(),
+        practical_enabled: practicalDutyEnabled.checked ? 1 : 0,
+        practical_type: practicalDutyEnabled.checked ? practicalType.value : null,
+        practical_candidates: practicalDutyEnabled.checked ? (parseInt(practicalCandidates.value) || 0) : 0,
+        project_enabled: projectDutyEnabled.checked ? 1 : 0,
+        project_course: projectDutyEnabled.checked ? projectCourse.value : null,
+        project_candidates: projectDutyEnabled.checked ? (parseInt(projectCandidates.value) || 0) : 0,
         practical_squad_enabled: practicalSquadEnabled.checked,
         practical_squad_sessions: practicalSquadEnabled.checked ? parseInt(practicalSquadSessions.value || 0) : 0,
         squad_enabled: squadEnabled.checked,
@@ -494,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('mobileNumber').value.trim()) errors.push('Mobile Number is required');
 
     // Duties Validation
-    if (!qpEnabled.checked && !scrutinyEnabled.checked && !evalEnabled.checked && !practicalSquadEnabled.checked && !squadEnabled.checked) {
+    if (!qpEnabled.checked && !scrutinyEnabled.checked && !evalEnabled.checked && !practicalDutyEnabled.checked && !projectDutyEnabled.checked && !practicalSquadEnabled.checked && !squadEnabled.checked) {
       errors.push('Please select at least one Duty Performed');
     }
 
@@ -537,6 +623,16 @@ document.addEventListener('DOMContentLoaded', () => {
           errors.push('Script Eval Phase 2: Select appointment and enter scripts');
         }
       }
+    }
+
+    if (practicalDutyEnabled.checked) {
+      if (!practicalType.value) errors.push('Practical: Please select a type');
+      if ((parseInt(practicalCandidates.value) || 0) <= 0) errors.push('Practical: Enter number of candidates');
+    }
+
+    if (projectDutyEnabled.checked) {
+      if (!projectCourse.value) errors.push('Project: Please select a course');
+      if ((parseInt(projectCandidates.value) || 0) <= 0) errors.push('Project: Enter number of candidates');
     }
 
     if (practicalSquadEnabled.checked) {
@@ -588,7 +684,14 @@ document.addEventListener('DOMContentLoaded', () => {
         qpEnabled.checked = false;
         scrutinyEnabled.checked = false;
         evalEnabled.checked = false;
+        practicalDutyEnabled.checked = false;
+        projectDutyEnabled.checked = false;
+        practicalSquadEnabled.checked = false;
         squadEnabled.checked = false;
+        
+        practicalDutySection.style.display = 'none';
+        projectDutySection.style.display = 'none';
+        practicalSquadSection.style.display = 'none';
         
         document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
         qpRateDisplay.textContent = '₹0';

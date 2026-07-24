@@ -89,7 +89,26 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
       practicalSquadAmount = practicalSquadSessions * practicalSquadRate;
     }
 
-    const grandTotal = qpAmount + scrutinyAmount + evalAmount + practicalSquadAmount + squadAmount;
+    let practicalAmount = 0, practicalCandidates = 0, practicalRate = 0;
+    if (b.practical_enabled) {
+      practicalCandidates = parseInt(b.practical_candidates) || 0;
+      practicalRate = b.practical_type === 'UG' ? 25 : 30;
+      practicalAmount = practicalCandidates * practicalRate;
+    }
+    let projectAmount = 0, projectCandidates = 0, projectRate = 0;
+    if (b.project_enabled) {
+      projectCandidates = parseInt(b.project_candidates) || 0;
+      if (b.project_course === 'M.E') {
+        projectRate = isExternal ? 250 : 75;
+      } else if (b.project_course === 'MBA') {
+        projectRate = isExternal ? 200 : 50;
+      } else if (b.project_course === 'B.E/B.Tech') {
+        projectRate = 30;
+      }
+      projectAmount = projectCandidates * projectRate;
+    }
+
+    const grandTotal = qpAmount + scrutinyAmount + evalAmount + practicalAmount + projectAmount + practicalSquadAmount + squadAmount;
     const amountInWords = numberToWords(grandTotal);
 
     let passbookUrl = null;
@@ -124,6 +143,16 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
       eval_scripts: evalScripts,
       eval_rate: 30,
       eval_amount: evalAmount,
+      practical_enabled: b.practical_enabled ? 1 : 0,
+      practical_type: b.practical_type || null,
+      practical_candidates: practicalCandidates,
+      practical_rate: practicalRate,
+      practical_amount: practicalAmount,
+      project_enabled: b.project_enabled ? 1 : 0,
+      project_course: b.project_course || null,
+      project_candidates: projectCandidates,
+      project_rate: projectRate,
+      project_amount: projectAmount,
       practical_squad_enabled: b.practical_squad_enabled ? 1 : 0,
       practical_squad_sessions: practicalSquadSessions,
       practical_squad_rate: practicalSquadRate,
@@ -338,7 +367,26 @@ router.put('/:id', requireAdmin, validateClaim, async (req, res) => {
       practicalSquadAmount = practicalSquadSessions * practicalSquadRate;
     }
 
-    const grandTotal = qpAmount + scrutinyAmount + evalAmount + practicalSquadAmount + squadAmount;
+    let practicalAmount = 0, practicalCandidates = 0, practicalRate = 0;
+    if (b.practical_enabled) {
+      practicalCandidates = parseInt(b.practical_candidates) || 0;
+      practicalRate = b.practical_type === 'UG' ? 25 : 30;
+      practicalAmount = practicalCandidates * practicalRate;
+    }
+    let projectAmount = 0, projectCandidates = 0, projectRate = 0;
+    if (b.project_enabled) {
+      projectCandidates = parseInt(b.project_candidates) || 0;
+      if (b.project_course === 'M.E') {
+        projectRate = isExternal ? 250 : 75;
+      } else if (b.project_course === 'MBA') {
+        projectRate = isExternal ? 200 : 50;
+      } else if (b.project_course === 'B.E/B.Tech') {
+        projectRate = 30;
+      }
+      projectAmount = projectCandidates * projectRate;
+    }
+
+    const grandTotal = qpAmount + scrutinyAmount + evalAmount + practicalAmount + projectAmount + practicalSquadAmount + squadAmount;
     
     let passbookUrl = oldClaim.passbook_file;
     if (b.passbook_file) {
@@ -370,6 +418,16 @@ router.put('/:id', requireAdmin, validateClaim, async (req, res) => {
       eval_date: b.eval_date || null,
       eval_scripts: evalScripts,
       eval_amount: evalAmount,
+      practical_enabled: b.practical_enabled ? 1 : 0,
+      practical_type: b.practical_type || null,
+      practical_candidates: practicalCandidates,
+      practical_rate: practicalRate,
+      practical_amount: practicalAmount,
+      project_enabled: b.project_enabled ? 1 : 0,
+      project_course: b.project_course || null,
+      project_candidates: projectCandidates,
+      project_rate: projectRate,
+      project_amount: projectAmount,
       practical_squad_enabled: b.practical_squad_enabled ? 1 : 0,
       practical_squad_sessions: practicalSquadSessions,
       practical_squad_rate: practicalSquadRate,

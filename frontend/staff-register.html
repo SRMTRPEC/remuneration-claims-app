@@ -5,8 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Staff Registration - APRIL MAY Remuneration Claim Management System">
   <title>Staff Registration | Remuneration Claims</title>
-  <link rel="stylesheet" href="/css/styles.css?v=9">
-  <link rel="stylesheet" href="/css/admin.css?v=9">
+  <link rel="stylesheet" href="/css/styles.css?v=20">
+  <link rel="stylesheet" href="/css/admin.css?v=20">
+  <style>
+    .staff-type-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+    .staff-type-card {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-sm);
+      padding: var(--space-lg) var(--space-md);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      background: var(--bg-input);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      text-align: center;
+    }
+    .staff-type-card:hover {
+      border-color: var(--primary-400);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .staff-type-card.selected {
+      border-color: var(--primary-500);
+      background: var(--primary-50);
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
+    [data-theme="dark"] .staff-type-card.selected {
+      background: rgba(99, 102, 241, 0.08);
+    }
+    .staff-type-card input { position: absolute; opacity: 0; }
+    .staff-type-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+    .staff-type-card:nth-child(1) .staff-type-icon {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(99, 102, 241, 0.06));
+    }
+    .staff-type-card:nth-child(2) .staff-type-icon {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(139, 92, 246, 0.06));
+    }
+    .staff-type-name { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
+    .staff-type-desc { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
+
+    .password-strength {
+      height: 4px; border-radius: var(--radius-full);
+      background: var(--border-color);
+      margin-top: 6px; overflow: hidden;
+    }
+    .password-strength-bar {
+      height: 100%; width: 0;
+      border-radius: var(--radius-full);
+      transition: width 0.3s, background 0.3s;
+    }
+
+    @media (max-width: 480px) {
+      .staff-type-cards { grid-template-columns: 1fr; }
+      .form-grid-2 { grid-template-columns: 1fr !important; }
+    }
+  </style>
 </head>
 <body>
   <!-- ── Animated Background ──────────────────────────────────────── -->
@@ -16,7 +77,7 @@
   </div>
 
   <div class="login-page">
-    <div class="login-card animate-fade-in" style="max-width: 500px;">
+    <div class="login-card animate-fade-in" style="max-width: 520px;">
       <div class="login-header">
         <div class="login-icon">📝</div>
         <h2 class="login-title">Staff Registration</h2>
@@ -26,29 +87,49 @@
       <div class="login-error" id="registerError"></div>
 
       <form id="staffRegisterForm">
-        <div style="margin-bottom: 1.5rem; text-align: center;">
-          <label class="form-label" style="display:block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-secondary);">Staff Type *</label>
-          <div style="display: flex; gap: 1.5rem; justify-content: center;">
-            <label style="cursor:pointer; display:flex; align-items:center; gap:0.5rem; color: var(--text-primary); font-weight: 500;">
-              <input type="radio" name="staffType" value="Internal" style="width: 18px; height: 18px;" required> Internal Staff
-            </label>
-            <label style="cursor:pointer; display:flex; align-items:center; gap:0.5rem; color: var(--text-primary); font-weight: 500;">
-              <input type="radio" name="staffType" value="External" style="width: 18px; height: 18px;" required> External Staff
-            </label>
+        <!-- Staff Type Selection -->
+        <label style="display:block; margin-bottom:8px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Staff Type *</label>
+        <div class="staff-type-cards">
+          <label class="staff-type-card" onclick="selectStaffType(this)">
+            <input type="radio" name="staffType" value="Internal" required>
+            <div class="staff-type-icon">🏢</div>
+            <div class="staff-type-name">Internal Staff</div>
+            <div class="staff-type-desc">College faculty & staff</div>
+          </label>
+          <label class="staff-type-card" onclick="selectStaffType(this)">
+            <input type="radio" name="staffType" value="External" required>
+            <div class="staff-type-icon">🌐</div>
+            <div class="staff-type-name">External Staff</div>
+            <div class="staff-type-desc">External examiner</div>
+          </label>
+        </div>
+
+        <!-- ID & Name -->
+        <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-md);">
+          <div>
+            <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Staff ID</label>
+            <input type="text" class="login-input" id="staffId" name="staffId" placeholder="e.g. TRPT..." required autocomplete="off" style="text-align:left;">
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Full Name</label>
+            <div style="display: flex; gap: var(--space-sm);">
+              <select class="login-input" id="staffSalutation" style="width: 100px; text-align: left; appearance: auto;" required>
+                <option value="Dr.">Dr.</option>
+                <option value="Mr.">Mr.</option>
+                <option value="Ms.">Ms.</option>
+                <option value="Mrs.">Mrs.</option>
+                <option value="Prof.">Prof.</option>
+              </select>
+              <input type="text" class="login-input" id="staffName" placeholder="Name" required autocomplete="off" style="flex: 1; text-align:left;">
+              <input type="text" class="login-input" id="staffInitial" placeholder="Initial" autocomplete="off" style="width: 100px; text-align:left; text-transform: uppercase;">
+            </div>
           </div>
         </div>
 
-        <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-          <div>
-            <input type="text" class="login-input" id="staffId" name="staffId" placeholder="Staff ID (e.g. TRPT...)" required autocomplete="off">
-          </div>
-          <div>
-            <input type="text" class="login-input" id="staffName" name="staffName" placeholder="Full Name" required autocomplete="off">
-          </div>
-        </div>
-
-        <div style="margin-bottom: 1rem;">
-          <select class="login-input" id="department" name="department" required style="appearance: auto; background-color: var(--bg-body);">
+        <!-- Department -->
+        <div style="margin-bottom: var(--space-md);">
+          <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Department</label>
+          <select class="login-input" id="department" name="department" required style="text-align:left; appearance: auto;">
             <option value="" disabled selected>Select Department</option>
             <option value="Artificial Intelligence and Data Science (AIDS)">Artificial Intelligence and Data Science (AIDS)</option>
             <option value="Civil Engineering">Civil Engineering</option>
@@ -65,32 +146,61 @@
           </select>
         </div>
 
-
-        <div class="form-row-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+        <!-- Passwords -->
+        <div class="form-grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-xl);">
           <div>
-            <input type="password" class="login-input" id="password" name="password" placeholder="Password" required minlength="6">
+            <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Password</label>
+            <input type="password" class="login-input" id="password" name="password" placeholder="Min 6 characters" required minlength="6" style="text-align:left;" oninput="updateStrength(this.value)">
+            <div class="password-strength">
+              <div class="password-strength-bar" id="strengthBar"></div>
+            </div>
           </div>
           <div>
-            <input type="password" class="login-input" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required minlength="6">
+            <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Confirm Password</label>
+            <input type="password" class="login-input" id="confirmPassword" name="confirmPassword" placeholder="Repeat password" required minlength="6" style="text-align:left;">
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:var(--space-sm);" id="registerBtn">
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;" id="registerBtn">
           <span class="spinner"></span>
           <span class="btn-text">Create Account</span>
         </button>
       </form>
 
-      <p style="text-align:center;margin-top:var(--space-lg);font-size:0.9rem;color:var(--text-muted);">
-        Already have an account? <a href="/login" style="color:var(--primary-400);font-weight:600;">Log In Here</a>
-      </p>
-      <p style="text-align:center;margin-top:var(--space-sm);font-size:0.9rem;color:var(--text-muted);">
-        Are you an administrator? <a href="/admin" style="color:var(--primary-400);font-weight:600;">Admin Login</a>
-      </p>
+      <div style="margin-top:var(--space-xl); text-align:center;">
+        <p style="font-size:0.88rem;color:var(--text-muted); margin-bottom:var(--space-sm);">
+          Already have an account? <a href="/login" style="color:var(--primary-500);font-weight:700;">Log In Here</a>
+        </p>
+        <p style="font-size:0.82rem;color:var(--text-muted);">
+          <a href="/admin" style="color:var(--text-muted);font-weight:600;">Admin Portal →</a>
+        </p>
+      </div>
     </div>
   </div>
 
-  <script src="/js/utils.js?v=9"></script>
-  <script src="/js/staff-auth.js?v=9"></script>
+  <script src="/js/utils.js?v=20"></script>
+  <script src="/js/staff-auth.js?v=20"></script>
+  <script>
+    function selectStaffType(card) {
+      document.querySelectorAll('.staff-type-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    }
+
+    function updateStrength(val) {
+      const bar = document.getElementById('strengthBar');
+      let strength = 0;
+      if (val.length >= 6) strength++;
+      if (val.length >= 8) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+      const pct = Math.min((strength / 5) * 100, 100);
+      bar.style.width = pct + '%';
+      if (pct <= 30) bar.style.background = 'var(--danger-500)';
+      else if (pct <= 60) bar.style.background = 'var(--warning-500)';
+      else bar.style.background = 'var(--success-500)';
+    }
+  </script>
 </body>
 </html>

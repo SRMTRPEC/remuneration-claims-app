@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="APRIL MAY Remuneration Claim Form - Submit your remuneration claims for question paper setting, paper scrutiny, script evaluation, and squad duty.">
   <title>APRIL MAY Remuneration Claim</title>
-  <link rel="stylesheet" href="/css/styles.css?v=16">
-  <link rel="stylesheet" href="/css/form.css?v=16">
-  <link rel="stylesheet" href="/css/print.css?v=16">
+  <link rel="stylesheet" href="/css/styles.css?v=20">
+  <link rel="stylesheet" href="/css/form.css?v=20">
+  <link rel="stylesheet" href="/css/print.css?v=20">
 </head>
 <body>
   <!-- ── Animated Background ──────────────────────────────────────── -->
@@ -43,7 +43,7 @@
       <div class="form-section" id="staffSection">
         <div class="section-header">
           <div class="section-header-left">
-            <div class="section-icon">👤</div>
+            <div class="section-icon">1</div>
             <div>
               <div class="section-title">Staff Details</div>
               <div class="section-subtitle">Enter your personal information</div>
@@ -91,7 +91,7 @@
       <div class="form-section card">
         <div class="section-header" style="cursor:default; opacity:1;">
           <div class="section-header-left">
-            <div class="section-icon">🏦</div>
+            <div class="section-icon">2</div>
             <div>
               <div class="section-title">Bank Details</div>
               <div class="section-subtitle">Information for remuneration transfer</div>
@@ -174,7 +174,7 @@
       <div class="form-section">
         <div class="section-header">
           <div class="section-header-left">
-            <div class="section-icon">📋</div>
+            <div class="section-icon">3</div>
             <div>
               <div class="section-title">Duties Performed</div>
               <div class="section-subtitle">Select the duties you are claiming remuneration for</div>
@@ -183,25 +183,40 @@
         </div>
         <div class="section-body" style="padding-top: 1rem;">
           <div class="checkbox-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
               <input type="checkbox" id="qpEnabled" name="qp_section_enabled" class="custom-checkbox">
-              <span style="font-weight: 500;">Question Paper Setting</span>
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">📝</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Question Paper Setting</span>
             </label>
-            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
               <input type="checkbox" id="scrutinyEnabled" name="scrutiny_section_enabled" class="custom-checkbox">
-              <span style="font-weight: 500;">Paper Scrutiny</span>
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🔍</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Paper Scrutiny</span>
             </label>
-            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
               <input type="checkbox" id="evalEnabled" name="eval_section_enabled" class="custom-checkbox">
-              <span style="font-weight: 500;">Script Evaluation</span>
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">✔️</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Script Evaluation</span>
             </label>
-            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="practicalDutyEnabled" name="practical_enabled" class="custom-checkbox">
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🧪</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Practical</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="projectDutyEnabled" name="project_enabled" class="custom-checkbox">
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🎓</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Project</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
               <input type="checkbox" id="practicalSquadEnabled" name="practical_squad_enabled" class="custom-checkbox">
-              <span style="font-weight: 500;">Practical Squad</span>
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🔬</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Practical Squad</span>
             </label>
-            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
               <input type="checkbox" id="squadEnabled" name="squad_section_enabled" class="custom-checkbox">
-              <span style="font-weight: 500;">Flying Squad / Exam Duty</span>
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🚨</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Flying Squad / Exam Duty</span>
             </label>
           </div>
         </div>
@@ -211,7 +226,7 @@
       <div class="form-section" id="qpSection" style="display: none;">
         <div class="section-header">
           <div class="section-header-left">
-            <div class="section-icon">📝</div>
+            <div class="section-icon">4</div>
             <div>
               <div class="section-title">Question Paper Setting</div>
               <div class="section-subtitle">Select one option for question paper work</div>
@@ -272,7 +287,7 @@
       <div class="form-section" id="scrutinySection" style="display: none;">
         <div class="section-header">
           <div class="section-header-left">
-            <div class="section-icon">🔍</div>
+            <div class="section-icon">5</div>
             <div>
               <div class="section-title">Paper Scrutiny</div>
               <div class="section-subtitle">Rate: ₹300 per paper</div>
@@ -400,11 +415,78 @@
         </div>
       </div>
 
-      <!-- ═══ SECTION 5: Practical Squad ═════════════════════════ -->
+      <!-- ═══ SECTION: Practical ═════════════════════════ -->
+      <div class="form-section" id="practicalDutySection" style="display: none;">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">🧪</div>
+            <div>
+              <div class="section-title">Practical</div>
+              <div class="section-subtitle">Select UG/PG and enter number of candidates</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-row" style="margin-bottom: var(--space-md);">
+            <div class="form-group">
+              <select class="form-select" id="practicalType" name="practical_type">
+                <option value="">Select Level</option>
+                <option value="UG">UG (₹25 per candidate)</option>
+                <option value="PG">PG (₹30 per candidate)</option>
+              </select>
+              <label class="form-label">Type</label>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input" id="practicalCandidates" name="practical_candidates" value="0" min="0" placeholder=" ">
+              <label class="form-label">Candidates</label>
+            </div>
+          </div>
+          <div class="subtotal-row">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-amount" id="practicalDutySubtotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION: Project ═════════════════════════ -->
+      <div class="form-section" id="projectDutySection" style="display: none;">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">🎓</div>
+            <div>
+              <div class="section-title">Project</div>
+              <div class="section-subtitle">Select Course and enter number of candidates</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-row" style="margin-bottom: var(--space-md);">
+            <div class="form-group">
+              <select class="form-select" id="projectCourse" name="project_course">
+                <option value="">Select Course</option>
+                <option value="M.E">M.E</option>
+                <option value="MBA">MBA</option>
+                <option value="B.E/B.Tech">B.E/B.Tech</option>
+              </select>
+              <label class="form-label">Course</label>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input" id="projectCandidates" name="project_candidates" value="0" min="0" placeholder=" ">
+              <label class="form-label">Candidates</label>
+            </div>
+          </div>
+          <div class="subtotal-row">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-amount" id="projectDutySubtotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION: Practical Squad ═════════════════════════ -->
       <div class="form-section" id="practicalSquadSection" style="display: none;">
         <div class="section-header">
           <div class="section-header-left">
-            <div class="section-icon">🔬</div>
+            <div class="section-icon">7</div>
             <div>
               <div class="section-title">Practical Squad</div>
               <div class="section-subtitle">Rate depends on Staff Type</div>
@@ -536,7 +618,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
-  <script src="/js/utils.js?v=15"></script>
-  <script src="/js/app.js?v=16"></script>
+  <script src="/js/utils.js?v=20"></script>
+  <script src="/js/app.js?v=20"></script>
 </body>
 </html>

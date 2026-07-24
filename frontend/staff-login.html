@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Staff Login - APRIL MAY Remuneration Claim Management System">
   <title>Staff Login | Remuneration Claims</title>
-  <link rel="stylesheet" href="/css/styles.css?v=9">
-  <link rel="stylesheet" href="/css/admin.css?v=9">
+  <link rel="stylesheet" href="/css/styles.css?v=20">
+  <link rel="stylesheet" href="/css/admin.css?v=20">
 </head>
 <body>
   <!-- ── Animated Background ──────────────────────────────────────── -->
@@ -17,6 +17,7 @@
 
   <div class="login-page">
     <div class="login-card animate-fade-in">
+      <!-- Gradient Top Bar built into CSS -->
       <div class="login-header">
         <div class="login-icon">👤</div>
         <h2 class="login-title">Staff Login</h2>
@@ -26,13 +27,18 @@
       <div class="login-error" id="loginError"></div>
 
       <form id="staffLoginForm">
-        <div style="margin-bottom: 1.5rem;">
-          <input type="text" class="login-input" id="staffId" name="staffId" placeholder="Staff ID (e.g. TRPT...)" required autocomplete="off">
+        <div style="margin-bottom: var(--space-lg);">
+          <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Staff ID</label>
+          <input type="text" class="login-input" id="staffId" name="staffId" placeholder="e.g. TRPT..." required autocomplete="off" style="text-align:left;">
         </div>
-        <div style="margin-bottom: 2rem; position: relative;">
-          <input type="password" class="login-input" id="password" name="password" placeholder="Password" required autocomplete="off">
+        <div style="margin-bottom: var(--space-lg); position: relative;">
+          <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Password</label>
+          <div style="position:relative;">
+            <input type="password" class="login-input" id="password" name="password" placeholder="Enter your password" required autocomplete="off" style="text-align:left; padding-right: 3rem;">
+            <button type="button" onclick="togglePassword(this)" style="position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--text-muted); padding:4px;">👁️</button>
+          </div>
           <div style="text-align: right; margin-top: 0.5rem;">
-            <a href="#" onclick="showToast('Please contact your administrator to reset your password.', 'info', 'Password Reset'); return false;" style="font-size: 0.85rem; color: var(--primary-400); text-decoration: none;">Forgot Password?</a>
+            <a href="#" onclick="showToast('Please contact your administrator to reset your password.', 'info', 'Password Reset'); return false;" style="font-size: 0.82rem; color: var(--primary-400); text-decoration: none; font-weight:600;">Forgot Password?</a>
           </div>
         </div>
         <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:var(--space-sm);" id="loginBtn">
@@ -41,16 +47,30 @@
         </button>
       </form>
 
-      <p style="text-align:center;margin-top:var(--space-lg);font-size:0.9rem;color:var(--text-muted);">
-        Don't have an account? <a href="/register" style="color:var(--primary-400);font-weight:600;">Register Here</a>
-      </p>
-      <p style="text-align:center;margin-top:var(--space-sm);font-size:0.9rem;color:var(--text-muted);">
-        Are you an administrator? <a href="/admin" style="color:var(--primary-400);font-weight:600;">Admin Login</a>
-      </p>
+      <div style="margin-top:var(--space-xl); text-align:center;">
+        <p style="font-size:0.88rem;color:var(--text-muted); margin-bottom:var(--space-sm);">
+          Don't have an account? <a href="/register" style="color:var(--primary-500);font-weight:700;">Register Here</a>
+        </p>
+        <p style="font-size:0.82rem;color:var(--text-muted);">
+          <a href="/admin" style="color:var(--text-muted);font-weight:600;">Admin Portal →</a>
+        </p>
+      </div>
     </div>
   </div>
 
-  <script src="/js/utils.js?v=9"></script>
-  <script src="/js/staff-auth.js?v=9"></script>
+  <script src="/js/utils.js?v=20"></script>
+  <script src="/js/staff-auth.js?v=20"></script>
+  <script>
+    function togglePassword(btn) {
+      const input = btn.parentElement.querySelector('input');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+  </script>
 </body>
 </html>

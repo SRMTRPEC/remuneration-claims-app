@@ -68,7 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
       registerError.style.display = 'none';
 
       const staff_id = document.getElementById('staffId').value.trim();
-      const staff_name = document.getElementById('staffName').value.trim();
+      const salutation = document.getElementById('staffSalutation').value;
+      const givenName = document.getElementById('staffName').value.trim();
+      const initial = document.getElementById('staffInitial').value.trim().toUpperCase();
+      const staff_name = `${salutation} ${givenName}${initial ? ' ' + initial + '.' : ''}`;
       const department = document.getElementById('department').value.trim();
       const staff_type = document.querySelector('input[name="staffType"]:checked')?.value;
       const password = document.getElementById('password').value;

@@ -226,6 +226,22 @@ function renderViewMode() {
             <td>₹30</td>
             <td style="text-align:right;font-weight:700;color:var(--primary-600);">${formatCurrency(c.eval_amount || 0)}</td>
           </tr>
+          ${c.practical_amount > 0 ? `
+          <tr>
+            <td style="font-weight:600;">Practical</td>
+            <td>${escapeHtml(c.practical_type || '-')}</td>
+            <td>${c.practical_candidates || 0} candidates</td>
+            <td>${formatCurrency(c.practical_rate || 0)}</td>
+            <td style="text-align:right;font-weight:700;color:var(--primary-600);">${formatCurrency(c.practical_amount || 0)}</td>
+          </tr>` : ''}
+          ${c.project_amount > 0 ? `
+          <tr>
+            <td style="font-weight:600;">Project</td>
+            <td>${escapeHtml(c.project_course || '-')}</td>
+            <td>${c.project_candidates || 0} candidates</td>
+            <td>${formatCurrency(c.project_rate || 0)}</td>
+            <td style="text-align:right;font-weight:700;color:var(--primary-600);">${formatCurrency(c.project_amount || 0)}</td>
+          </tr>` : ''}
           ${c.practical_squad_amount > 0 ? `
           <tr>
             <td style="font-weight:600;">Practical Squad</td>
@@ -511,6 +527,61 @@ function renderEditMode() {
         </div>
       </div>
 
+      <!-- Practical Duty -->
+      <div class="card" style="margin-bottom:var(--space-lg);">
+        <h3 style="margin-bottom:var(--space-md);display:flex;align-items:center;justify-content:space-between;">
+          <span>🧪 Practical</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="editPracticalEnabled" ${c.practical_enabled ? 'checked' : ''} onchange="document.getElementById('editPracticalBody').style.display = this.checked ? 'block' : 'none'">
+            <span class="toggle-slider"></span>
+          </label>
+        </h3>
+        <div id="editPracticalBody" style="${c.practical_enabled ? 'display:block;' : 'display:none;'}">
+          <div class="form-row">
+            <div class="form-group">
+              <select class="form-select" id="editPracticalType">
+                <option value="">None</option>
+                <option value="UG" ${c.practical_type === 'UG' ? 'selected' : ''}>UG (₹25)</option>
+                <option value="PG" ${c.practical_type === 'PG' ? 'selected' : ''}>PG (₹30)</option>
+              </select>
+              <label class="form-label">Type</label>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input" id="editPracticalCandidates" value="${c.practical_candidates || 0}" min="0" placeholder=" ">
+              <label class="form-label">Candidates</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Duty -->
+      <div class="card" style="margin-bottom:var(--space-lg);">
+        <h3 style="margin-bottom:var(--space-md);display:flex;align-items:center;justify-content:space-between;">
+          <span>🎓 Project</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="editProjectEnabled" ${c.project_enabled ? 'checked' : ''} onchange="document.getElementById('editProjectBody').style.display = this.checked ? 'block' : 'none'">
+            <span class="toggle-slider"></span>
+          </label>
+        </h3>
+        <div id="editProjectBody" style="${c.project_enabled ? 'display:block;' : 'display:none;'}">
+          <div class="form-row">
+            <div class="form-group">
+              <select class="form-select" id="editProjectCourse">
+                <option value="">None</option>
+                <option value="M.E" ${c.project_course === 'M.E' ? 'selected' : ''}>M.E</option>
+                <option value="MBA" ${c.project_course === 'MBA' ? 'selected' : ''}>MBA</option>
+                <option value="B.E/B.Tech" ${c.project_course === 'B.E/B.Tech' ? 'selected' : ''}>B.E/B.Tech</option>
+              </select>
+              <label class="form-label">Course</label>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input" id="editProjectCandidates" value="${c.project_candidates || 0}" min="0" placeholder=" ">
+              <label class="form-label">Candidates</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Practical Squad -->
       <div class="card" style="margin-bottom:var(--space-lg);">
         <h3 style="margin-bottom:var(--space-md);display:flex;align-items:center;justify-content:space-between;">
@@ -718,6 +789,12 @@ async function saveEdit() {
       }
       return sessions;
     })(),
+    practical_enabled: document.getElementById('editPracticalEnabled')?.checked || false,
+    practical_type: document.getElementById('editPracticalType')?.value || null,
+    practical_candidates: parseInt(document.getElementById('editPracticalCandidates')?.value) || 0,
+    project_enabled: document.getElementById('editProjectEnabled')?.checked || false,
+    project_course: document.getElementById('editProjectCourse')?.value || null,
+    project_candidates: parseInt(document.getElementById('editProjectCandidates')?.value) || 0,
     practical_squad_enabled: document.getElementById('editPracticalSquadEnabled')?.checked || false,
     practical_squad_sessions: parseInt(document.getElementById('editPracticalSquadSessions')?.value) || 0,
     squad_sessions: {

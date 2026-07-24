@@ -43,6 +43,12 @@ function createClaimsWorkbook(claims) {
     { header: 'Eval Date', key: 'eval_date', width: 16 },
     { header: 'Scripts', key: 'eval_scripts', width: 12 },
     { header: 'Eval Amount', key: 'eval_amount', width: 14 },
+    { header: 'Prac Type', key: 'practical_type', width: 12 },
+    { header: 'Prac Cands', key: 'practical_candidates', width: 12 },
+    { header: 'Prac Amount', key: 'practical_amount', width: 14 },
+    { header: 'Proj Course', key: 'project_course', width: 14 },
+    { header: 'Proj Cands', key: 'project_candidates', width: 12 },
+    { header: 'Proj Amount', key: 'project_amount', width: 14 },
     { header: 'Squad Days', key: 'squad_days', width: 12 },
     { header: 'Squad Session', key: 'squad_session', width: 16 },
     { header: 'Squad Amount', key: 'squad_amount', width: 14 },
@@ -118,6 +124,12 @@ function createClaimsWorkbook(claims) {
       eval_date: formattedEvalDate,
       eval_scripts: formattedEvalScripts,
       eval_amount: claim.eval_amount || 0,
+      practical_type: claim.practical_type || '-',
+      practical_candidates: claim.practical_candidates || 0,
+      practical_amount: claim.practical_amount || 0,
+      project_course: claim.project_course || '-',
+      project_candidates: claim.project_candidates || 0,
+      project_amount: claim.project_amount || 0,
       squad_days: claim.squad_days || 0,
       squad_session: formattedSessions,
       squad_amount: claim.squad_amount || 0,
@@ -135,7 +147,7 @@ function createClaimsWorkbook(claims) {
     }
 
     // Currency formatting for amount columns
-    ['qp_amount', 'scrutiny_amount', 'eval_amount', 'squad_amount', 'grand_total'].forEach(key => {
+    ['qp_amount', 'scrutiny_amount', 'eval_amount', 'practical_amount', 'project_amount', 'squad_amount', 'grand_total'].forEach(key => {
       const cell = row.getCell(key);
       cell.numFmt = '₹#,##0.00';
     });
@@ -144,7 +156,7 @@ function createClaimsWorkbook(claims) {
   // ── Auto-filter on all columns ──────────────────────────────────
   sheet.autoFilter = {
     from: { row: 1, column: 1 },
-    to: { row: claims.length + 1, column: 21 }
+    to: { row: claims.length + 1, column: 32 }
   };
 
   // ── Border all cells ────────────────────────────────────────────

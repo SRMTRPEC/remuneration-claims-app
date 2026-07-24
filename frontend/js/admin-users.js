@@ -60,6 +60,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
+    
+    // Combine salutation, name, and initial
+    const salutation = data.staff_salutation || '';
+    const givenName = data.staff_name ? data.staff_name.trim() : '';
+    const initial = data.staff_initial ? data.staff_initial.trim().toUpperCase() : '';
+    data.staff_name = `${salutation} ${givenName}${initial ? ' ' + initial + '.' : ''}`.trim();
+    
+    delete data.staff_salutation;
+    delete data.staff_initial;
 
     try {
       const res = await apiFetch('/api/admin/users/staff', {
