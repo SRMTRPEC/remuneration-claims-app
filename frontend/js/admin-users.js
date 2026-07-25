@@ -49,6 +49,45 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchStaff();
   fetchAdmins();
 
+  // Static Buttons
+  document.getElementById('btnAddStaff')?.addEventListener('click', () => openModal('staffModal'));
+  document.getElementById('btnAddAdmin')?.addEventListener('click', () => openModal('adminModal'));
+  document.getElementById('togglePasswordVisibility')?.addEventListener('change', (e) => {
+    document.getElementById('adminNewPassword').type = e.target.checked ? 'text' : 'password';
+    document.getElementById('adminConfirmPassword').type = e.target.checked ? 'text' : 'password';
+  });
+
+  // Modal close buttons
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      closeModal(btn.getAttribute('data-close'));
+    });
+  });
+
+  // Table Event Delegation (Staff)
+  document.querySelector('#staffTable').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+
+    if (btn.classList.contains('btn-view-staff')) {
+      viewStaff(btn.dataset.id);
+    } else if (btn.classList.contains('btn-edit-staff')) {
+      editStaff(btn.dataset.id);
+    } else if (btn.classList.contains('btn-delete-staff')) {
+      deleteUser(btn.dataset.id, btn.dataset.type, btn.dataset.name);
+    }
+  });
+
+  // Table Event Delegation (Admin)
+  document.querySelector('#adminTable').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+
+    if (btn.classList.contains('btn-delete-admin')) {
+      deleteUser(btn.dataset.id, btn.dataset.type, btn.dataset.name);
+    }
+  });
+
   // Handle Staff Form
   document.getElementById('createStaffForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -64,7 +103,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Combine salutation, name, and initial
     const salutation = data.staff_salutation || '';
     const givenName = data.staff_name ? data.staff_name.trim() : '';
-    const initial = data.staff_initial ? data.staff_initial.trim().toUpperCase() : '';
+    let initial = data.staff_initial ? data.staff_initial.trim().toUpperCase() : '';
+    
+    // Strip any dots or commas the user might have accidentally entered in the initial field
+    initial = initial.replace(/[.,\s]+/g, '');
+    
     data.staff_name = `${salutation} ${givenName}${initial ? ' ' + initial + '.' : ''}`.trim();
     
     delete data.staff_salutation;
@@ -129,7 +172,46 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.disabled = false;
     }
   });
+
+  // Handle Edit Staff Form
+  document.getElementById('editStaffForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    const originalText = btn.textContent;
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+    document.getElementById('editStaffFormError').style.display = 'none';
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    const id = data.id;
+    delete data.id;
+
+    try {
+      const res = await apiFetch(`/api/admin/users/staff/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Failed to update staff account');
+      
+      closeModal('editStaffModal');
+      showToast('Staff account updated successfully', 'success');
+      fetchStaff();
+    } catch (err) {
+      const errorDiv = document.getElementById('editStaffFormError');
+      errorDiv.textContent = err.message || 'Failed to update staff account';
+      errorDiv.style.display = 'block';
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
+  });
 });
+
+let allStaffData = []; // Store fetched staff globally for easy editing
 
 async function fetchStaff() {
   const tbody = document.querySelector('#staffTable tbody');
@@ -138,14 +220,16 @@ async function fetchStaff() {
     if (!res || !res.ok) throw new Error('Failed to fetch staff');
     const data = await res.json();
     
-    if (!data.staff || data.staff.length === 0) {
+    allStaffData = data.staff || [];
+
+    if (allStaffData.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;">No staff accounts found.</td></tr>';
       return;
     }
 
     let userMap = window.userMap || {};
     
-    tbody.innerHTML = data.staff.map(s => {
+    tbody.innerHTML = allStaffData.map(s => {
       const searchKey = `Staff: ${s.staff_id} - ${s.staff_name}`;
       userMap[searchKey] = { id: s.id, type: 'staff' };
       return `
@@ -155,9 +239,15 @@ async function fetchStaff() {
         <td><span class="badge ${s.staff_type === 'External' ? 'badge-warning' : 'badge-primary'}">${escapeHtml(s.staff_type || 'Internal')}</span></td>
         <td><span class="badge badge-outline">${escapeHtml(s.department)}</span></td>
         <td>${new Date(s.created_at).toLocaleDateString()}</td>
-        <td style="text-align: center;">
-          <button class="btn btn-sm" style="color: var(--danger-color); padding: 0.25rem 0.5rem; background: transparent; border: none;" onclick="deleteUser('${s.id}', 'staff', '${escapeHtml(s.staff_name)}')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        <td style="text-align: center; white-space: nowrap;">
+          <button class="btn btn-sm btn-view-staff" data-id="${s.id}" style="color: var(--text-primary); padding: 0.25rem 0.5rem; background: transparent; border: none; margin-right: 0.25rem;" title="View Details">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+          <button class="btn btn-sm btn-edit-staff" data-id="${s.id}" style="color: var(--primary-color); padding: 0.25rem 0.5rem; background: transparent; border: none; margin-right: 0.25rem;" title="Edit Details">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+          </button>
+          <button class="btn btn-sm btn-delete-staff" data-id="${s.id}" data-type="staff" data-name="${escapeHtml(s.staff_name)}" style="color: var(--danger-color); padding: 0.25rem 0.5rem; background: transparent; border: none;" title="Delete Staff">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
           </button>
         </td>
       </tr>
@@ -194,8 +284,8 @@ async function fetchAdmins() {
         <td><strong>${escapeHtml(a.username)}</strong></td>
         <td>${a.created_at ? new Date(a.created_at).toLocaleDateString() : '-'}</td>
         <td style="text-align: center;">
-          <button class="btn btn-sm" style="color: var(--danger-color); padding: 0.25rem 0.5rem; background: transparent; border: none;" onclick="deleteUser('${a.id}', 'admin', '${escapeHtml(a.username)}')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          <button class="btn btn-sm btn-delete-admin" data-id="${a.id}" data-type="admin" data-name="${escapeHtml(a.username)}" style="color: var(--danger-color); padding: 0.25rem 0.5rem; background: transparent; border: none;" title="Delete Admin">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
           </button>
         </td>
       </tr>
@@ -212,6 +302,31 @@ async function fetchAdmins() {
 
 function openModal(id) {
   document.getElementById(id).classList.add('active');
+}
+
+function viewStaff(id) {
+  const staff = allStaffData.find(s => s.id == id);
+  if (!staff) return;
+  
+  document.getElementById('viewStaffId').textContent = staff.staff_id || '-';
+  document.getElementById('viewStaffName').textContent = staff.staff_name || '-';
+  document.getElementById('viewStaffType').textContent = staff.staff_type || 'Internal';
+  document.getElementById('viewDepartment').textContent = staff.department || '-';
+  
+  openModal('viewStaffModal');
+}
+
+function editStaff(id) {
+  const staff = allStaffData.find(s => s.id == id);
+  if (!staff) return;
+  
+  document.getElementById('editStaffDbId').value = staff.id;
+  document.getElementById('editStaffId').value = staff.staff_id;
+  document.getElementById('editStaffName').value = staff.staff_name;
+  document.getElementById('editStaffType').value = staff.staff_type || 'Internal';
+  document.getElementById('editDepartment').value = staff.department || '';
+  
+  openModal('editStaffModal');
 }
 
 function closeModal(id) {

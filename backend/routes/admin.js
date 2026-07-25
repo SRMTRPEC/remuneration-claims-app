@@ -139,6 +139,53 @@ router.post('/users/staff', async (req, res) => {
 });
 
 /**
+ * PUT /api/admin/users/staff/:id
+ * Update an existing staff account
+ */
+router.put('/users/staff/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { staff_id, staff_name, department, staff_type } = req.body;
+
+    if (!staff_id || !staff_name || !department || !staff_type) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const cleanStaffId = 'TRPT' + staff_id.replace(/^TRPT/i, '').trim();
+
+    // Check if new staff_id already exists for a different user
+    const { data: existing, error: checkErr } = await supabase
+      .from('staff')
+      .select('id')
+      .eq('staff_id', cleanStaffId)
+      .neq('id', id)
+      .maybeSingle();
+
+    if (existing) {
+      return res.status(400).json({ error: 'Staff ID is already in use by another account' });
+    }
+
+    const { data: updatedStaff, error } = await supabase
+      .from('staff')
+      .update({
+        staff_id: cleanStaffId,
+        staff_name: staff_name.trim(),
+        department: department.trim(),
+        staff_type: staff_type
+      })
+      .eq('id', id)
+      .select('id, staff_id, staff_name, department, staff_type, created_at')
+      .single();
+
+    if (error) throw error;
+    res.json({ success: true, staff: updatedStaff });
+  } catch (err) {
+    console.error('Update staff error:', err);
+    res.status(500).json({ error: 'Failed to update staff account' });
+  }
+});
+
+/**
  * GET /api/admin/users/admins
  * List all admin profiles
  */
