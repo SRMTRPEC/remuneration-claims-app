@@ -45,14 +45,14 @@ export default function StaffDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-bg">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-brand-accent border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-bg">
+    <div className="min-h-screen">
       {/* Navbar */}
       <nav className="bg-white/70 backdrop-blur-md border-b border-black/5 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">

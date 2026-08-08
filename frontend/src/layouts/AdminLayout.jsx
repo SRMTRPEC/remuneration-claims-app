@@ -31,7 +31,7 @@ export default function AdminLayout() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="font-secondary bg-neutral-background text-text-secondary overflow-x-hidden min-h-screen flex w-full relative">
+    <div className="font-secondary text-text-secondary overflow-x-hidden min-h-screen flex w-full relative">
       {/* Sidebar */}
       <aside className="w-[280px] bg-brand-primary h-screen sticky top-0 flex flex-col p-6 shadow-mega z-40">
         <div className="text-2xl font-bold text-white tracking-tight mb-12">

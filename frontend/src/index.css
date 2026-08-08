@@ -28,6 +28,16 @@
 }
 
 @layer base {
+  body {
+    font-family: var(--font-secondary);
+    color: var(--color-text-secondary);
+    background-color: var(--color-neutral-background);
+    background-image: linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
