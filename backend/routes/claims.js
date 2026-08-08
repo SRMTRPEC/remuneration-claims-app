@@ -66,10 +66,10 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
     if (b.eval_sessions && Array.isArray(b.eval_sessions)) {
       evalSessionsStr = JSON.stringify(b.eval_sessions);
       evalScripts = b.eval_sessions.reduce((sum, s) => sum + (parseInt(s.scripts) || 0), 0);
-      evalAmount = b.eval_sessions.reduce((sum, s) => sum + ((parseInt(s.scripts) || 0) * (s.appointment === 'Chief Examiner/Controller' ? 33 : 30)), 0);
+      evalAmount = b.eval_sessions.reduce((sum, s) => sum + ((parseInt(s.scripts) || 0) * (s.appointment === 'Chief Examiner/Board Chairman' ? 33 : 30)), 0);
     } else {
       evalScripts = parseInt(b.eval_scripts) || 0;
-      evalAmount = evalScripts * (b.eval_appointment === 'Chief Examiner/Controller' ? 33 : 30);
+      evalAmount = evalScripts * (b.eval_appointment === 'Chief Examiner/Board Chairman' ? 33 : 30);
     }
 
     let squadAmount = 0, squadDays = 0, squadSessionsStr = null;
@@ -82,13 +82,7 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
       squadDays = fDays + aDays + bDays;
     }
 
-    let practicalSquadAmount = 0, practicalSquadSessions = 0, practicalSquadRate = 0;
-    if (b.practical_squad_enabled) {
-      practicalSquadRate = isExternal ? 500 : 200;
-      practicalSquadSessions = parseInt(b.practical_squad_sessions) || 0;
-      practicalSquadAmount = practicalSquadSessions * practicalSquadRate;
-    }
-
+    let practicalSquadAmount = 0;
     let practicalAmount = 0, practicalCandidates = 0, practicalRate = 0;
     if (b.practical_enabled) {
       practicalCandidates = parseInt(b.practical_candidates) || 0;
@@ -118,6 +112,7 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
 
     const insertData = {
       claim_number: claimNumber,
+      staff_type: isExternal ? 'External' : 'Internal',
       staff_name: sanitize(b.staff_name?.trim()),
       staff_id: sanitize(b.staff_id?.trim()),
       department: sanitize(b.department?.trim()),
@@ -187,6 +182,31 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
 });
 
 /**
+ * GET /api/claims/my
+ * Get claims submitted by the currently logged-in staff member
+ */
+router.get('/my', requireStaff, async (req, res) => {
+  try {
+    const staffId = req.staff?.staff_id || req.user?.staff_id;
+    if (!staffId) {
+      return res.status(401).json({ error: 'Staff ID not found in token' });
+    }
+
+    const { data, error } = await supabase
+      .from('remuneration_claims')
+      .select('id, claim_number, created_at, updated_at, grand_total, amount_in_words')
+      .eq('staff_id', staffId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json({ claims: data || [] });
+  } catch (err) {
+    console.error('Fetch my claims error:', err);
+    res.status(500).json({ error: 'Failed to fetch your claims' });
+  }
+});
+
+/**
  * GET /api/claims
  * List claims with pagination and filtering
  */
@@ -194,7 +214,7 @@ router.get('/', requireAdmin, async (req, res) => {
   try {
     const { search, department, designation, date_from, date_to, amount_min, amount_max, sort, page, limit } = req.query;
     
-    let query = supabase.from('remuneration_claims').select('id, claim_number, created_at, updated_at, staff_name, staff_id, department, designation, bank_name, bank_branch, account_number, ifsc_code, mobile_number, staff_section_enabled, qp_section_enabled, qp_type, qp_quantity, qp_rate, qp_amount, scrutiny_quantity, scrutiny_rate, scrutiny_amount, eval_appointment, eval_phase, eval_date, eval_scripts, eval_rate, eval_amount, squad_days, squad_session, squad_rate, squad_amount, grand_total, amount_in_words', { count: 'exact' });
+    let query = supabase.from('remuneration_claims').select('id, claim_number, created_at, updated_at, staff_type, staff_name, staff_id, department, designation, bank_name, bank_branch, account_number, ifsc_code, mobile_number, staff_section_enabled, qp_section_enabled, qp_type, qp_quantity, qp_rate, qp_amount, scrutiny_quantity, scrutiny_rate, scrutiny_amount, eval_appointment, eval_phase, eval_date, eval_scripts, eval_rate, eval_amount, squad_days, squad_session, squad_rate, squad_amount, grand_total, amount_in_words', { count: 'exact' });
 
     if (search) query = query.or(`staff_name.ilike.%${search}%,staff_id.ilike.%${search}%,department.ilike.%${search}%,designation.ilike.%${search}%,claim_number.ilike.%${search}%`);
     if (department) query = query.eq('department', department);
@@ -203,6 +223,7 @@ router.get('/', requireAdmin, async (req, res) => {
     if (date_to) query = query.lte('created_at', date_to + ' 23:59:59');
     if (amount_min) query = query.gte('grand_total', parseFloat(amount_min));
     if (amount_max) query = query.lte('grand_total', parseFloat(amount_max));
+    if (req.query.staff_type) query = query.eq('staff_type', req.query.staff_type);
 
     let orderCol = 'created_at', ascending = false;
     if (sort === 'oldest') { ascending = true; }
@@ -344,10 +365,10 @@ router.put('/:id', requireAdmin, validateClaim, async (req, res) => {
     if (b.eval_sessions && Array.isArray(b.eval_sessions)) {
       evalSessionsStr = JSON.stringify(b.eval_sessions);
       evalScripts = b.eval_sessions.reduce((sum, s) => sum + (parseInt(s.scripts) || 0), 0);
-      evalAmount = b.eval_sessions.reduce((sum, s) => sum + ((parseInt(s.scripts) || 0) * (s.appointment === 'Chief Examiner/Controller' ? 33 : 30)), 0);
+      evalAmount = b.eval_sessions.reduce((sum, s) => sum + ((parseInt(s.scripts) || 0) * (s.appointment === 'Chief Examiner/Board Chairman' ? 33 : 30)), 0);
     } else {
       evalScripts = parseInt(b.eval_scripts) || 0;
-      evalAmount = evalScripts * (b.eval_appointment === 'Chief Examiner/Controller' ? 33 : 30);
+      evalAmount = evalScripts * (b.eval_appointment === 'Chief Examiner/Board Chairman' ? 33 : 30);
     }
 
     let squadAmount = 0, squadDays = 0, squadSessionsStr = null;
@@ -360,13 +381,7 @@ router.put('/:id', requireAdmin, validateClaim, async (req, res) => {
       squadDays = fDays + aDays + bDays;
     }
 
-    let practicalSquadAmount = 0, practicalSquadSessions = 0, practicalSquadRate = 0;
-    if (b.practical_squad_enabled) {
-      practicalSquadRate = isExternal ? 500 : 200;
-      practicalSquadSessions = parseInt(b.practical_squad_sessions) || 0;
-      practicalSquadAmount = practicalSquadSessions * practicalSquadRate;
-    }
-
+    let practicalSquadAmount = 0;
     let practicalAmount = 0, practicalCandidates = 0, practicalRate = 0;
     if (b.practical_enabled) {
       practicalCandidates = parseInt(b.practical_candidates) || 0;
@@ -395,6 +410,7 @@ router.put('/:id', requireAdmin, validateClaim, async (req, res) => {
     }
 
     const updateData = {
+      staff_type: isExternal ? 'External' : 'Internal',
       staff_name: sanitize(b.staff_name?.trim()),
       staff_id: sanitize(b.staff_id?.trim()),
       department: sanitize(b.department?.trim()),

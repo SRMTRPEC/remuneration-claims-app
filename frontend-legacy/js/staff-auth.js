@@ -73,6 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const initial = document.getElementById('staffInitial').value.trim().toUpperCase();
       const staff_name = `${salutation} ${givenName}${initial ? ' ' + initial + '.' : ''}`;
       const department = document.getElementById('department').value.trim();
+      let designation = document.getElementById('designation').value.trim();
+      if (designation === 'Others') {
+        designation = document.getElementById('otherDesignation').value.trim();
+      }
       const staff_type = document.querySelector('input[name="staffType"]:checked')?.value;
       const password = document.getElementById('password').value;
       const confirm_password = document.getElementById('confirmPassword').value;
@@ -90,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
-          body: JSON.stringify({ staff_id, staff_name, department, staff_type, password, confirm_password }),
+          body: JSON.stringify({ staff_id, staff_name, department, designation, staff_type, password, confirm_password }),
         });
 
         const data = await res.json();

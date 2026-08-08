@@ -56,7 +56,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // ── Static Files ────────────────────────────────────────────────────
-app.use(express.static(path.join(__dirname, 'frontend')));
+app.use(express.static(path.join(__dirname, 'frontend/dist')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // ── API Routes ──────────────────────────────────────────────────────
@@ -66,34 +66,10 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/export', exportRoutes);
 
 // ── Page Routes ─────────────────────────────────────────────────────
-// Serve the public claim form
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
-});
-
-// Serve staff auth pages
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'staff-login.html'));
-});
-app.get('/register', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'staff-register.html'));
-});
-
-// Serve admin pages
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'admin', 'login.html'));
-});
-app.get('/admin/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'admin', 'dashboard.html'));
-});
-app.get('/admin/claims', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'admin', 'claims.html'));
-});
-app.get('/admin/users', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'admin', 'users.html'));
-});
-app.get('/admin/claim/:id', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'admin', 'claim-detail.html'));
+// In production, the React app handles routing. Serve index.html for all non-API routes.
+app.get('*', (req, res, next) => {
+  if (req.url.startsWith('/api')) return next();
+  res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
 });
 
 // ── 404 Handler ─────────────────────────────────────────────────────

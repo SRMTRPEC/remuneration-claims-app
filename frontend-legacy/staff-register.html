@@ -126,7 +126,6 @@
           </div>
         </div>
 
-        <!-- Department -->
         <div style="margin-bottom: var(--space-md);">
           <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Department</label>
           <select class="login-input" id="department" name="department" required style="text-align:left; appearance: auto;">
@@ -144,6 +143,23 @@
             <option value="Tamil">Tamil</option>
             <option value="Master of Business Administration (MBA)">Master of Business Administration (MBA)</option>
           </select>
+        </div>
+
+        <!-- Designation -->
+        <div style="margin-bottom: var(--space-xl);">
+          <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Designation</label>
+          <select class="login-input" id="designation" name="designation" required style="text-align:left; appearance: auto;" onchange="document.getElementById('otherDesignationDiv').style.display = this.value === 'Others' ? 'block' : 'none';">
+            <option value="" disabled selected>Select Designation</option>
+            <option value="Professor">Professor</option>
+            <option value="Associate Professor">Associate Professor</option>
+            <option value="Assistant Professor">Assistant Professor</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        
+        <div id="otherDesignationDiv" style="margin-bottom: var(--space-xl); display: none;">
+          <label style="display:block; margin-bottom:6px; font-weight:600; font-size:0.82rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">Please Specify Designation</label>
+          <input type="text" class="login-input" id="otherDesignation" name="otherDesignation" placeholder="Enter your designation" autocomplete="off" style="text-align:left;">
         </div>
 
         <!-- Passwords -->

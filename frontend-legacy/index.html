@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="APRIL MAY Remuneration Claim Form - Submit your remuneration claims for question paper setting, paper scrutiny, script evaluation, and squad duty.">
+  <title>APRIL MAY Remuneration Claim</title>
+  <link rel="stylesheet" href="/css/styles.css?v=20">
+  <link rel="stylesheet" href="/css/form.css?v=20">
+  <link rel="stylesheet" href="/css/print.css?v=20">
+</head>
+<body>
+  <!-- ── Animated Background ──────────────────────────────────────── -->
+  <div class="background-mesh">
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+  </div>
+
+  <!-- ── Navbar ─────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <h1>📋 APRIL MAY Remuneration Claim</h1>
+      <span class="badge badge-primary">2026</span>
+    </div>
+    <div class="navbar-actions">
+      <span style="margin-right: 1rem; font-weight: 600;" id="staffWelcomeName"></span>
+      <button type="button" class="btn btn-sm" id="logoutBtn">Logout</button>
+      <a href="/admin" class="btn btn-sm btn-primary">🔒 Admin</a>
+    </div>
+  </nav>
+
+  <!-- ── Page Header ────────────────────────────────────────────── -->
+  <div class="claim-form-page">
+    <div class="page-header">
+      <h1>APRIL MAY Remuneration Claim</h1>
+      <p class="subtitle">Fill in your remuneration claim details below</p>
+    </div>
+
+    <!-- ── Claim Form ───────────────────────────────────────────── -->
+    <form class="claim-form" id="claimForm" novalidate>
+
+      <!-- ═══ SECTION 1: Staff Details ══════════════════════════ -->
+      <div class="form-section" id="staffSection">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">1</div>
+            <div>
+              <div class="section-title">Staff Details</div>
+              <div class="section-subtitle">Enter your personal information</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body" id="staffBody">
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" class="form-input" id="staffName" name="staff_name" placeholder=" " required readonly style="background-color: var(--bg-body); cursor: not-allowed;">
+              <label class="form-label" for="staffName">Staff Name *</label>
+            </div>
+            <div class="form-group input-prefix-group">
+              <span class="input-prefix">TRPT</span>
+              <input type="text" class="form-input" id="staffId" name="staff_id" placeholder=" " required readonly style="background-color: var(--bg-body); cursor: not-allowed;">
+              <label class="form-label" for="staffId">Staff ID *</label>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" class="form-input" id="department" name="department" placeholder=" " required readonly style="background-color: var(--bg-body); cursor: not-allowed;">
+              <label class="form-label" for="department">Department *</label>
+            </div>
+            <div class="form-group">
+              <select class="form-select" id="designation" name="designation" required>
+                <option value="">Select Designation</option>
+                <option value="Assistant Professor">Assistant Professor</option>
+                <option value="Associate Professor">Associate Professor</option>
+                <option value="Professor">Professor</option>
+                <option value="Others">Others</option>
+              </select>
+              <label class="form-label" for="designation">Designation *</label>
+            </div>
+          </div>
+          <div class="form-row" id="otherDesignationRow" style="display: none;">
+            <div class="form-group" style="grid-column: span 2;">
+              <input type="text" class="form-input" id="otherDesignation" name="other_designation" placeholder=" ">
+              <label class="form-label" for="otherDesignation">Please specify your Designation *</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION 1.5: Bank Details ═══════════════════════════ -->
+      <div class="form-section card">
+        <div class="section-header" style="cursor:default; opacity:1;">
+          <div class="section-header-left">
+            <div class="section-icon">2</div>
+            <div>
+              <div class="section-title">Bank Details</div>
+              <div class="section-subtitle">Information for remuneration transfer</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body" style="display:block;">
+          <div class="form-row">
+            <div class="form-group">
+              <select class="form-select" id="bankName" name="bank_name" required>
+                <option value="">Select Bank</option>
+                <option value="State Bank of India">State Bank of India</option>
+                <option value="HDFC Bank">HDFC Bank</option>
+                <option value="ICICI Bank">ICICI Bank</option>
+                <option value="Punjab National Bank">Punjab National Bank</option>
+                <option value="Axis Bank">Axis Bank</option>
+                <option value="Canara Bank">Canara Bank</option>
+                <option value="Bank of Baroda">Bank of Baroda</option>
+                <option value="Union Bank of India">Union Bank of India</option>
+                <option value="Bank of India">Bank of India</option>
+                <option value="Indian Bank">Indian Bank</option>
+                <option value="Central Bank of India">Central Bank of India</option>
+                <option value="Indian Overseas Bank">Indian Overseas Bank</option>
+                <option value="UCO Bank">UCO Bank</option>
+                <option value="Bank of Maharashtra">Bank of Maharashtra</option>
+                <option value="Punjab & Sind Bank">Punjab & Sind Bank</option>
+                <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+                <option value="IndusInd Bank">IndusInd Bank</option>
+                <option value="Yes Bank">Yes Bank</option>
+                <option value="IDBI Bank">IDBI Bank</option>
+                <option value="Federal Bank">Federal Bank</option>
+                <option value="South Indian Bank">South Indian Bank</option>
+                <option value="Karur Vysya Bank">Karur Vysya Bank</option>
+                <option value="City Union Bank">City Union Bank</option>
+                <option value="Tamilnad Mercantile Bank">Tamilnad Mercantile Bank</option>
+                <option value="Equitas Small Finance Bank">Equitas Small Finance Bank</option>
+                <option value="Ujjivan Small Finance Bank">Ujjivan Small Finance Bank</option>
+                <option value="Paytm Payments Bank">Paytm Payments Bank</option>
+                <option value="India Post Payments Bank">India Post Payments Bank</option>
+                <option value="Other">Other / Co-operative Bank</option>
+              </select>
+              <label class="form-label" for="bankName">Bank Name *</label>
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-input" id="bankBranch" name="bank_branch" placeholder=" " required>
+              <label class="form-label" for="bankBranch">Branch Name *</label>
+            </div>
+          </div>
+          <div class="form-row" id="otherBankRow" style="display: none;">
+            <div class="form-group" style="grid-column: span 2;">
+              <input type="text" class="form-input" id="otherBankName" name="other_bank_name" placeholder=" ">
+              <label class="form-label" for="otherBankName">Please specify your Bank Name *</label>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" class="form-input" id="accountNumber" name="account_number" placeholder=" " required>
+              <label class="form-label" for="accountNumber">Account Number *</label>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" class="form-input" id="ifscCode" name="ifsc_code" placeholder=" " required>
+              <label class="form-label" for="ifscCode">IFSC Code *</label>
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-input" id="mobileNumber" name="mobile_number" placeholder=" " required>
+              <label class="form-label" for="mobileNumber">Mobile Number *</label>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+              <input type="file" class="form-input" id="passbookFile" accept="image/*,application/pdf" style="padding-top: 12px; height: 52px;" required>
+              <label class="form-label" for="passbookFile" style="transform: translateY(-26px) scale(0.85); left: var(--space-sm);">Passbook Photo / PDF *</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ═══ SECTION: Duties Performed ═════════════════════════ -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">3</div>
+            <div>
+              <div class="section-title">Duties Performed</div>
+              <div class="section-subtitle">Select the duties you are claiming remuneration for</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body" style="padding-top: 1rem;">
+          <div class="checkbox-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="qpEnabled" name="qp_section_enabled" class="custom-checkbox">
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">📝</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Question Paper Setting</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="scrutinyEnabled" name="scrutiny_section_enabled" class="custom-checkbox">
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🔍</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Paper Scrutiny</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="evalEnabled" name="eval_section_enabled" class="custom-checkbox">
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">✔️</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Script Evaluation</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="practicalDutyEnabled" name="practical_enabled" class="custom-checkbox">
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🧪</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Practical</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="projectDutyEnabled" name="project_enabled" class="custom-checkbox">
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🎓</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Project</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="practicalSquadEnabled" name="practical_squad_enabled" class="custom-checkbox">
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🔬</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Practical Squad</span>
+            </label>
+            <label class="checkbox-card" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-card);">
+              <input type="checkbox" id="squadEnabled" name="squad_section_enabled" class="custom-checkbox">
+              <div style="font-size: 1.5rem; width: 32px; text-align: center;">🚨</div>
+              <span style="font-weight: 600; font-size: 0.95rem;">Flying Squad / Exam Duty</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION 2: Question Paper Setting ═════════════════ -->
+      <div class="form-section" id="qpSection" style="display: none;">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">4</div>
+            <div>
+              <div class="section-title">Question Paper Setting</div>
+              <div class="section-subtitle">Select one option for question paper work</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body" id="qpBody">
+          <!-- Radio Options -->
+          <div class="radio-options" id="qpRadioOptions">
+            <label class="radio-card" data-qp-type="qp_with_answer_key">
+              <input type="radio" name="qp_type" value="qp_with_answer_key" class="custom-radio">
+              <span class="radio-card-label">QP Setting with Answer Key</span>
+              <span class="radio-card-rate">₹1,500</span>
+            </label>
+            <label class="radio-card" data-qp-type="qp_only">
+              <input type="radio" name="qp_type" value="qp_only" class="custom-radio">
+              <span class="radio-card-label">Question Paper Only</span>
+              <span class="radio-card-rate">₹750</span>
+            </label>
+            <label class="radio-card" data-qp-type="answer_key_only">
+              <input type="radio" name="qp_type" value="answer_key_only" class="custom-radio">
+              <span class="radio-card-label">Answer Key Only</span>
+              <span class="radio-card-rate">₹750</span>
+            </label>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <select class="form-select" id="qpQuantity" name="qp_quantity">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+              <label class="form-label" for="qpQuantity">Number of Question Papers</label>
+            </div>
+            <div class="form-group">
+              <div class="form-input" id="qpRateDisplay" style="background:var(--bg-card);font-weight:700;color:var(--primary-600);border-color:transparent;box-shadow:none;">₹0</div>
+              <label class="form-label">Rate</label>
+            </div>
+          </div>
+
+          <div class="subtotal-row">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-amount" id="qpSubtotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION 3: Paper Scrutiny ═════════════════════════ -->
+      <div class="form-section" id="scrutinySection" style="display: none;">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">5</div>
+            <div>
+              <div class="section-title">Paper Scrutiny</div>
+              <div class="section-subtitle">Rate: ₹300 per paper</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body" id="scrutinyBody">
+          <div class="form-row">
+            <div class="form-group">
+              <select class="form-select" id="scrutinyQuantity" name="scrutiny_quantity">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+              <label class="form-label" for="scrutinyQuantity">Number of Papers</label>
+            </div>
+            <div class="form-group">
+              <div class="form-input" style="background:var(--bg-card);font-weight:700;color:var(--primary-600);border-color:transparent;box-shadow:none;">₹300</div>
+              <label class="form-label">Rate</label>
+            </div>
+          </div>
+          <div class="subtotal-row">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-amount" id="scrutinySubtotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION 4: Script Evaluation ══════════════════════ -->
+      <div class="form-section" id="evalSection" style="display: none;">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">📊</div>
+            <div>
+              <div class="section-title">Script Evaluation</div>
+              <div class="section-subtitle">Rate: ₹30 per script</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body" id="evalBody">
+          <!-- Phase Selectors -->
+          <div class="form-row" style="margin-bottom: var(--space-md);">
+            <label style="display:flex; align-items:center; gap:var(--space-sm); font-weight:600; cursor:pointer;">
+              <input type="checkbox" id="evalPhase1Toggle" style="width:18px;height:18px;"> Phase 1
+            </label>
+            <label style="display:flex; align-items:center; gap:var(--space-sm); font-weight:600; cursor:pointer; margin-left: var(--space-lg);">
+              <input type="checkbox" id="evalPhase2Toggle" style="width:18px;height:18px;"> Phase 2
+            </label>
+          </div>
+
+          <!-- Phase 1 Block -->
+          <div id="evalPhase1Block" style="display: none; padding: var(--space-md); background: rgba(0,0,0,0.02); border-radius: var(--radius-md); margin-bottom: var(--space-md); border: 1px solid var(--border-color);">
+            <h4 style="margin-bottom: var(--space-sm); color: var(--text-secondary);">Phase 1 Details</h4>
+            
+            <!-- Date 1: 20-06-2026 -->
+            <div style="margin-bottom: var(--space-sm);"><strong>20-06-2026</strong></div>
+            <div class="form-row" style="margin-bottom: var(--space-md);">
+              <div class="form-group">
+                <select class="form-select" id="evalAppt1_1">
+                  <option value="">Select Appointment</option>
+                  <option value="Chief Examiner/Board Chairman">Chief Examiner/Board Chairman</option>
+                  <option value="Examiner">Examiner</option>
+                  <option value="Assistant Examiner">Assistant Examiner</option>
+                </select>
+                <label class="form-label">Appointment</label>
+              </div>
+              <div class="form-group">
+                <input type="number" class="form-input" id="evalScripts1_1" value="0" min="0" placeholder=" ">
+                <label class="form-label">Scripts (₹30 each)</label>
+              </div>
+            </div>
+
+            <!-- Date 2: 21-06-2026 -->
+            <div style="margin-bottom: var(--space-sm);"><strong>21-06-2026</strong></div>
+            <div class="form-row">
+              <div class="form-group">
+                <select class="form-select" id="evalAppt1_2">
+                  <option value="">Select Appointment</option>
+                  <option value="Chief Examiner/Board Chairman">Chief Examiner/Board Chairman</option>
+                  <option value="Examiner">Examiner</option>
+                  <option value="Assistant Examiner">Assistant Examiner</option>
+                </select>
+                <label class="form-label">Appointment</label>
+              </div>
+              <div class="form-group">
+                <input type="number" class="form-input" id="evalScripts1_2" value="0" min="0" placeholder=" ">
+                <label class="form-label">Scripts (₹30 each)</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phase 2 Block -->
+          <div id="evalPhase2Block" style="display: none; padding: var(--space-md); background: rgba(0,0,0,0.02); border-radius: var(--radius-md); margin-bottom: var(--space-md); border: 1px solid var(--border-color);">
+            <h4 style="margin-bottom: var(--space-sm); color: var(--text-secondary);">Phase 2 Details</h4>
+            
+            <div style="margin-bottom: var(--space-sm);"><strong>01-07-2026</strong></div>
+            <div class="form-row">
+              <div class="form-group">
+                <select class="form-select" id="evalAppt2_1">
+                  <option value="">Select Appointment</option>
+                  <option value="Chief Examiner/Board Chairman">Chief Examiner/Board Chairman</option>
+                  <option value="Examiner">Examiner</option>
+                  <option value="Assistant Examiner">Assistant Examiner</option>
+                </select>
+                <label class="form-label">Appointment</label>
+              </div>
+              <div class="form-group">
+                <input type="number" class="form-input" id="evalScripts2_1" value="0" min="0" placeholder=" ">
+                <label class="form-label">Scripts (₹30 each)</label>
+              </div>
+            </div>
+          </div>
+          <div class="subtotal-row">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-amount" id="evalSubtotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION: Practical ═════════════════════════ -->
+      <div class="form-section" id="practicalDutySection" style="display: none;">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">🧪</div>
+            <div>
+              <div class="section-title">Practical</div>
+              <div class="section-subtitle">Select UG/PG and enter number of candidates</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-row" style="margin-bottom: var(--space-md);">
+            <div class="form-group">
+              <select class="form-select" id="practicalType" name="practical_type">
+                <option value="">Select Level</option>
+                <option value="UG">UG (₹25 per candidate)</option>
+                <option value="PG">PG (₹30 per candidate)</option>
+              </select>
+              <label class="form-label">Type</label>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input" id="practicalCandidates" name="practical_candidates" value="0" min="0" placeholder=" ">
+              <label class="form-label">Candidates</label>
+            </div>
+          </div>
+          <div class="subtotal-row">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-amount" id="practicalDutySubtotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION: Project ═════════════════════════ -->
+      <div class="form-section" id="projectDutySection" style="display: none;">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">🎓</div>
+            <div>
+              <div class="section-title">Project</div>
+              <div class="section-subtitle">Select Course and enter number of candidates</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-row" style="margin-bottom: var(--space-md);">
+            <div class="form-group">
+              <select class="form-select" id="projectCourse" name="project_course">
+                <option value="">Select Course</option>
+                <option value="M.E">M.E</option>
+                <option value="MBA">MBA</option>
+                <option value="B.E/B.Tech">B.E/B.Tech</option>
+              </select>
+              <label class="form-label">Course</label>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input" id="projectCandidates" name="project_candidates" value="0" min="0" placeholder=" ">
+              <label class="form-label">Candidates</label>
+            </div>
+          </div>
+          <div class="subtotal-row">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-amount" id="projectDutySubtotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION: Practical Squad ═════════════════════════ -->
+      <div class="form-section" id="practicalSquadSection" style="display: none;">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">7</div>
+            <div>
+              <div class="section-title">Practical Squad</div>
+              <div class="section-subtitle">Rate depends on Staff Type</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="form-row-3" style="margin-bottom: var(--space-md); align-items: flex-end;">
+            <div class="form-group" style="align-self: center;">
+              <div style="font-weight: 600; color: var(--text-primary);">Number of Sessions</div>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input" id="practicalSquadSessions" name="practical_squad_sessions" value="0" min="0" placeholder=" ">
+              <label class="form-label" for="practicalSquadSessions">Sessions</label>
+            </div>
+            <div class="form-group">
+              <div class="form-input" id="practicalSquadAmount" style="background:var(--bg-card);font-weight:700;color:var(--primary-600);border-color:transparent;box-shadow:none;">₹0</div>
+            </div>
+          </div>
+          <div class="subtotal-row">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-amount" id="practicalSquadSubtotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION 6: Flying Squad ═══════════════════════════ -->
+      <div class="form-section" id="squadSection" style="display: none;">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-icon">🚗</div>
+            <div>
+              <div class="section-title">Flying Squad / Exam Duty</div>
+              <div class="section-subtitle">Rate depends on sessions</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-body" id="squadBody">
+          <div class="form-row-3" style="margin-bottom: var(--space-md);">
+            <div class="form-group" style="align-self: center;">
+              <div style="font-weight: 600; color: var(--text-primary);">Forenoon (₹200)</div>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input squad-session-input" id="squadForenoon" name="squad_forenoon" value="0" min="0" max="10" placeholder=" ">
+              <label class="form-label" for="squadForenoon">Number of Days</label>
+            </div>
+            <div class="form-group">
+              <div class="form-input squad-session-amount" id="squadForenoonAmount" style="background:var(--bg-card);font-weight:700;color:var(--primary-600);border-color:transparent;box-shadow:none;">₹0</div>
+            </div>
+          </div>
+          
+          <div class="form-row-3" style="margin-bottom: var(--space-md);">
+            <div class="form-group" style="align-self: center;">
+              <div style="font-weight: 600; color: var(--text-primary);">Afternoon (₹200)</div>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input squad-session-input" id="squadAfternoon" name="squad_afternoon" value="0" min="0" max="10" placeholder=" ">
+              <label class="form-label" for="squadAfternoon">Number of Days</label>
+            </div>
+            <div class="form-group">
+              <div class="form-input squad-session-amount" id="squadAfternoonAmount" style="background:var(--bg-card);font-weight:700;color:var(--primary-600);border-color:transparent;box-shadow:none;">₹0</div>
+            </div>
+          </div>
+          
+          <div class="form-row-3">
+            <div class="form-group" style="align-self: center;">
+              <div style="font-weight: 600; color: var(--text-primary);">Both Sessions (₹400)</div>
+            </div>
+            <div class="form-group">
+              <input type="number" class="form-input squad-session-input" id="squadBoth" name="squad_both" value="0" min="0" max="10" placeholder=" ">
+              <label class="form-label" for="squadBoth">Number of Days</label>
+            </div>
+            <div class="form-group">
+              <div class="form-input squad-session-amount" id="squadBothAmount" style="background:var(--bg-card);font-weight:700;color:var(--primary-600);border-color:transparent;box-shadow:none;">₹0</div>
+            </div>
+          </div>
+          <div class="subtotal-row">
+            <span class="subtotal-label">Subtotal</span>
+            <span class="subtotal-amount" id="squadSubtotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ GRAND TOTAL ═══════════════════════════════════════ -->
+      <div class="grand-total-section animate-fade-in" id="grandTotalSection">
+        <div class="grand-total-header">
+          <div class="grand-total-label">Grand Total</div>
+          <div class="grand-total-amount" id="grandTotalAmount">₹0</div>
+          <div class="grand-total-words" id="grandTotalWords">Rupees Zero Only</div>
+        </div>
+        <div class="breakdown-list" id="breakdownList"></div>
+      </div>
+
+      <!-- ═══ ACTION BUTTONS ════════════════════════════════════ -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+          <span class="spinner"></span>
+          <span class="btn-text">💾 Save Claim</span>
+        </button>
+        <button type="button" class="btn btn-secondary btn-lg" id="resetBtn">🔄 Reset</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ── Draft Indicator ────────────────────────────────────────── -->
+  <div class="draft-indicator" id="draftIndicator">
+    <span class="draft-dot">●</span>
+    <span class="draft-text">Draft saved</span>
+  </div>
+
+  <!-- ── Print Preview Container ────────────────────────────────── -->
+  <div class="print-preview" id="printPreview"></div>
+
+  <!-- ── Success Modal ──────────────────────────────────────────── -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal" style="text-align:center;">
+      <div style="font-size:3rem;margin-bottom:var(--space-md);">✅</div>
+      <h3 class="modal-title">Claim Submitted Successfully!</h3>
+      <div class="modal-body">
+        <p>Your claim <strong id="successClaimNumber"></strong> has been recorded.</p>
+        <p style="margin-top:var(--space-sm);">Grand Total: <strong id="successGrandTotal"></strong></p>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-top:var(--space-sm);" id="successAmountWords"></p>
+      </div>
+      <div class="modal-actions" style="justify-content:center; gap: var(--space-md);">
+        <button class="btn btn-outline" id="printSuccessBtn">🖨️ Print Receipt</button>
+        <button class="btn btn-primary" id="submitAnotherBtn">Submit Another Claim</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
+  <script src="/js/utils.js?v=20"></script>
+  <script src="/js/app.js?v=20"></script>
+</body>
+</html>

@@ -16,160 +16,169 @@ function createClaimsWorkbook(claims) {
   workbook.creator = 'APRIL MAY Remuneration System';
   workbook.created = new Date();
 
-  const sheet = workbook.addWorksheet('Remuneration Claims', {
-    views: [{ state: 'frozen', ySplit: 1 }] // Freeze first row
-  });
+  const internalClaims = claims.filter(c => c.staff_type !== 'External');
+  const externalClaims = claims.filter(c => c.staff_type === 'External');
 
-  // ── Define columns ──────────────────────────────────────────────
-  sheet.columns = [
-    { header: 'Claim Number', key: 'claim_number', width: 18 },
-    { header: 'Created Date', key: 'created_at', width: 18 },
-    { header: 'Staff Name', key: 'staff_name', width: 22 },
-    { header: 'Staff ID', key: 'staff_id', width: 15 },
-    { header: 'Department', key: 'department', width: 20 },
-    { header: 'Designation', key: 'designation', width: 20 },
-    { header: 'Bank Name', key: 'bank_name', width: 20 },
-    { header: 'Branch Name', key: 'bank_branch', width: 20 },
-    { header: 'Account Number', key: 'account_number', width: 20 },
-    { header: 'IFSC Code', key: 'ifsc_code', width: 15 },
-    { header: 'Mobile Number', key: 'mobile_number', width: 15 },
-    { header: 'QP Type', key: 'qp_type', width: 24 },
-    { header: 'QP Quantity', key: 'qp_quantity', width: 14 },
-    { header: 'QP Amount', key: 'qp_amount', width: 14 },
-    { header: 'Scrutiny Qty', key: 'scrutiny_quantity', width: 14 },
-    { header: 'Scrutiny Amt', key: 'scrutiny_amount', width: 14 },
-    { header: 'Appointment', key: 'eval_appointment', width: 18 },
-    { header: 'Phase', key: 'eval_phase', width: 12 },
-    { header: 'Eval Date', key: 'eval_date', width: 16 },
-    { header: 'Scripts', key: 'eval_scripts', width: 12 },
-    { header: 'Eval Amount', key: 'eval_amount', width: 14 },
-    { header: 'Prac Type', key: 'practical_type', width: 12 },
-    { header: 'Prac Cands', key: 'practical_candidates', width: 12 },
-    { header: 'Prac Amount', key: 'practical_amount', width: 14 },
-    { header: 'Proj Course', key: 'project_course', width: 14 },
-    { header: 'Proj Cands', key: 'project_candidates', width: 12 },
-    { header: 'Proj Amount', key: 'project_amount', width: 14 },
-    { header: 'Squad Days', key: 'squad_days', width: 12 },
-    { header: 'Squad Session', key: 'squad_session', width: 16 },
-    { header: 'Squad Amount', key: 'squad_amount', width: 14 },
-    { header: 'Grand Total', key: 'grand_total', width: 16 },
-    { header: 'Amount in Words', key: 'amount_in_words', width: 40 },
-  ];
-
-  // ── Style header row ────────────────────────────────────────────
-  const headerRow = sheet.getRow(1);
-  headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
-  headerRow.fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: 'FF1A237E' } // Deep indigo
-  };
-  headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-  headerRow.height = 28;
-
-  // ── Add data rows ───────────────────────────────────────────────
-  claims.forEach((claim, index) => {
-    let formattedSessions = claim.squad_session || '-';
-    if (typeof formattedSessions === 'string' && formattedSessions.startsWith('{')) {
-      try {
-        const obj = JSON.parse(formattedSessions);
-        if (typeof obj === 'object') {
-          const parts = [];
-          if (obj.Forenoon) parts.push(`${obj.Forenoon}x Forenoon`);
-          if (obj.Afternoon) parts.push(`${obj.Afternoon}x Afternoon`);
-          if (obj["Both Sessions"]) parts.push(`${obj["Both Sessions"]}x Both Sessions`);
-          if (parts.length > 0) {
-            formattedSessions = parts.join(', ');
-          }
-        }
-      } catch (e) {}
-    }
-
-    let formattedEvalPhase = claim.eval_phase || '-';
-    let formattedEvalAppt = claim.eval_appointment || '-';
-    let formattedEvalDate = claim.eval_date || '-';
-    let formattedEvalScripts = claim.eval_scripts || 0;
+  const createSheet = (sheetName, sheetClaims) => {
+    if (sheetClaims.length === 0 && sheetName === 'External Staff') return;
     
-    if (typeof formattedEvalPhase === 'string' && formattedEvalPhase.startsWith('[')) {
-      try {
-        const arr = JSON.parse(formattedEvalPhase);
-        if (Array.isArray(arr)) {
-          formattedEvalPhase = arr.map(s => s.phase).join(', ');
-          formattedEvalAppt = arr.map(s => `${s.phase}: ${s.appointment || '-'}`).join(' | ');
-          formattedEvalDate = arr.map(s => `${s.phase}: ${s.date || '-'}`).join(' | ');
-          formattedEvalScripts = arr.map(s => `${s.phase}: ${s.scripts || 0}`).join(' | ');
-        }
-      } catch (e) {}
-    }
-
-    const row = sheet.addRow({
-      claim_number: claim.claim_number,
-      created_at: formatExcelDate(claim.created_at),
-      staff_name: claim.staff_name,
-      staff_id: claim.staff_id,
-      department: claim.department,
-      designation: claim.designation,
-      bank_name: claim.bank_name || '-',
-      bank_branch: claim.bank_branch || '-',
-      account_number: claim.account_number ? `'${claim.account_number}` : '-',
-      ifsc_code: claim.ifsc_code || '-',
-      mobile_number: claim.mobile_number || '-',
-      qp_type: formatQpType(claim.qp_type),
-      qp_quantity: claim.qp_quantity || 0,
-      qp_amount: claim.qp_amount || 0,
-      scrutiny_quantity: claim.scrutiny_quantity || 0,
-      scrutiny_amount: claim.scrutiny_amount || 0,
-      eval_appointment: formattedEvalAppt,
-      eval_phase: formattedEvalPhase,
-      eval_date: formattedEvalDate,
-      eval_scripts: formattedEvalScripts,
-      eval_amount: claim.eval_amount || 0,
-      practical_type: claim.practical_type || '-',
-      practical_candidates: claim.practical_candidates || 0,
-      practical_amount: claim.practical_amount || 0,
-      project_course: claim.project_course || '-',
-      project_candidates: claim.project_candidates || 0,
-      project_amount: claim.project_amount || 0,
-      squad_days: claim.squad_days || 0,
-      squad_session: formattedSessions,
-      squad_amount: claim.squad_amount || 0,
-      grand_total: claim.grand_total || 0,
-      amount_in_words: claim.amount_in_words || '',
+    const sheet = workbook.addWorksheet(sheetName, {
+      views: [{ state: 'frozen', ySplit: 1 }]
     });
 
-    // Alternate row colors
-    if (index % 2 === 0) {
-      row.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFF5F5F5' }
-      };
-    }
+    sheet.columns = [
+      { header: 'Claim Number', key: 'claim_number', width: 18 },
+      { header: 'Created Date', key: 'created_at', width: 18 },
+      { header: 'Staff Type', key: 'staff_type', width: 15 },
+      { header: 'Staff Name', key: 'staff_name', width: 22 },
+      { header: 'Staff ID', key: 'staff_id', width: 15 },
+      { header: 'Department', key: 'department', width: 20 },
+      { header: 'Designation', key: 'designation', width: 20 },
+      { header: 'Bank Name', key: 'bank_name', width: 20 },
+      { header: 'Branch Name', key: 'bank_branch', width: 20 },
+      { header: 'Account Number', key: 'account_number', width: 20 },
+      { header: 'IFSC Code', key: 'ifsc_code', width: 15 },
+      { header: 'Mobile Number', key: 'mobile_number', width: 15 },
+      { header: 'QP Type', key: 'qp_type', width: 24 },
+      { header: 'QP Quantity', key: 'qp_quantity', width: 14 },
+      { header: 'QP Amount', key: 'qp_amount', width: 14 },
+      { header: 'Scrutiny Qty', key: 'scrutiny_quantity', width: 14 },
+      { header: 'Scrutiny Amt', key: 'scrutiny_amount', width: 14 },
+      { header: 'Appointment', key: 'eval_appointment', width: 18 },
+      { header: 'Phase', key: 'eval_phase', width: 12 },
+      { header: 'Eval Date', key: 'eval_date', width: 16 },
+      { header: 'Scripts', key: 'eval_scripts', width: 12 },
+      { header: 'Eval Amount', key: 'eval_amount', width: 14 },
+      { header: 'Prac Type', key: 'practical_type', width: 12 },
+      { header: 'Prac Cands', key: 'practical_candidates', width: 12 },
+      { header: 'Prac Amount', key: 'practical_amount', width: 14 },
+      { header: 'Proj Course', key: 'project_course', width: 14 },
+      { header: 'Proj Cands', key: 'project_candidates', width: 12 },
+      { header: 'Proj Amount', key: 'project_amount', width: 14 },
+      { header: 'Squad Days', key: 'squad_days', width: 12 },
+      { header: 'Squad Session', key: 'squad_session', width: 16 },
+      { header: 'Squad Amount', key: 'squad_amount', width: 14 },
+      { header: 'Grand Total', key: 'grand_total', width: 16 },
+      { header: 'Amount in Words', key: 'amount_in_words', width: 40 },
+    ];
 
-    // Currency formatting for amount columns
-    ['qp_amount', 'scrutiny_amount', 'eval_amount', 'practical_amount', 'project_amount', 'squad_amount', 'grand_total'].forEach(key => {
-      const cell = row.getCell(key);
-      cell.numFmt = '₹#,##0.00';
+    const headerRow = sheet.getRow(1);
+    headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+    headerRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF1A237E' }
+    };
+    headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    headerRow.height = 28;
+
+    sheetClaims.forEach((claim, index) => {
+      let formattedSessions = claim.squad_session || '-';
+      if (typeof formattedSessions === 'string' && formattedSessions.startsWith('{')) {
+        try {
+          const obj = JSON.parse(formattedSessions);
+          if (typeof obj === 'object') {
+            const parts = [];
+            if (obj.Forenoon) parts.push(`${obj.Forenoon}x Forenoon`);
+            if (obj.Afternoon) parts.push(`${obj.Afternoon}x Afternoon`);
+            if (obj["Both Sessions"]) parts.push(`${obj["Both Sessions"]}x Both Sessions`);
+            if (parts.length > 0) {
+              formattedSessions = parts.join(', ');
+            }
+          }
+        } catch (e) {}
+      }
+
+      let formattedEvalPhase = claim.eval_phase || '-';
+      let formattedEvalAppt = claim.eval_appointment || '-';
+      let formattedEvalDate = claim.eval_date || '-';
+      let formattedEvalScripts = claim.eval_scripts || 0;
+      
+      if (typeof formattedEvalPhase === 'string' && formattedEvalPhase.startsWith('[')) {
+        try {
+          const arr = JSON.parse(formattedEvalPhase);
+          if (Array.isArray(arr)) {
+            formattedEvalPhase = arr.map(s => s.phase).join(', ');
+            formattedEvalAppt = arr.map(s => `${s.phase}: ${s.appointment || '-'}`).join(' | ');
+            formattedEvalDate = arr.map(s => `${s.phase}: ${s.date || '-'}`).join(' | ');
+            formattedEvalScripts = arr.map(s => `${s.phase}: ${s.scripts || 0}`).join(' | ');
+          }
+        } catch (e) {}
+      }
+
+      const row = sheet.addRow({
+        claim_number: claim.claim_number,
+        created_at: formatExcelDate(claim.created_at),
+        staff_type: claim.staff_type || 'Internal',
+        staff_name: claim.staff_name,
+        staff_id: claim.staff_id,
+        department: claim.department,
+        designation: claim.designation,
+        bank_name: claim.bank_name || '-',
+        bank_branch: claim.bank_branch || '-',
+        account_number: claim.account_number ? `'${claim.account_number}` : '-',
+        ifsc_code: claim.ifsc_code || '-',
+        mobile_number: claim.mobile_number || '-',
+        qp_type: formatQpType(claim.qp_type),
+        qp_quantity: claim.qp_quantity || 0,
+        qp_amount: claim.qp_amount || 0,
+        scrutiny_quantity: claim.scrutiny_quantity || 0,
+        scrutiny_amount: claim.scrutiny_amount || 0,
+        eval_appointment: formattedEvalAppt,
+        eval_phase: formattedEvalPhase,
+        eval_date: formattedEvalDate,
+        eval_scripts: formattedEvalScripts,
+        eval_amount: claim.eval_amount || 0,
+        practical_type: claim.practical_type || '-',
+        practical_candidates: claim.practical_candidates || 0,
+        practical_amount: claim.practical_amount || 0,
+        project_course: claim.project_course || '-',
+        project_candidates: claim.project_candidates || 0,
+        project_amount: claim.project_amount || 0,
+        squad_days: claim.squad_days || 0,
+        squad_session: formattedSessions,
+        squad_amount: claim.squad_amount || 0,
+        grand_total: claim.grand_total || 0,
+        amount_in_words: claim.amount_in_words || '',
+      });
+
+      if (index % 2 === 0) {
+        row.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFF5F5F5' }
+        };
+      }
+
+      ['qp_amount', 'scrutiny_amount', 'eval_amount', 'practical_amount', 'project_amount', 'squad_amount', 'grand_total'].forEach(key => {
+        const cell = row.getCell(key);
+        cell.numFmt = '₹#,##0.00';
+      });
     });
-  });
 
-  // ── Auto-filter on all columns ──────────────────────────────────
-  sheet.autoFilter = {
-    from: { row: 1, column: 1 },
-    to: { row: claims.length + 1, column: 32 }
+    sheet.autoFilter = {
+      from: { row: 1, column: 1 },
+      to: { row: sheetClaims.length + 1, column: 33 }
+    };
+
+    sheet.eachRow((row, rowNumber) => {
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+          left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+          bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+          right: { style: 'thin', color: { argb: 'FFD0D0D0' } }
+        };
+      });
+    });
   };
 
-  // ── Border all cells ────────────────────────────────────────────
-  sheet.eachRow((row, rowNumber) => {
-    row.eachCell((cell) => {
-      cell.border = {
-        top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
-        left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
-        bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
-        right: { style: 'thin', color: { argb: 'FFD0D0D0' } }
-      };
-    });
-  });
+  createSheet('Internal Staff', internalClaims);
+  createSheet('External Staff', externalClaims);
+
+  if (workbook.worksheets.length === 0) {
+    workbook.addWorksheet('No Claims');
+  }
 
   return workbook;
 }

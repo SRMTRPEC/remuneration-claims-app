@@ -67,12 +67,13 @@
                     <th>Name</th>
                     <th>Type</th>
                     <th>Department</th>
+                    <th>Designation</th>
                     <th>Created At</th>
                     <th style="width: 80px; text-align: center;">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td colspan="6" style="text-align:center;padding:2rem;">Loading...</td></tr>
+                  <tr><td colspan="7" style="text-align:center;padding:2rem;">Loading...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -197,6 +198,20 @@
           </select>
         </div>
         <div class="form-group">
+          <label>Designation</label>
+          <select name="designation" id="addDesignation" required onchange="document.getElementById('addOtherDesignationDiv').style.display = this.value === 'Others' ? 'block' : 'none';">
+            <option value="">Select Designation</option>
+            <option value="Professor">Professor</option>
+            <option value="Associate Professor">Associate Professor</option>
+            <option value="Assistant Professor">Assistant Professor</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        <div class="form-group" id="addOtherDesignationDiv" style="display: none;">
+          <label>Please Specify Designation</label>
+          <input type="text" name="otherDesignation" id="addOtherDesignation">
+        </div>
+        <div class="form-group">
           <label>Password (min 6 characters)</label>
           <input type="password" name="password" required minlength="6">
         </div>
@@ -246,6 +261,20 @@
             <option value="Master of Business Administration (MBA)">Master of Business Administration (MBA)</option>
           </select>
         </div>
+        <div class="form-group">
+          <label>Designation</label>
+          <select name="designation" id="editDesignation" required onchange="document.getElementById('editOtherDesignationDiv').style.display = this.value === 'Others' ? 'block' : 'none';">
+            <option value="">Select Designation</option>
+            <option value="Professor">Professor</option>
+            <option value="Associate Professor">Associate Professor</option>
+            <option value="Assistant Professor">Assistant Professor</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        <div class="form-group" id="editOtherDesignationDiv" style="display: none;">
+          <label>Please Specify Designation</label>
+          <input type="text" name="otherDesignation" id="editOtherDesignation">
+        </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Save Changes</button>
       </form>
     </div>
@@ -271,6 +300,10 @@
       <div style="margin-bottom: 1.5rem;">
         <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Department</label>
         <div id="viewDepartment" style="font-size: 1rem; color: var(--text-primary); padding: 0.5rem; background: var(--bg-card); border-radius: 4px; border: 1px solid var(--border-color);"></div>
+      </div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="font-weight: 600; font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Designation</label>
+        <div id="viewDesignation" style="font-size: 1rem; color: var(--text-primary); padding: 0.5rem; background: var(--bg-card); border-radius: 4px; border: 1px solid var(--border-color);"></div>
       </div>
       <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
         <button class="btn btn-outline" style="width: 100%;" data-close="viewStaffModal">Close</button>

@@ -78,7 +78,7 @@ router.get('/users/staff', async (req, res) => {
   try {
     const { data: staff, error } = await supabase
       .from('staff')
-      .select('id, staff_id, staff_name, department, staff_type, created_at')
+      .select('id, staff_id, staff_name, designation, department, staff_type, created_at')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -95,9 +95,9 @@ router.get('/users/staff', async (req, res) => {
  */
 router.post('/users/staff', async (req, res) => {
   try {
-    const { staff_id, staff_name, department, staff_type, password } = req.body;
+    const { staff_id, staff_name, designation, department, staff_type, password } = req.body;
 
-    if (!staff_id || !staff_name || !department || !staff_type || !password) {
+    if (!staff_id || !staff_name || !designation || !department || !staff_type || !password) {
       return res.status(400).json({ error: 'All fields are required' });
     }
     if (password.length < 6) {
@@ -123,11 +123,12 @@ router.post('/users/staff', async (req, res) => {
       .insert([{
         staff_id: cleanStaffId,
         staff_name: staff_name.trim(),
+        designation: designation.trim(),
         department: department.trim(),
         staff_type: staff_type,
         password_hash
       }])
-      .select('id, staff_id, staff_name, department, staff_type, created_at')
+      .select('id, staff_id, staff_name, designation, department, staff_type, created_at')
       .single();
 
     if (error) throw error;
@@ -145,9 +146,9 @@ router.post('/users/staff', async (req, res) => {
 router.put('/users/staff/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { staff_id, staff_name, department, staff_type } = req.body;
+    const { staff_id, staff_name, designation, department, staff_type } = req.body;
 
-    if (!staff_id || !staff_name || !department || !staff_type) {
+    if (!staff_id || !staff_name || !designation || !department || !staff_type) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
@@ -170,11 +171,12 @@ router.put('/users/staff/:id', async (req, res) => {
       .update({
         staff_id: cleanStaffId,
         staff_name: staff_name.trim(),
+        designation: designation.trim(),
         department: department.trim(),
         staff_type: staff_type
       })
       .eq('id', id)
-      .select('id, staff_id, staff_name, department, staff_type, created_at')
+      .select('id, staff_id, staff_name, designation, department, staff_type, created_at')
       .single();
 
     if (error) throw error;

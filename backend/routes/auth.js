@@ -100,11 +100,11 @@ router.get('/me', verifyToken, (req, res) => {
  */
 router.post('/staff/register', async (req, res) => {
   try {
-    const { staff_id, staff_name, department, staff_type } = req.body;
+    const { staff_id, staff_name, department, designation, staff_type } = req.body;
     const password = (req.body.password || '').trim();
     const confirm_password = (req.body.confirm_password || '').trim();
 
-    if (!staff_id || !staff_name || !department || !staff_type || !password) {
+    if (!staff_id || !staff_name || !department || !designation || !staff_type || !password) {
       return res.status(400).json({ error: 'All fields are required' });
     }
     if (password !== confirm_password) {
@@ -114,8 +114,10 @@ router.post('/staff/register', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
 
-    // Format staff ID safely
-    const cleanStaffId = 'TRPT' + staff_id.replace(/^TRPT/i, '').trim();
+    // Format staff ID based on staff_type
+    const cleanStaffId = staff_type === 'External' 
+      ? staff_id.trim() 
+      : 'TRPT' + staff_id.replace(/^TRPT/i, '').trim();
 
     // Check if exists
     const { data: existing, error: checkErr } = await supabase
@@ -136,6 +138,7 @@ router.post('/staff/register', async (req, res) => {
         staff_id: cleanStaffId,
         staff_name: staff_name.trim(),
         department: department.trim(),
+        designation: designation.trim(),
         staff_type: staff_type,
         password_hash
       }])
@@ -164,14 +167,16 @@ router.post('/staff/register', async (req, res) => {
  */
 router.post('/staff/login', async (req, res) => {
   try {
-    const { staff_id } = req.body;
+    const { staff_id, staff_type } = req.body;
     const password = (req.body.password || '').trim();
 
-    if (!staff_id || !password) {
-      return res.status(400).json({ error: 'Staff ID and password required' });
+    if (!staff_id || !password || !staff_type) {
+      return res.status(400).json({ error: 'Staff Type, ID, and Password required' });
     }
 
-    const cleanStaffId = 'TRPT' + staff_id.replace(/^TRPT/i, '').trim();
+    const cleanStaffId = staff_type === 'External'
+      ? staff_id.trim()
+      : 'TRPT' + staff_id.replace(/^TRPT/i, '').trim();
 
     const { data: staff, error } = await supabase
       .from('staff')

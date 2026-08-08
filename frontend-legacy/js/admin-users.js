@@ -113,6 +113,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     delete data.staff_salutation;
     delete data.staff_initial;
 
+    if (data.designation === 'Others') {
+      data.designation = data.otherDesignation || '';
+    }
+    delete data.otherDesignation;
+
     try {
       const res = await apiFetch('/api/admin/users/staff', {
         method: 'POST',
@@ -187,6 +192,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const id = data.id;
     delete data.id;
 
+    if (data.designation === 'Others') {
+      data.designation = data.otherDesignation || '';
+    }
+    delete data.otherDesignation;
+
     try {
       const res = await apiFetch(`/api/admin/users/staff/${id}`, {
         method: 'PUT',
@@ -238,6 +248,7 @@ async function fetchStaff() {
         <td>${escapeHtml(s.staff_name)}</td>
         <td><span class="badge ${s.staff_type === 'External' ? 'badge-warning' : 'badge-primary'}">${escapeHtml(s.staff_type || 'Internal')}</span></td>
         <td><span class="badge badge-outline">${escapeHtml(s.department)}</span></td>
+        <td>${escapeHtml(s.designation || '')}</td>
         <td>${new Date(s.created_at).toLocaleDateString()}</td>
         <td style="text-align: center; white-space: nowrap;">
           <button class="btn btn-sm btn-view-staff" data-id="${s.id}" style="color: var(--text-primary); padding: 0.25rem 0.5rem; background: transparent; border: none; margin-right: 0.25rem;" title="View Details">
@@ -312,6 +323,7 @@ function viewStaff(id) {
   document.getElementById('viewStaffName').textContent = staff.staff_name || '-';
   document.getElementById('viewStaffType').textContent = staff.staff_type || 'Internal';
   document.getElementById('viewDepartment').textContent = staff.department || '-';
+  document.getElementById('viewDesignation').textContent = staff.designation || '-';
   
   openModal('viewStaffModal');
 }
@@ -325,6 +337,17 @@ function editStaff(id) {
   document.getElementById('editStaffName').value = staff.staff_name;
   document.getElementById('editStaffType').value = staff.staff_type || 'Internal';
   document.getElementById('editDepartment').value = staff.department || '';
+  
+  const standardDesignations = ['Professor', 'Associate Professor', 'Assistant Professor'];
+  if (staff.designation && !standardDesignations.includes(staff.designation)) {
+    document.getElementById('editDesignation').value = 'Others';
+    document.getElementById('editOtherDesignation').value = staff.designation;
+    document.getElementById('editOtherDesignationDiv').style.display = 'block';
+  } else {
+    document.getElementById('editDesignation').value = staff.designation || '';
+    document.getElementById('editOtherDesignation').value = '';
+    document.getElementById('editOtherDesignationDiv').style.display = 'none';
+  }
   
   openModal('editStaffModal');
 }
