@@ -8,6 +8,7 @@ export default function StaffRegister() {
     confirm_password: '',
     staff_name: '',
     staff_initial: '',
+    email: '',
     department: '',
     designation: '',
     other_department: '',
@@ -34,7 +35,7 @@ export default function StaffRegister() {
       return;
     }
 
-    if (!formData.username || !formData.password || !formData.staff_name || !formData.department) {
+    if (!formData.username || !formData.password || !formData.staff_name || !formData.department || !formData.email) {
       setError('Please fill in all required fields');
       return;
     }
@@ -50,6 +51,7 @@ export default function StaffRegister() {
           confirm_password: formData.confirm_password,
           staff_name: formData.staff_name,
           staff_initial: formData.staff_initial,
+          email: formData.email,
           department: formData.department === 'Others' ? formData.other_department : formData.department,
           designation: formData.designation === 'Others' ? formData.other_designation : formData.designation,
           staff_id: formData.username,
@@ -142,6 +144,18 @@ export default function StaffRegister() {
               required
             />
           </div>
+        </div>
+        
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Email Address *</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+            required
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4">

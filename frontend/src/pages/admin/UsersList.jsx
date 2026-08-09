@@ -149,7 +149,7 @@ export default function UsersList() {
   };
 
   const openAddModal = () => {
-    setAddForm({ staff_id: '', staff_name: '', department: '', designation: '', other_designation: '', staff_type: 'Internal', password: '' });
+    setAddForm({ staff_id: '', staff_name: '', email: '', department: '', designation: '', other_designation: '', staff_type: 'Internal', password: '' });
     setShowAddStaff(true);
   };
 
@@ -458,6 +458,10 @@ export default function UsersList() {
                 <p className="text-brand-primary">{viewStaff.staff_type || 'Internal'}</p>
               </div>
               <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-text-secondary block mb-1">Email</span>
+                <p className="text-brand-primary">{viewStaff.email || 'N/A'}</p>
+              </div>
+              <div>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-text-secondary block mb-1">Department</span>
                 <p className="text-brand-primary">{viewStaff.department}</p>
               </div>
@@ -494,6 +498,10 @@ export default function UsersList() {
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Full Name</label>
                   <input type="text" name="staff_name" value={editForm.staff_name} onChange={handleEditChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Email Address</label>
+                  <input type="email" name="email" value={editForm.email || ''} onChange={handleEditChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Staff ID / Univ No</label>
@@ -568,6 +576,10 @@ export default function UsersList() {
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Full Name</label>
                   <input type="text" name="staff_name" value={addForm.staff_name} onChange={handleAddChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Email Address</label>
+                  <input type="email" name="email" value={addForm.email} onChange={handleAddChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Staff ID / Univ No</label>

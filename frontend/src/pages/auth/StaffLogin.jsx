@@ -118,7 +118,12 @@ export default function StaffLogin() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Password</label>
+          <div className="flex justify-between items-center">
+            <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Password</label>
+            <Link to="/forgot-password" className="text-[10px] font-mono uppercase tracking-widest text-brand-accent hover:underline">
+              Forgot Password?
+            </Link>
+          </div>
           <input
             type="password"
             value={password}

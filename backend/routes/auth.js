@@ -7,8 +7,21 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const supabase = require('../supabase');
 const { generateToken, generateStaffToken, requireAdmin, requireStaff, verifyToken } = require('../middleware/auth');
+
+// Configure Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: process.env.SMTP_PORT || 587,
+  secure: process.env.SMTP_SECURE === 'true',
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
+});
 
 /**
  * POST /api/auth/login
@@ -100,11 +113,11 @@ router.get('/me', verifyToken, (req, res) => {
  */
 router.post('/staff/register', async (req, res) => {
   try {
-    const { staff_id, staff_name, department, designation, staff_type } = req.body;
+    const { staff_id, staff_name, department, designation, staff_type, email } = req.body;
     const password = (req.body.password || '').trim();
     const confirm_password = (req.body.confirm_password || '').trim();
 
-    if (!staff_id || !staff_name || !department || !designation || !staff_type || !password) {
+    if (!staff_id || !staff_name || !department || !designation || !staff_type || !password || !email) {
       return res.status(400).json({ error: 'All fields are required' });
     }
     if (password !== confirm_password) {
@@ -130,6 +143,17 @@ router.post('/staff/register', async (req, res) => {
       return res.status(400).json({ error: 'Staff ID is already registered' });
     }
 
+    // Check if email exists
+    const { data: existingEmail } = await supabase
+      .from('staff')
+      .select('id')
+      .eq('email', email.trim())
+      .maybeSingle();
+
+    if (existingEmail) {
+      return res.status(400).json({ error: 'Email is already registered' });
+    }
+
     // Create staff
     const password_hash = bcrypt.hashSync(password, 10);
     const { data: newStaff, error } = await supabase
@@ -140,6 +164,7 @@ router.post('/staff/register', async (req, res) => {
         department: department.trim(),
         designation: designation.trim(),
         staff_type: staff_type,
+        email: email.trim(),
         password_hash
       }])
       .select()
@@ -205,6 +230,104 @@ router.post('/staff/login', async (req, res) => {
   } catch (err) {
     console.error('Staff login error:', err);
     res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+/**
+ * POST /api/auth/forgot-password
+ */
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    // Check if user exists
+    const { data: staff, error } = await supabase
+      .from('staff')
+      .select('id, staff_name')
+      .eq('email', email.trim())
+      .single();
+
+    if (error || !staff) {
+      // Return success anyway to prevent email enumeration
+      return res.json({ success: true, message: 'If this email is registered, a reset link will be sent.' });
+    }
+
+    // Generate token
+    const token = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    // Save token
+    const { error: updateError } = await supabase
+      .from('staff')
+      .update({ reset_token: hashedToken, reset_token_expires: expiresAt.toISOString() })
+      .eq('id', staff.id);
+
+    if (updateError) throw updateError;
+
+    // Send email
+    const resetUrl = `${req.protocol}://${req.get('host')}/reset-password?token=${token}`;
+    
+    await transporter.sendMail({
+      from: `"Remuneration Portal" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: 'Password Reset Request',
+      html: `
+        <h3>Hello ${staff.staff_name},</h3>
+        <p>You requested a password reset for the Remuneration Portal.</p>
+        <p>Please click the link below to reset your password. This link is valid for 1 hour.</p>
+        <a href="${resetUrl}">${resetUrl}</a>
+        <p>If you did not request this, please ignore this email.</p>
+      `
+    });
+
+    res.json({ success: true, message: 'Reset link sent to your email.' });
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    res.status(500).json({ error: 'Failed to process request' });
+  }
+});
+
+/**
+ * POST /api/auth/reset-password
+ */
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'Token and new password are required' });
+    if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Find valid token
+    const { data: staff, error } = await supabase
+      .from('staff')
+      .select('id, reset_token_expires')
+      .eq('reset_token', hashedToken)
+      .single();
+
+    if (error || !staff) {
+      return res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+
+    if (new Date(staff.reset_token_expires) < new Date()) {
+      return res.status(400).json({ error: 'Reset token has expired' });
+    }
+
+    // Update password and clear token
+    const password_hash = bcrypt.hashSync(password, 10);
+    const { error: updateError } = await supabase
+      .from('staff')
+      .update({ password_hash, reset_token: null, reset_token_expires: null })
+      .eq('id', staff.id);
+
+    if (updateError) throw updateError;
+
+    res.json({ success: true, message: 'Password reset successfully' });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ error: 'Failed to reset password' });
   }
 });
 

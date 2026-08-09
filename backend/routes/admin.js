@@ -95,10 +95,11 @@ router.get('/users/staff', async (req, res) => {
  */
 router.post('/users/staff', async (req, res) => {
   try {
-    const { staff_id, staff_name, designation, department, staff_type, password } = req.body;
+    const { staff_id, staff_name, designation, department, staff_type, email } = req.body;
+    const password = (req.body.password || '').trim();
 
     if (!staff_id || !staff_name || !designation || !department || !staff_type || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
+      return res.status(400).json({ error: 'All fields except email are required' });
     }
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
@@ -126,9 +127,10 @@ router.post('/users/staff', async (req, res) => {
         designation: designation.trim(),
         department: department.trim(),
         staff_type: staff_type,
+        email: email ? email.trim() : null,
         password_hash
       }])
-      .select('id, staff_id, staff_name, designation, department, staff_type, created_at')
+      .select('id, staff_id, staff_name, designation, department, staff_type, email, created_at')
       .single();
 
     if (error) throw error;
@@ -146,10 +148,10 @@ router.post('/users/staff', async (req, res) => {
 router.put('/users/staff/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { staff_id, staff_name, designation, department, staff_type } = req.body;
+    const { staff_id, staff_name, designation, department, staff_type, email } = req.body;
 
     if (!staff_id || !staff_name || !designation || !department || !staff_type) {
-      return res.status(400).json({ error: 'All fields are required' });
+      return res.status(400).json({ error: 'All fields except email are required' });
     }
 
     const cleanStaffId = 'TRPT' + staff_id.replace(/^TRPT/i, '').trim();
@@ -173,10 +175,11 @@ router.put('/users/staff/:id', async (req, res) => {
         staff_name: staff_name.trim(),
         designation: designation.trim(),
         department: department.trim(),
-        staff_type: staff_type
+        staff_type: staff_type,
+        email: email ? email.trim() : null
       })
       .eq('id', id)
-      .select('id, staff_id, staff_name, designation, department, staff_type, created_at')
+      .select('id, staff_id, staff_name, designation, department, staff_type, email, created_at')
       .single();
 
     if (error) throw error;

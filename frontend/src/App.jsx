@@ -14,6 +14,8 @@ import StaffDashboard from './pages/StaffDashboard';
 import AdminLogin from './pages/auth/AdminLogin';
 import StaffLogin from './pages/auth/StaffLogin';
 import StaffRegister from './pages/auth/StaffRegister';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 
 // Admin Pages
 import Dashboard from './pages/admin/Dashboard';
@@ -37,6 +39,8 @@ export default function App() {
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/login" element={<StaffLogin />} />
           <Route path="/register" element={<StaffRegister />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
 
         {/* Admin Routes */}
