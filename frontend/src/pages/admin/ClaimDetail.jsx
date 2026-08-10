@@ -139,7 +139,7 @@ export default function ClaimDetail() {
       </tr>
       ${claim.practical_enabled ? `
       <tr>
-        <td>Practical / Viva Voce</td>
+        <td>Practical</td>
         <td>${claim.practical_type || '-'}</td>
         <td>${claim.practical_candidates || 0} candidates</td>
         <td>${claim.practical_rate || 0}</td>
@@ -290,7 +290,7 @@ export default function ClaimDetail() {
                   </tr>
                   {claim.practical_enabled && (
                     <tr className="border-b border-black/5 hover:bg-neutral-surface/50 transition-colors">
-                      <td className="p-4 text-sm font-semibold text-brand-primary">Practical / Viva Voce</td>
+                      <td className="p-4 text-sm font-semibold text-brand-primary">Practical</td>
                       <td className="p-4 text-sm text-text-secondary">{claim.practical_type}</td>
                       <td className="p-4 text-sm text-text-secondary">{claim.practical_candidates} candidates</td>
                       <td className="p-4 text-sm text-text-secondary">{formatCurrency(claim.practical_rate)}</td>

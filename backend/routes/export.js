@@ -8,7 +8,7 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../supabase');
 const { requireAdmin } = require('../middleware/auth');
-const { createClaimsWorkbook } = require('../utils/excel');
+const { createClaimsWorkbook, createUsersWorkbook } = require('../utils/excel');
 
 // All export routes require admin auth
 router.use(requireAdmin);
@@ -92,6 +92,30 @@ router.post('/selected', async (req, res) => {
   } catch (err) {
     console.error('Export selected error:', err);
     res.status(500).json({ error: 'Failed to export' });
+  }
+});
+
+/**
+ * GET /api/export/users
+ * Exports all users
+ */
+router.get('/users', async (req, res) => {
+  try {
+    const { data: users, error } = await supabase
+      .from('staff')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const workbook = createUsersWorkbook(users);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=Users_${new Date().toISOString().split('T')[0]}.xlsx`);
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error('Export users error:', err);
+    res.status(500).json({ error: 'Failed to export users' });
   }
 });
 

@@ -101,7 +101,7 @@ export default function StaffLogin() {
 
         <div className="flex flex-col gap-1.5">
           <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">
-            {staffType === 'Internal' ? 'Staff ID' : 'Anna University Number'}
+            {staffType === 'Internal' ? 'Staff ID' : 'Anna University Code'}
           </label>
           <div className="relative">
             {staffType === 'Internal' && (

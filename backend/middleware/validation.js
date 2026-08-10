@@ -28,8 +28,8 @@ function validateClaim(req, res, next) {
   if (!body.department || body.department.trim().length === 0) {
     errors.push('Department is required');
   }
-  if (!body.designation || !VALID_DESIGNATIONS.includes(body.designation)) {
-    errors.push('Valid designation is required');
+  if (!body.designation || body.designation.trim().length === 0) {
+    errors.push('Designation is required');
   }
 
   // Bank Details (always required)

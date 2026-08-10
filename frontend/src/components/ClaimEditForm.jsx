@@ -104,11 +104,11 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
     if (formData.eval_enabled) {
       let eTotal = 0;
       if (formData.eval_phase1) {
-        if (formData.eval1_1_appt) eTotal += (parseInt(formData.eval1_1_scripts) || 0) * (formData.eval1_1_appt === 'Chief Examiner/Board Chairman' ? 33 : 30);
-        if (formData.eval1_2_appt) eTotal += (parseInt(formData.eval1_2_scripts) || 0) * (formData.eval1_2_appt === 'Chief Examiner/Board Chairman' ? 33 : 30);
+        if (formData.eval1_1_appt) eTotal += (parseInt(formData.eval1_1_scripts) || 0) * (formData.eval1_1_appt === 'Board Chairman/Chief Examiner' ? 33 : 30);
+        if (formData.eval1_2_appt) eTotal += (parseInt(formData.eval1_2_scripts) || 0) * (formData.eval1_2_appt === 'Board Chairman/Chief Examiner' ? 33 : 30);
       }
       if (formData.eval_phase2) {
-        if (formData.eval2_1_appt) eTotal += (parseInt(formData.eval2_1_scripts) || 0) * (formData.eval2_1_appt === 'Chief Examiner/Board Chairman' ? 33 : 30);
+        if (formData.eval2_1_appt) eTotal += (parseInt(formData.eval2_1_scripts) || 0) * (formData.eval2_1_appt === 'Board Chairman/Chief Examiner' ? 33 : 30);
       }
       newAmounts.eval = eTotal;
       total += eTotal;
@@ -388,7 +388,7 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
                       <div className="grid grid-cols-2 gap-4">
                         <select name="eval1_1_appt" value={formData.eval1_1_appt} onChange={handleChange} className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm">
                           <option value="">Select Appointment</option>
-                          <option value="Chief Examiner/Board Chairman">Chief Examiner/Board Chairman</option>
+                          <option value="Board Chairman/Chief Examiner">Board Chairman/Chief Examiner</option>
                           <option value="Examiner">Examiner</option>
                           <option value="Assistant Examiner">Assistant Examiner</option>
                         </select>
@@ -401,7 +401,7 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
                       <div className="grid grid-cols-2 gap-4">
                         <select name="eval1_2_appt" value={formData.eval1_2_appt} onChange={handleChange} className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm">
                           <option value="">Select Appointment</option>
-                          <option value="Chief Examiner/Board Chairman">Chief Examiner/Board Chairman</option>
+                          <option value="Board Chairman/Chief Examiner">Board Chairman/Chief Examiner</option>
                           <option value="Examiner">Examiner</option>
                           <option value="Assistant Examiner">Assistant Examiner</option>
                         </select>
@@ -420,7 +420,7 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
                       <div className="grid grid-cols-2 gap-4">
                         <select name="eval2_1_appt" value={formData.eval2_1_appt} onChange={handleChange} className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm">
                           <option value="">Select Appointment</option>
-                          <option value="Chief Examiner/Board Chairman">Chief Examiner/Board Chairman</option>
+                          <option value="Board Chairman/Chief Examiner">Board Chairman/Chief Examiner</option>
                           <option value="Examiner">Examiner</option>
                           <option value="Assistant Examiner">Assistant Examiner</option>
                         </select>
@@ -438,7 +438,7 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <input type="checkbox" name="practical_enabled" checked={formData.practical_enabled} onChange={handleChange} className="w-4 h-4 accent-green-500 border border-black/20 rounded-sm cursor-pointer" />
-                <span className="font-semibold text-brand-primary">Practical / Viva Voce</span>
+                <span className="font-semibold text-brand-primary">Practical</span>
               </div>
               {formData.practical_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.practical)}</span>}
             </div>

@@ -66,10 +66,10 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
     if (b.eval_sessions && Array.isArray(b.eval_sessions)) {
       evalSessionsStr = JSON.stringify(b.eval_sessions);
       evalScripts = b.eval_sessions.reduce((sum, s) => sum + (parseInt(s.scripts) || 0), 0);
-      evalAmount = b.eval_sessions.reduce((sum, s) => sum + ((parseInt(s.scripts) || 0) * (s.appointment === 'Chief Examiner/Board Chairman' ? 33 : 30)), 0);
+      evalAmount = b.eval_sessions.reduce((sum, s) => sum + ((parseInt(s.scripts) || 0) * (s.appointment === 'Board Chairman/Chief Examiner' ? 33 : 30)), 0);
     } else {
       evalScripts = parseInt(b.eval_scripts) || 0;
-      evalAmount = evalScripts * (b.eval_appointment === 'Chief Examiner/Board Chairman' ? 33 : 30);
+      evalAmount = evalScripts * (b.eval_appointment === 'Board Chairman/Chief Examiner' ? 33 : 30);
     }
 
     let squadAmount = 0, squadDays = 0, squadSessionsStr = null;
@@ -82,7 +82,13 @@ router.post('/', requireStaff, validateClaim, async (req, res) => {
       squadDays = fDays + aDays + bDays;
     }
 
-    let practicalSquadAmount = 0;
+    let practicalSquadAmount = 0, practicalSquadSessions = 0, practicalSquadRate = 0;
+    if (b.practical_squad_enabled) {
+      practicalSquadSessions = parseInt(b.practical_squad_sessions) || 0;
+      practicalSquadRate = 150;
+      practicalSquadAmount = practicalSquadSessions * practicalSquadRate;
+    }
+
     let practicalAmount = 0, practicalCandidates = 0, practicalRate = 0;
     if (b.practical_enabled) {
       practicalCandidates = parseInt(b.practical_candidates) || 0;
@@ -365,10 +371,10 @@ router.put('/:id', requireAdmin, validateClaim, async (req, res) => {
     if (b.eval_sessions && Array.isArray(b.eval_sessions)) {
       evalSessionsStr = JSON.stringify(b.eval_sessions);
       evalScripts = b.eval_sessions.reduce((sum, s) => sum + (parseInt(s.scripts) || 0), 0);
-      evalAmount = b.eval_sessions.reduce((sum, s) => sum + ((parseInt(s.scripts) || 0) * (s.appointment === 'Chief Examiner/Board Chairman' ? 33 : 30)), 0);
+      evalAmount = b.eval_sessions.reduce((sum, s) => sum + ((parseInt(s.scripts) || 0) * (s.appointment === 'Board Chairman/Chief Examiner' ? 33 : 30)), 0);
     } else {
       evalScripts = parseInt(b.eval_scripts) || 0;
-      evalAmount = evalScripts * (b.eval_appointment === 'Chief Examiner/Board Chairman' ? 33 : 30);
+      evalAmount = evalScripts * (b.eval_appointment === 'Board Chairman/Chief Examiner' ? 33 : 30);
     }
 
     let squadAmount = 0, squadDays = 0, squadSessionsStr = null;

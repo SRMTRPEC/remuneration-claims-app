@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import PopupMessage from '../../components/PopupMessage';
 
 export default function StaffRegister() {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ export default function StaffRegister() {
   
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [popup, setPopup] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -31,12 +33,22 @@ export default function StaffRegister() {
     setSuccess('');
 
     if (formData.password !== formData.confirm_password) {
-      setError('Passwords do not match');
+      setPopup({ type: 'error', message: 'Passwords do not match', onClose: () => setPopup(null) });
       return;
     }
 
-    if (!formData.username || !formData.password || !formData.staff_name || !formData.department || !formData.email) {
-      setError('Please fill in all required fields');
+    if (!formData.username || !formData.password || !formData.staff_name || !formData.department || !formData.designation || !formData.email) {
+      setPopup({ type: 'error', message: 'Please fill in all required fields', onClose: () => setPopup(null) });
+      return;
+    }
+
+    if (formData.department === 'Others' && !formData.other_department) {
+      setPopup({ type: 'error', message: 'Please specify your other department', onClose: () => setPopup(null) });
+      return;
+    }
+
+    if (formData.designation === 'Others' && !formData.other_designation) {
+      setPopup({ type: 'error', message: 'Please specify your other designation', onClose: () => setPopup(null) });
       return;
     }
 
@@ -62,14 +74,18 @@ export default function StaffRegister() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Registration failed');
+        setPopup({ type: 'error', message: data.error || 'Registration failed', onClose: () => setPopup(null) });
         return;
       }
 
-      setSuccess('Registration successful! Redirecting to login...');
-      setTimeout(() => navigate('/login'), 2000);
+      setPopup({ 
+        type: 'success', 
+        message: 'Registration successful!', 
+        onClose: () => navigate('/login') 
+      });
+      setTimeout(() => navigate('/login'), 2500);
     } catch (err) {
-      setError('Connection failed. Please try again.');
+      setPopup({ type: 'error', message: 'Connection failed. Please try again.', onClose: () => setPopup(null) });
     } finally {
       setLoading(false);
     }
@@ -86,16 +102,13 @@ export default function StaffRegister() {
         <p className="text-xs font-mono uppercase tracking-widest text-text-secondary mt-2">Staff Registration</p>
       </div>
 
-      {error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm text-center border border-red-200">
-          {error}
-        </div>
-      )}
-      
-      {success && (
-        <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm text-center border border-green-200">
-          {success}
-        </div>
+      {popup && (
+        <PopupMessage 
+          type={popup.type} 
+          title={popup.title} 
+          message={popup.message} 
+          onClose={popup.onClose} 
+        />
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -116,7 +129,7 @@ export default function StaffRegister() {
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">
-              {formData.staff_type === 'Internal' ? 'Staff ID *' : 'Anna Univ Number *'}
+              {formData.staff_type === 'Internal' ? 'Staff ID *' : 'Anna University Code *'}
             </label>
             <div className="relative">
               {formData.staff_type === 'Internal' && (

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, UserPlus, Shield, Key, Search, Trash2, Edit2, Eye, X } from 'lucide-react';
+import { Users, UserPlus, Shield, Key, Search, Trash2, Edit2, Eye, X, Download } from 'lucide-react';
 
 export default function UsersList() {
   const [activeTab, setActiveTab] = useState('internal_staff');
@@ -72,6 +72,10 @@ export default function UsersList() {
       const res = await fetch(`/api/admin/users/admins/${id}`, { method: 'DELETE' });
       if (res.ok) setAdmins(admins.filter(a => a.id !== id));
     } catch (e) { console.error(e); }
+  };
+
+  const handleExportUsers = () => {
+    window.location.href = '/api/export/users';
   };
 
   const openEditModal = (s) => {
@@ -287,9 +291,14 @@ export default function UsersList() {
                 className="w-full pl-10 pr-4 py-2 bg-neutral-surface border border-black/5 rounded-md text-sm focus:outline-none focus:border-brand-accent transition-colors"
               />
             </div>
-            <button onClick={openAddModal} className="flex items-center gap-2 bg-brand-accent text-white px-4 py-2 rounded-full font-mono text-[10px] uppercase tracking-widest hover:bg-brand-primary shadow-accent transition-all">
-              <UserPlus size={14} /> Add Staff
-            </button>
+            <div className="flex items-center gap-4">
+              <button onClick={handleExportUsers} className="flex items-center gap-2 bg-neutral-surface border border-black/5 text-brand-primary px-4 py-2 rounded-full font-mono text-[10px] uppercase tracking-widest hover:bg-white shadow-sm transition-all">
+                <Download size={14} /> Export
+              </button>
+              <button onClick={openAddModal} className="flex items-center gap-2 bg-brand-accent text-white px-4 py-2 rounded-full font-mono text-[10px] uppercase tracking-widest hover:bg-brand-primary shadow-accent transition-all">
+                <UserPlus size={14} /> Add Staff
+              </button>
+            </div>
           </div>
           
           <div className="bg-white rounded-md shadow-mega border border-black/5 overflow-hidden">

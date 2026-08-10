@@ -201,4 +201,79 @@ function formatQpType(type) {
   return map[type] || type;
 }
 
-module.exports = { createClaimsWorkbook };
+/**
+ * Generate an Excel workbook from an array of users (staff)
+ * @param {Array} users - Array of user objects from the database
+ * @returns {ExcelJS.Workbook} Formatted workbook ready to write
+ */
+function createUsersWorkbook(users) {
+  const workbook = new ExcelJS.Workbook();
+  workbook.creator = 'APRIL MAY Remuneration System';
+  workbook.created = new Date();
+
+  const sheet = workbook.addWorksheet('Users', {
+    views: [{ state: 'frozen', ySplit: 1 }]
+  });
+
+  sheet.columns = [
+    { header: 'Staff ID / Code', key: 'staff_id', width: 20 },
+    { header: 'Name', key: 'name', width: 30 },
+    { header: 'Email', key: 'email', width: 30 },
+    { header: 'Role', key: 'role', width: 15 },
+    { header: 'Staff Type', key: 'staff_type', width: 15 },
+    { header: 'Department', key: 'department', width: 35 },
+    { header: 'Designation', key: 'designation', width: 30 },
+    { header: 'Created At', key: 'created_at', width: 20 }
+  ];
+
+  const headerRow = sheet.getRow(1);
+  headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+  headerRow.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FF1A237E' }
+  };
+  headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+  headerRow.height = 28;
+
+  users.forEach((user, index) => {
+    const row = sheet.addRow({
+      staff_id: user.staff_id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      staff_type: user.staff_type,
+      department: user.department || '-',
+      designation: user.designation || '-',
+      created_at: formatExcelDate(user.created_at)
+    });
+
+    if (index % 2 === 0) {
+      row.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFF5F5F5' }
+      };
+    }
+  });
+
+  sheet.autoFilter = {
+    from: { row: 1, column: 1 },
+    to: { row: users.length + 1, column: 8 }
+  };
+
+  sheet.eachRow((row, rowNumber) => {
+    row.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+        left: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+        bottom: { style: 'thin', color: { argb: 'FFD0D0D0' } },
+        right: { style: 'thin', color: { argb: 'FFD0D0D0' } }
+      };
+    });
+  });
+
+  return workbook;
+}
+
+module.exports = { createClaimsWorkbook, createUsersWorkbook };

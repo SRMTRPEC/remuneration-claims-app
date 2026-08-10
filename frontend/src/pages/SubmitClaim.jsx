@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { FileText, Calculator, ShieldCheck, CheckCircle2, ChevronRight, Upload } from 'lucide-react';
+import { FileText, Calculator, ShieldCheck, CheckCircle2, ChevronRight, Upload, BookOpen, Search, CheckSquare, Microscope, Presentation, ShieldAlert } from 'lucide-react';
+import PopupMessage from '../components/PopupMessage';
 
 export default function SubmitClaim() {
   const [user, setUser] = useState(null);
   const [staffType, setStaffType] = useState('Internal');
+  const [popup, setPopup] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,7 +20,8 @@ export default function SubmitClaim() {
             ...prev,
             staff_name: data.user.staff_name || '',
             staff_id: (data.user.staff_id || '').replace(/^TRPT/i, ''),
-            department: data.user.department || ''
+            department: data.user.department || '',
+            designation: data.user.designation || ''
           }));
         } else {
           navigate('/login');
@@ -88,11 +91,11 @@ export default function SubmitClaim() {
     if (formData.eval_enabled) {
       let eTotal = 0;
       if (formData.eval_phase1) {
-        if (formData.eval1_1_appt) eTotal += (parseInt(formData.eval1_1_scripts) || 0) * (formData.eval1_1_appt === 'Chief Examiner/Board Chairman' ? 33 : 30);
-        if (formData.eval1_2_appt) eTotal += (parseInt(formData.eval1_2_scripts) || 0) * (formData.eval1_2_appt === 'Chief Examiner/Board Chairman' ? 33 : 30);
+        if (formData.eval1_1_appt) eTotal += (parseInt(formData.eval1_1_scripts) || 0) * (formData.eval1_1_appt === 'Board Chairman/Chief Examiner' ? 33 : 30);
+        if (formData.eval1_2_appt) eTotal += (parseInt(formData.eval1_2_scripts) || 0) * (formData.eval1_2_appt === 'Board Chairman/Chief Examiner' ? 33 : 30);
       }
       if (formData.eval_phase2) {
-        if (formData.eval2_1_appt) eTotal += (parseInt(formData.eval2_1_scripts) || 0) * (formData.eval2_1_appt === 'Chief Examiner/Board Chairman' ? 33 : 30);
+        if (formData.eval2_1_appt) eTotal += (parseInt(formData.eval2_1_scripts) || 0) * (formData.eval2_1_appt === 'Board Chairman/Chief Examiner' ? 33 : 30);
       }
       newAmounts.eval = eTotal;
       total += eTotal;
@@ -132,11 +135,33 @@ export default function SubmitClaim() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Manual Validation
+    const requiredFields = ['staff_name', 'staff_id', 'department', 'designation', 'bank_name', 'bank_branch', 'account_number', 'ifsc_code', 'mobile_number'];
+    const missingFields = requiredFields.filter(f => !formData[f]);
+    
+    if (missingFields.length > 0) {
+      setPopup({ type: 'error', message: `Please fill in all required fields. Missing: ${missingFields.join(', ')}`, onClose: () => setPopup(null) });
+      return;
+    }
+
+
+
+    if (!formData.passbook_file) {
+      setPopup({ type: 'error', message: 'Please upload a copy of your bank passbook', onClose: () => setPopup(null) });
+      return;
+    }
+
+    if (grandTotal === 0) {
+      setPopup({ type: 'error', message: 'Please select at least one claim item', onClose: () => setPopup(null) });
+      return;
+    }
+
     try {
       const payload = {
         ...formData,
         staff_id: staffType === 'External' ? formData.staff_id : 'TRPT' + formData.staff_id,
-        designation: formData.designation === 'Others' ? formData.other_designation : formData.designation,
+        designation: formData.designation,
         eval_sessions: (() => {
           let sessions = [];
           if (formData.eval_phase1) {
@@ -163,21 +188,40 @@ export default function SubmitClaim() {
       });
       
       if (res.ok) {
-        alert('Claim submitted successfully!');
-        window.location.reload();
+        setPopup({ 
+          type: 'success', 
+          message: 'Claim submitted successfully!', 
+          onClose: () => window.location.reload() 
+        });
       } else {
         const data = await res.json();
-        alert(`Error: ${data.error || 'Submission failed'}`);
+        setPopup({ type: 'error', message: `Error: ${data.error || 'Submission failed'}`, onClose: () => setPopup(null) });
       }
     } catch (err) {
-      alert('Network error');
+      setPopup({ type: 'error', message: 'Network error', onClose: () => setPopup(null) });
     }
   };
 
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(val);
 
+  const isExt = staffType === 'External';
+  const qpRate = formData.qp_type === 'qp_with_answer_key' ? (isExt ? 2000 : 1500) : (formData.qp_type ? (isExt ? 1000 : 750) : 0);
+  const eval11Rate = formData.eval1_1_appt === 'Board Chairman/Chief Examiner' ? 33 : (formData.eval1_1_appt ? 30 : 0);
+  const eval12Rate = formData.eval1_2_appt === 'Board Chairman/Chief Examiner' ? 33 : (formData.eval1_2_appt ? 30 : 0);
+  const eval21Rate = formData.eval2_1_appt === 'Board Chairman/Chief Examiner' ? 33 : (formData.eval2_1_appt ? 30 : 0);
+  const practicalRate = formData.practical_type === 'UG' ? 30 : (formData.practical_type === 'PG' ? 40 : (formData.practical_type === 'Ph.D' ? (isExt ? 3000 : 2500) : 0));
+  const projectRate = formData.project_course === 'M.E' ? (isExt ? 250 : 75) : (formData.project_course === 'MBA' ? (isExt ? 200 : 50) : (formData.project_course === 'B.E/B.Tech' ? 30 : 0));
+
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4">
+    <div className="max-w-4xl mx-auto py-12 px-4 relative">
+      {popup && (
+        <PopupMessage 
+          type={popup.type} 
+          title={popup.title} 
+          message={popup.message} 
+          onClose={popup.onClose} 
+        />
+      )}
       <Link to="/dashboard" className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-text-secondary hover:text-brand-accent transition-colors self-start mb-8">
         ← Back to Dashboard
       </Link>
@@ -197,17 +241,17 @@ export default function SubmitClaim() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Full Name *</label>
-              <input type="text" name="staff_name" value={formData.staff_name} onChange={handleChange} required readOnly className="w-full bg-neutral-surface/50 border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors cursor-not-allowed opacity-70" />
+              <input type="text" name="staff_name" value={formData.staff_name} onChange={handleChange} readOnly className="w-full bg-neutral-surface/50 border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors cursor-not-allowed opacity-70" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">
-                {staffType === 'Internal' ? 'Staff ID *' : 'Anna Univ Number *'}
+                {staffType === 'Internal' ? 'Staff ID *' : 'Anna University Code *'}
               </label>
               <div className="relative">
                 {staffType === 'Internal' && (
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary text-sm font-mono font-bold opacity-70">TRPT</span>
                 )}
-                <input type="text" name="staff_id" value={formData.staff_id} onChange={handleChange} required readOnly className={`w-full bg-neutral-surface/50 border border-black/5 rounded-md ${staffType === 'Internal' ? 'pl-14' : 'pl-4'} pr-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors font-mono cursor-not-allowed opacity-70`} />
+                <input type="text" name="staff_id" value={formData.staff_id} onChange={handleChange} readOnly className={`w-full bg-neutral-surface/50 border border-black/5 rounded-md ${staffType === 'Internal' ? 'pl-14' : 'pl-4'} pr-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors font-mono cursor-not-allowed opacity-70`} />
               </div>
             </div>
             <div className="flex flex-col gap-1.5">
@@ -216,7 +260,7 @@ export default function SubmitClaim() {
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Department *</label>
-              <select name="department" value={formData.department} onChange={handleChange} required disabled className="w-full bg-neutral-surface/50 border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors cursor-not-allowed opacity-70">
+              <select name="department" value={formData.department} onChange={handleChange} disabled className="w-full bg-neutral-surface/50 border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors cursor-not-allowed opacity-70">
                 <option value="" disabled>Select Department</option>
                 <option value="Artificial Intelligence and Data Science (AIDS)">Artificial Intelligence and Data Science (AIDS)</option>
                 <option value="Civil Engineering">Civil Engineering</option>
@@ -232,22 +276,10 @@ export default function SubmitClaim() {
                 <option value="Master of Business Administration (MBA)">Master of Business Administration (MBA)</option>
               </select>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 md:col-span-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Designation *</label>
-              <select name="designation" value={formData.designation} onChange={handleChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors">
-                <option value="">Select Designation</option>
-                <option value="Assistant Professor">Assistant Professor</option>
-                <option value="Associate Professor">Associate Professor</option>
-                <option value="Professor">Professor</option>
-                <option value="Others">Others</option>
-              </select>
+              <input type="text" name="designation" value={formData.designation} onChange={handleChange} disabled className="w-full bg-neutral-surface/50 border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors cursor-not-allowed opacity-70" />
             </div>
-            {formData.designation === 'Others' && (
-              <div className="flex flex-col gap-1.5 md:col-span-2">
-                <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Please specify your Designation *</label>
-                <input type="text" name="other_designation" value={formData.other_designation} onChange={handleChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
-              </div>
-            )}
           </div>
         </div>
 
@@ -259,7 +291,7 @@ export default function SubmitClaim() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Bank Name *</label>
-              <select name="bank_name" value={formData.bank_name} onChange={handleChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors">
+              <select name="bank_name" value={formData.bank_name} onChange={handleChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors">
                 <option value="" disabled>Select Bank</option>
                 <option value="State Bank of India">State Bank of India</option>
                 <option value="HDFC Bank">HDFC Bank</option>
@@ -294,23 +326,23 @@ export default function SubmitClaim() {
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Branch Name *</label>
-              <input type="text" name="bank_branch" value={formData.bank_branch} onChange={handleChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
+              <input type="text" name="bank_branch" value={formData.bank_branch} onChange={handleChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Account Number *</label>
-              <input type="text" name="account_number" value={formData.account_number} onChange={handleChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
+              <input type="text" name="account_number" value={formData.account_number} onChange={handleChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">IFSC Code *</label>
-              <input type="text" name="ifsc_code" value={formData.ifsc_code} onChange={handleChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
+              <input type="text" name="ifsc_code" value={formData.ifsc_code} onChange={handleChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Mobile Number *</label>
-              <input type="text" name="mobile_number" value={formData.mobile_number} onChange={handleChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
+              <input type="text" name="mobile_number" value={formData.mobile_number} onChange={handleChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors" />
             </div>
             <div className="flex flex-col gap-1.5 md:col-span-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Passbook Photo / PDF *</label>
-              <input type="file" accept="image/*,application/pdf" onChange={handleFileChange} required className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-accent/10 file:text-brand-primary hover:file:bg-brand-accent/20 cursor-pointer" />
+              <input type="file" accept="image/*,application/pdf" onChange={handleFileChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand-accent transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-accent/10 file:text-brand-primary hover:file:bg-brand-accent/20 cursor-pointer" />
             </div>
           </div>
         </div>
@@ -328,6 +360,7 @@ export default function SubmitClaim() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <input type="checkbox" name="qp_enabled" checked={formData.qp_enabled} onChange={handleChange} className="w-4 h-4 accent-green-500 border border-black/20 rounded-sm cursor-pointer" />
+                  <BookOpen size={16} className="text-blue-500" />
                   <span className="font-semibold text-brand-primary">Question Paper Setting</span>
                 </div>
                 {formData.qp_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.qp)}</span>}
@@ -340,7 +373,10 @@ export default function SubmitClaim() {
                     <option value="qp_only">QP Only</option>
                     <option value="answer_key_only">Answer Key Only</option>
                   </select>
-                  <input type="number" name="qp_quantity" value={formData.qp_quantity} onChange={handleChange} placeholder="Quantity" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                  <div className="flex flex-col gap-1">
+                    <input type="number" name="qp_quantity" value={formData.qp_quantity} onChange={handleChange} placeholder="Quantity" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm w-full" />
+                    {qpRate > 0 && <span className="text-[10px] text-brand-primary/60 font-mono font-bold pl-1">RATE: ₹{qpRate} EACH</span>}
+                  </div>
                 </div>
               )}
             </div>
@@ -350,6 +386,7 @@ export default function SubmitClaim() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <input type="checkbox" name="scrutiny_enabled" checked={formData.scrutiny_enabled} onChange={handleChange} className="w-4 h-4 accent-green-500 border border-black/20 rounded-sm cursor-pointer" />
+                  <Search size={16} className="text-purple-500" />
                   <span className="font-semibold text-brand-primary">Paper Scrutiny</span>
                 </div>
                 {formData.scrutiny_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.scrutiny)}</span>}
@@ -366,6 +403,7 @@ export default function SubmitClaim() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <input type="checkbox" name="eval_enabled" checked={formData.eval_enabled} onChange={handleChange} className="w-4 h-4 accent-green-500 border border-black/20 rounded-sm cursor-pointer" />
+                  <CheckSquare size={16} className="text-emerald-500" />
                   <span className="font-semibold text-brand-primary">Script Evaluation</span>
                 </div>
                 {formData.eval_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.eval)}</span>}
@@ -392,11 +430,14 @@ export default function SubmitClaim() {
                         <div className="grid grid-cols-2 gap-4">
                           <select name="eval1_1_appt" value={formData.eval1_1_appt} onChange={handleChange} className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm">
                             <option value="">Select Appointment</option>
-                            <option value="Chief Examiner/Board Chairman">Chief Examiner/Board Chairman</option>
+                            <option value="Board Chairman/Chief Examiner">Board Chairman/Chief Examiner</option>
                             <option value="Examiner">Examiner</option>
                             <option value="Assistant Examiner">Assistant Examiner</option>
                           </select>
-                          <input type="number" name="eval1_1_scripts" value={formData.eval1_1_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                          <div className="flex flex-col gap-1">
+                            <input type="number" name="eval1_1_scripts" value={formData.eval1_1_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm w-full" />
+                            {eval11Rate > 0 && <span className="text-[10px] text-brand-primary/60 font-mono font-bold pl-1">RATE: ₹{eval11Rate} EACH</span>}
+                          </div>
                         </div>
                       </div>
 
@@ -405,11 +446,14 @@ export default function SubmitClaim() {
                         <div className="grid grid-cols-2 gap-4">
                           <select name="eval1_2_appt" value={formData.eval1_2_appt} onChange={handleChange} className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm">
                             <option value="">Select Appointment</option>
-                            <option value="Chief Examiner/Board Chairman">Chief Examiner/Board Chairman</option>
+                            <option value="Board Chairman/Chief Examiner">Board Chairman/Chief Examiner</option>
                             <option value="Examiner">Examiner</option>
                             <option value="Assistant Examiner">Assistant Examiner</option>
                           </select>
-                          <input type="number" name="eval1_2_scripts" value={formData.eval1_2_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                          <div className="flex flex-col gap-1">
+                            <input type="number" name="eval1_2_scripts" value={formData.eval1_2_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm w-full" />
+                            {eval12Rate > 0 && <span className="text-[10px] text-brand-primary/60 font-mono font-bold pl-1">RATE: ₹{eval12Rate} EACH</span>}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -424,11 +468,14 @@ export default function SubmitClaim() {
                         <div className="grid grid-cols-2 gap-4">
                           <select name="eval2_1_appt" value={formData.eval2_1_appt} onChange={handleChange} className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm">
                             <option value="">Select Appointment</option>
-                            <option value="Chief Examiner/Board Chairman">Chief Examiner/Board Chairman</option>
+                            <option value="Board Chairman/Chief Examiner">Board Chairman/Chief Examiner</option>
                             <option value="Examiner">Examiner</option>
                             <option value="Assistant Examiner">Assistant Examiner</option>
                           </select>
-                          <input type="number" name="eval2_1_scripts" value={formData.eval2_1_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                          <div className="flex flex-col gap-1">
+                            <input type="number" name="eval2_1_scripts" value={formData.eval2_1_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm w-full" />
+                            {eval21Rate > 0 && <span className="text-[10px] text-brand-primary/60 font-mono font-bold pl-1">RATE: ₹{eval21Rate} EACH</span>}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -442,7 +489,8 @@ export default function SubmitClaim() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <input type="checkbox" name="practical_enabled" checked={formData.practical_enabled} onChange={handleChange} className="w-4 h-4 accent-green-500 border border-black/20 rounded-sm cursor-pointer" />
-                  <span className="font-semibold text-brand-primary">Practical / Viva Voce</span>
+                  <Microscope size={16} className="text-pink-500" />
+                  <span className="font-semibold text-brand-primary">Practical</span>
                 </div>
                 {formData.practical_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.practical)}</span>}
               </div>
@@ -454,7 +502,10 @@ export default function SubmitClaim() {
                     <option value="PG">PG</option>
                     <option value="Ph.D">Ph.D</option>
                   </select>
-                  <input type="number" name="practical_candidates" value={formData.practical_candidates} onChange={handleChange} placeholder="Number of Candidates" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                  <div className="flex flex-col gap-1">
+                    <input type="number" name="practical_candidates" value={formData.practical_candidates} onChange={handleChange} placeholder="Number of Candidates" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm w-full" />
+                    {practicalRate > 0 && <span className="text-[10px] text-brand-primary/60 font-mono font-bold pl-1">RATE: ₹{practicalRate} EACH</span>}
+                  </div>
                 </div>
               )}
             </div>
@@ -464,6 +515,7 @@ export default function SubmitClaim() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <input type="checkbox" name="project_enabled" checked={formData.project_enabled} onChange={handleChange} className="w-4 h-4 accent-green-500 border border-black/20 rounded-sm cursor-pointer" />
+                  <Presentation size={16} className="text-orange-500" />
                   <span className="font-semibold text-brand-primary">Project Viva Voce</span>
                 </div>
                 {formData.project_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.project)}</span>}
@@ -476,7 +528,10 @@ export default function SubmitClaim() {
                     <option value="MBA">MBA</option>
                     <option value="B.E/B.Tech">B.E/B.Tech</option>
                   </select>
-                  <input type="number" name="project_candidates" value={formData.project_candidates} onChange={handleChange} placeholder="Number of Candidates" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                  <div className="flex flex-col gap-1">
+                    <input type="number" name="project_candidates" value={formData.project_candidates} onChange={handleChange} placeholder="Number of Candidates" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm w-full" />
+                    {projectRate > 0 && <span className="text-[10px] text-brand-primary/60 font-mono font-bold pl-1">RATE: ₹{projectRate} EACH</span>}
+                  </div>
                 </div>
               )}
             </div>
@@ -486,6 +541,7 @@ export default function SubmitClaim() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <input type="checkbox" name="squad_enabled" checked={formData.squad_enabled} onChange={handleChange} className="w-4 h-4 accent-green-500 border border-black/20 rounded-sm cursor-pointer" />
+                  <ShieldAlert size={16} className="text-red-500" />
                   <span className="font-semibold text-brand-primary">Squad Duty</span>
                 </div>
                 {formData.squad_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.squad)}</span>}
