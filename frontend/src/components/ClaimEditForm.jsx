@@ -71,9 +71,10 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    if (name === 'mobile_number') {
+    if (name === 'mobile_number' || name === 'account_number') {
       const numericValue = value.replace(/\D/g, '');
-      if (numericValue.length > 10) return;
+      if (name === 'mobile_number' && numericValue.length > 10) return;
+      if (name === 'account_number' && numericValue.length > 20) return;
       setFormData(prev => ({ ...prev, [name]: numericValue }));
       return;
     }
