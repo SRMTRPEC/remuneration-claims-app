@@ -56,6 +56,14 @@ export default function SubmitClaim() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    
+    if (name === 'mobile_number') {
+      const numericValue = value.replace(/\D/g, '');
+      if (numericValue.length > 10) return;
+      setFormData(prev => ({ ...prev, [name]: numericValue }));
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
