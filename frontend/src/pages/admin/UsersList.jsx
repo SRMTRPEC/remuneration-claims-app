@@ -16,7 +16,7 @@ export default function UsersList() {
   
   // Add Staff Modal States
   const [showAddStaff, setShowAddStaff] = useState(false);
-  const [addForm, setAddForm] = useState({ staff_id: '', staff_name: '', department: '', designation: '', other_designation: '', staff_type: 'Internal', password: '' });
+  const [addForm, setAddForm] = useState({ staff_id: '', staff_name: '', department: '', designation: '', other_designation: '', staff_type: '', password: '' });
   const [isAdding, setIsAdding] = useState(false);
   
   // Add Admin Modal States
@@ -153,7 +153,7 @@ export default function UsersList() {
   };
 
   const openAddModal = () => {
-    setAddForm({ staff_id: '', staff_name: '', email: '', department: '', designation: '', other_designation: '', staff_type: 'Internal', password: '' });
+    setAddForm({ staff_id: '', staff_name: '', email: '', department: '', designation: '', other_designation: '', staff_type: '', password: '' });
     setShowAddStaff(true);
   };
 
@@ -596,7 +596,8 @@ export default function UsersList() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Staff Type</label>
-                  <select name="staff_type" value={addForm.staff_type} onChange={handleAddChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm focus:outline-none focus:border-brand-accent transition-colors">
+                  <select name="staff_type" value={addForm.staff_type} onChange={handleAddChange} className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm focus:outline-none focus:border-brand-accent transition-colors" required>
+                    <option value="" disabled>Choose an option</option>
                     <option value="Internal">Internal</option>
                     <option value="External">External</option>
                   </select>

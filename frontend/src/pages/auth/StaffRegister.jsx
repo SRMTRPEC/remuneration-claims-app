@@ -14,7 +14,11 @@ export default function StaffRegister() {
     designation: '',
     other_department: '',
     other_designation: '',
-    staff_type: 'Internal'
+    bank_name: '',
+    bank_branch: '',
+    account_number: '',
+    ifsc_code: '',
+    staff_type: ''
   });
   
   const [error, setError] = useState('');
@@ -121,6 +125,7 @@ export default function StaffRegister() {
              className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent transition-colors appearance-none"
              required
            >
+             <option value="" disabled>Choose an option</option>
              <option value="Internal">Internal (College Faculty)</option>
              <option value="External">External (Guest/Visiting)</option>
            </select>
