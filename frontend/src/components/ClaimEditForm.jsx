@@ -79,6 +79,17 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
       return;
     }
 
+    if (type === 'number') {
+      if (value === '') {
+        setFormData(prev => ({ ...prev, [name]: '' }));
+        return;
+      }
+      const val = Number(value);
+      if (val < 0) return;
+      setFormData(prev => ({ ...prev, [name]: val }));
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
