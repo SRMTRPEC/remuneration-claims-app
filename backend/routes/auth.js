@@ -113,7 +113,7 @@ router.get('/me', verifyToken, (req, res) => {
  */
 router.post('/staff/register', async (req, res) => {
   try {
-    const { staff_id, staff_name, department, designation, staff_type, email } = req.body;
+    const { staff_id, staff_name, staff_initial, department, designation, staff_type, email } = req.body;
     const password = (req.body.password || '').trim();
     const confirm_password = (req.body.confirm_password || '').trim();
 
@@ -160,7 +160,7 @@ router.post('/staff/register', async (req, res) => {
       .from('staff')
       .insert([{
         staff_id: cleanStaffId,
-        staff_name: staff_name.trim(),
+        staff_name: staff_initial ? `${staff_name.trim()} ${staff_initial.trim()}`.trim() : staff_name.trim(),
         department: department.trim(),
         designation: designation.trim(),
         staff_type: staff_type,
