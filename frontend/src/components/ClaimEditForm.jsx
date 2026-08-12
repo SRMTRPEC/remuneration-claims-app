@@ -491,23 +491,6 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
             )}
           </div>
 
-          {/* Practical Squad */}
-          <div className="border border-black/5 rounded-md p-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <input type="checkbox" name="practical_squad_enabled" checked={formData.practical_squad_enabled} onChange={handleChange} className="w-4 h-4 accent-green-500 border border-black/20 rounded-sm cursor-pointer" />
-                <span className="font-semibold text-brand-primary">Practical Squad Duty</span>
-              </div>
-              {formData.practical_squad_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.practical_squad)}</span>}
-            </div>
-            {formData.practical_squad_enabled && (
-              <div className="mt-4 pl-7 flex flex-col gap-1 w-1/2">
-                <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Sessions</label>
-                <input type="number" name="practical_squad_sessions" value={formData.practical_squad_sessions} onChange={handleChange} placeholder="Sessions" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
-              </div>
-            )}
-          </div>
-
           {/* Project */}
           <div className="border border-black/5 rounded-md p-4">
             <div className="flex justify-between items-center">
