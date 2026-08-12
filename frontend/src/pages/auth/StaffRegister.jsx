@@ -131,7 +131,7 @@ export default function StaffRegister() {
            </select>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">
               {formData.staff_type === 'Internal' ? 'Staff ID *' : 'Anna University Code *'}
