@@ -151,16 +151,28 @@ export default function StaffRegister() {
               />
             </div>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Full Name *</label>
-            <input
-              type="text"
-              name="staff_name"
-              value={formData.staff_name}
-              onChange={handleChange}
-              className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent transition-colors"
-              required
-            />
+          <div className="flex gap-3">
+            <div className="flex flex-col gap-1.5 flex-1">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Full Name *</label>
+              <input
+                type="text"
+                name="staff_name"
+                value={formData.staff_name}
+                onChange={handleChange}
+                className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-1.5 w-24">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Initial</label>
+              <input
+                type="text"
+                name="staff_initial"
+                value={formData.staff_initial}
+                onChange={handleChange}
+                className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent transition-colors text-center"
+              />
+            </div>
           </div>
         </div>
         
@@ -177,16 +189,6 @@ export default function StaffRegister() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Initial</label>
-            <input
-              type="text"
-              name="staff_initial"
-              value={formData.staff_initial}
-              onChange={handleChange}
-              className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent transition-colors"
-            />
-          </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Department *</label>
             <select
@@ -212,6 +214,24 @@ export default function StaffRegister() {
               <option value="Others">Others</option>
             </select>
           </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Designation *</label>
+            <select
+              name="designation"
+              value={formData.designation}
+              onChange={handleChange}
+              className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+              required
+            >
+              <option value="" disabled>Select Designation</option>
+              <option value="Professor">Professor</option>
+              <option value="Associate Professor">Associate Professor</option>
+              <option value="Assistant Professor">Assistant Professor</option>
+              <option value="Teaching Fellow">Teaching Fellow</option>
+              <option value="Guest Lecturer">Guest Lecturer</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
         </div>
 
         {formData.department === 'Others' && (
@@ -228,23 +248,6 @@ export default function StaffRegister() {
             />
           </div>
         )}
-
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Designation *</label>
-          <select
-            name="designation"
-            value={formData.designation}
-            onChange={handleChange}
-            className="w-full bg-neutral-surface border border-black/5 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-brand-accent transition-colors"
-            required
-          >
-            <option value="" disabled>Select Designation</option>
-            <option value="Professor">Professor</option>
-            <option value="Associate Professor">Associate Professor</option>
-            <option value="Assistant Professor">Assistant Professor</option>
-            <option value="Others">Others</option>
-          </select>
-        </div>
 
         {formData.designation === 'Others' && (
           <div className="flex flex-col gap-1.5">
