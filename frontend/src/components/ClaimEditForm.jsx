@@ -356,7 +356,10 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
                   <option value="qp_only">QP Only</option>
                   <option value="answer_key_only">Answer Key Only</option>
                 </select>
-                <input type="number" name="qp_quantity" value={formData.qp_quantity} onChange={handleChange} placeholder="Quantity" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Papers</label>
+                  <input type="number" name="qp_quantity" value={formData.qp_quantity} onChange={handleChange} placeholder="Quantity" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                </div>
               </div>
             )}
           </div>
@@ -371,7 +374,8 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
               {formData.scrutiny_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.scrutiny)}</span>}
             </div>
             {formData.scrutiny_enabled && (
-              <div className="mt-4 pl-7">
+              <div className="mt-4 pl-7 flex flex-col gap-1 w-1/2">
+                <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Papers</label>
                 <input type="number" name="scrutiny_quantity" value={formData.scrutiny_quantity} onChange={handleChange} placeholder="Quantity (₹300 each)" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
               </div>
             )}
@@ -412,7 +416,10 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
                           <option value="Examiner">Examiner</option>
                           <option value="Assistant Examiner">Assistant Examiner</option>
                         </select>
-                        <input type="number" name="eval1_1_scripts" value={formData.eval1_1_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Scripts</label>
+                          <input type="number" name="eval1_1_scripts" value={formData.eval1_1_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                        </div>
                       </div>
                     </div>
 
@@ -425,7 +432,10 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
                           <option value="Examiner">Examiner</option>
                           <option value="Assistant Examiner">Assistant Examiner</option>
                         </select>
-                        <input type="number" name="eval1_2_scripts" value={formData.eval1_2_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Scripts</label>
+                          <input type="number" name="eval1_2_scripts" value={formData.eval1_2_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -444,7 +454,10 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
                           <option value="Examiner">Examiner</option>
                           <option value="Assistant Examiner">Assistant Examiner</option>
                         </select>
-                        <input type="number" name="eval2_1_scripts" value={formData.eval2_1_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Scripts</label>
+                          <input type="number" name="eval2_1_scripts" value={formData.eval2_1_scripts} onChange={handleChange} placeholder="Scripts" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -470,7 +483,27 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
                   <option value="PG">PG</option>
                   <option value="Ph.D">Ph.D</option>
                 </select>
-                <input type="number" name="practical_candidates" value={formData.practical_candidates} onChange={handleChange} placeholder="Number of Candidates" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Candidates</label>
+                  <input type="number" name="practical_candidates" value={formData.practical_candidates} onChange={handleChange} placeholder="Number of Candidates" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Practical Squad */}
+          <div className="border border-black/5 rounded-md p-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <input type="checkbox" name="practical_squad_enabled" checked={formData.practical_squad_enabled} onChange={handleChange} className="w-4 h-4 accent-green-500 border border-black/20 rounded-sm cursor-pointer" />
+                <span className="font-semibold text-brand-primary">Practical Squad Duty</span>
+              </div>
+              {formData.practical_squad_enabled && <span className="font-mono text-sm font-bold text-brand-accent">{formatCurrency(amounts.practical_squad)}</span>}
+            </div>
+            {formData.practical_squad_enabled && (
+              <div className="mt-4 pl-7 flex flex-col gap-1 w-1/2">
+                <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Sessions</label>
+                <input type="number" name="practical_squad_sessions" value={formData.practical_squad_sessions} onChange={handleChange} placeholder="Sessions" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
               </div>
             )}
           </div>
@@ -492,7 +525,10 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
                   <option value="MBA">MBA</option>
                   <option value="B.E/B.Tech">B.E/B.Tech</option>
                 </select>
-                <input type="number" name="project_candidates" value={formData.project_candidates} onChange={handleChange} placeholder="Number of Candidates" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Candidates</label>
+                  <input type="number" name="project_candidates" value={formData.project_candidates} onChange={handleChange} placeholder="Number of Candidates" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                </div>
               </div>
             )}
           </div>
@@ -508,17 +544,26 @@ export default function ClaimEditForm({ claim, onCancel, onSuccess }) {
             </div>
             {formData.squad_enabled && (
               <div className="mt-4 pl-7 flex flex-col gap-3">
-                <div className="grid grid-cols-2 gap-4 items-center">
-                  <span className="text-sm text-brand-primary font-semibold">Forenoon (₹200)</span>
-                  <input type="number" name="squad_forenoon" value={formData.squad_forenoon} onChange={handleChange} placeholder="Days" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                <div className="grid grid-cols-2 gap-4 items-end">
+                  <span className="text-sm text-brand-primary font-semibold mb-2">Forenoon (₹200)</span>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Days</label>
+                    <input type="number" name="squad_forenoon" value={formData.squad_forenoon} onChange={handleChange} placeholder="Days" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 items-center">
-                  <span className="text-sm text-brand-primary font-semibold">Afternoon (₹200)</span>
-                  <input type="number" name="squad_afternoon" value={formData.squad_afternoon} onChange={handleChange} placeholder="Days" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                <div className="grid grid-cols-2 gap-4 items-end">
+                  <span className="text-sm text-brand-primary font-semibold mb-2">Afternoon (₹200)</span>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Days</label>
+                    <input type="number" name="squad_afternoon" value={formData.squad_afternoon} onChange={handleChange} placeholder="Days" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 items-center">
-                  <span className="text-sm text-brand-primary font-semibold">Both Sessions (₹400)</span>
-                  <input type="number" name="squad_both" value={formData.squad_both} onChange={handleChange} placeholder="Days" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                <div className="grid grid-cols-2 gap-4 items-end">
+                  <span className="text-sm text-brand-primary font-semibold mb-2">Both Sessions (₹400)</span>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] font-mono uppercase tracking-widest text-text-secondary">Number of Days</label>
+                    <input type="number" name="squad_both" value={formData.squad_both} onChange={handleChange} placeholder="Days" className="bg-neutral-surface border border-black/5 rounded-md px-4 py-2 text-sm" />
+                  </div>
                 </div>
               </div>
             )}
