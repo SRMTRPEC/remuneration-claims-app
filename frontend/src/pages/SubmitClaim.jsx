@@ -53,6 +53,7 @@ export default function SubmitClaim() {
 
   const [amounts, setAmounts] = useState({ qp: 0, scrutiny: 0, eval: 0, squad: 0, practical: 0, project: 0, practical_squad: 0 });
   const [grandTotal, setGrandTotal] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -177,6 +178,8 @@ export default function SubmitClaim() {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       const payload = {
         ...formData,
@@ -219,6 +222,8 @@ export default function SubmitClaim() {
       }
     } catch (err) {
       setPopup({ type: 'error', message: 'Network error', onClose: () => setPopup(null) });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -595,8 +600,12 @@ export default function SubmitClaim() {
               {formatCurrency(grandTotal)}
             </div>
           </div>
-          <button type="submit" className="w-full md:w-auto bg-brand-accent hover:bg-white text-white hover:text-brand-primary px-10 py-5 rounded-full font-mono text-sm uppercase tracking-widest font-bold shadow-accent transition-all flex items-center justify-center gap-3">
-            Submit Claim <ChevronRight size={18} />
+          <button 
+            type="submit" 
+            disabled={isSubmitting}
+            className={`w-full md:w-auto ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-accent hover:bg-white hover:text-brand-primary'} text-white px-10 py-5 rounded-full font-mono text-sm uppercase tracking-widest font-bold shadow-accent transition-all flex items-center justify-center gap-3`}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Claim'} {!isSubmitting && <ChevronRight size={18} />}
           </button>
         </div>
 
