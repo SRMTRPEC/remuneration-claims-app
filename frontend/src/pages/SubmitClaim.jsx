@@ -214,7 +214,7 @@ export default function SubmitClaim() {
         setPopup({ 
           type: 'success', 
           message: 'Claim submitted successfully!', 
-          onClose: () => window.location.reload() 
+          onClose: () => navigate('/dashboard') 
         });
       } else {
         const data = await res.json();
